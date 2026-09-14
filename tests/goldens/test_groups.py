@@ -112,3 +112,23 @@ class TemplateGroupsTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@_goldens.needs("stack-folder-flattened-logic")
+class EventsSurviveAddTrackTest(unittest.TestCase):
+    """A track added after members were assigned used to leave a group short of fader events
+    ("2 event(s) for 2 member(s), 4 expected"); on Logic's blank-born project it does not."""
+
+    def test_the_group_keeps_one_event_per_member_per_fader(self):
+        from logicxkit.logic.services.addtrack import add_track
+        from logicxkit.logic.services.groups import assign, create_group, group_errors, read_groups
+        from logicxkit.logicx import project_data
+        data = project_data(_goldens.path("stack-folder-flattened-logic"))
+        data, _made = create_group(data, name="Drums")
+        for oid in (88, 92):
+            data = assign(data, oid, 1)
+        data, report = add_track(data, name="Room", after=92, track_count=3)
+        data = assign(data, report["object_id"], 1)
+        (group,) = read_groups(data)
+        self.assertEqual(group.members, (88, 92, report["object_id"]))
+        self.assertEqual(group_errors(data), [])

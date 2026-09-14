@@ -81,19 +81,22 @@ def test_notice_only_for_unconfirmed_levels():
 
 
 def test_emit_notice_writes_only_on_a_write(capsys, monkeypatch):
+    """Every command is CONFIRMED today, so a DERIVED one is stood up for the test."""
     from argparse import Namespace
 
-    from logicxkit.logic._capabilities import NOTICE_ENV, emit_notice
+    from logicxkit.logic import _capabilities as caps
 
-    monkeypatch.delenv(NOTICE_ENV, raising=False)
-    emit_notice(Namespace(cmd="transplant", out=None))
+    derived = caps.Capability(("shove",), "DERIVED", "with care", "made up for this test")
+    monkeypatch.setattr(caps, "by_command", lambda: {"shove": derived})
+    monkeypatch.delenv(caps.NOTICE_ENV, raising=False)
+    caps.emit_notice(Namespace(cmd="shove", out=None))
     assert capsys.readouterr().err == ""
 
-    emit_notice(Namespace(cmd="transplant", out="somewhere"))
-    assert "transplant" in capsys.readouterr().err
+    caps.emit_notice(Namespace(cmd="shove", out="somewhere"))
+    assert "shove" in capsys.readouterr().err
 
-    monkeypatch.setenv(NOTICE_ENV, "1")
-    emit_notice(Namespace(cmd="transplant", out="somewhere"))
+    monkeypatch.setenv(caps.NOTICE_ENV, "1")
+    caps.emit_notice(Namespace(cmd="shove", out="somewhere"))
     assert capsys.readouterr().err == ""
 
 

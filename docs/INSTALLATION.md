@@ -93,8 +93,10 @@ both corpora have resolves to the public file first (`LOGICXKIT_GOLDENS=owner` f
 [`resources/README.md`](../resources/README.md) describes its shape and how the controlled
 saves are made.
 
-**The data root** (`LOGICXKIT_DATA`) — record templates Logic wrote, plugin-slot donor records,
-and AU parameter tables dumped from installed plugins. The tools load these at runtime.
+**The data root** (`LOGICXKIT_DATA`) — optional. The package carries Logic's own record templates
+and native plug-in donors (`src/logicxkit/data`, regenerated from the public corpus by
+`bin/regen_data.py`); a data root adds third-party donor records and AU parameter tables dumped
+from installed plugins, and its files take precedence over the packaged ones.
 [`resources/data/README.md`](../resources/data/README.md) says how to regenerate each part
 (`logic donors`, `logic recdiff`, and `auprobe.swift list` for the AU tables).
 
@@ -115,7 +117,7 @@ synthetic layer only**, and the keys only the owner's corpus has skip on every o
 Every run ends with a line naming how much actually ran:
 
 ```
-goldens: 0 of 73 keys found; none on this machine
+goldens: 0 of 185 keys found; none on this machine
 ```
 
 Read that line before trusting a run. Set `LOGICXKIT_REQUIRE_GOLDENS=1` to make a missing

@@ -56,3 +56,18 @@ class LegacyBaseWordTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@_goldens.needs("transplant-ours", "transplant-resave-logic")
+class LogicResavedTransplantTest(unittest.TestCase):
+    def test_logic_kept_both_slots_byte_for_byte(self):
+        from logicxkit.logic.services.insert import HEADER, project_records
+        from logicxkit.logicx import project_data
+        ours, logic = (project_data(_goldens.path(k)) for k in ("transplant-ours", "transplant-resave-logic"))
+        owner = owner_of(ours, _goldens.fact("transplant-ours", "channel"))
+
+        def slots(data):
+            return {r.key: r.raw[HEADER:] for r in project_records(data)
+                    if r.tag == b"UCuA" and r.owner == owner and r.key in (2, 3)}
+        self.assertEqual(sorted(slots(ours)), [2, 3])
+        self.assertEqual(slots(ours), slots(logic))

@@ -12,7 +12,8 @@ from logicxkit.logic import cli
 NOT_PATHS = {
     "add", "after", "assign", "by", "channel", "copy", "create", "hide", "input", "key", "key_at",
     "length", "mono", "move", "name", "output", "pane", "ramp", "remove", "rename", "row", "set",
-    "setting", "show", "skip", "stack", "stereo", "time", "time_at", "track",
+    "audio", "note", "patch", "region", "setting", "show", "skip", "stack", "stereo", "time", "time_at", "track",
+    "ref", "group", "off",
 }
 
 

@@ -279,7 +279,7 @@ is not the arrange hierarchy.
 |---|---|
 | `+0` | channel-object type in the low 16 bits: **1800** at Logic 12, **1728** at Logic 11; mixed projects set flag bits `0x4040` in the high half on some tracks (ten of 69 in one mix), so mask before comparing |
 | `+16` | object id — what `karT+8` points at |
-| `+24` | u32 **group number** (1-based; 0 = none) — see Groups below |
+| `+24` | u32 **group bitmask** (bit N−1 = group N; 0 = none; a channel in groups 1 and 4 reads 9) — see Groups below |
 | `+38` | u32 **parent**: the object id of the stack this track was dragged into (0 if never dragged). Ids reach 500, so all four bytes matter |
 | `+45` | state: 0 on a fresh object, 1 after its first save, 3 after the next |
 | `+80` | 1 on the selected object only |
@@ -378,6 +378,82 @@ one the project already carries (level bytes and `+8` copied, never synthesised)
 `+44` and the target bus's UUID at `+60`; `logic send --add/--copy/--remove` drives it.
 **Confirmed in Logic 12.3.1 on 2026-09-02:** the added send showed on the strip.
 
+### Row selection marks — `karT`, measured 2026-09-13
+
+Logic's own saves mark the selected arrange row twice: `+76` bit 5 (0x20) and `+79` bit 6
+(0x40) of the 94-byte row; a fresh project's three tracks all carry both ("3 selected"), and a
+header click moves both to the clicked row. Logic clears the `+79` mark on any row it loads
+from one of our files and keeps `+76`, so a written selection does not survive a load: what
+Logic reads it from is still open.
+
+### MIDI regions — the region entry and its events (`logic midi`, measured 2026-09-13)
+
+A region is an 80-byte entry in the song container's `qSvE` (`regions.py` has the row and
+object fields): `+4` its start tick with bar 1 at 34560 (the automation root folders sit at
+34560; a one-bar region placed at 3 1 1 1 reads 42240), `+13` bit 0 its Loop flag, `+32` the
+slot of its own sequence triple, whose `qeSM` carries the region name at `+16` (u16 length,
+then the text). The region's `qSvE` is an event list (`events.py`), ticks region-relative with
+38400 at the region's start:
+
+| line | layout |
+|---|---|
+| note `0x9c` | `+11` velocity, `+12` pitch; a `0x89` continuation follows with `+12` u32 length in ticks |
+| controller `0xBc` | `+11` value, `+12` number; a `0xBB` continuation follows |
+| program change `0xCc` | `+12` program |
+| pitch bend `0xEc` | `+12` LSB, `+11` MSB (0x40 at centre) |
+
+`c` is the channel less one. `+15` bit 7 marks the selected event on every sequence — sections,
+notes, region entries alike — set on the one just made and cleared by a click elsewhere.
+Logic files events by tick, and at one tick program change, controller, notes, pitch bend.
+
+### `.patch` bundles (`logic patch`)
+
+A Library patch is a folder: `nodes.plistZ` names the nodes, and each node folder holds
+`base.plistZ` (the channel's settings — name, strip file, volume, pan, mute, solo, width, input
+and output — as `Channel_*` keys), `mappings.plistZ` and `uidata.plistZ` (Smart Controls) and the
+channel's `.cst`. Each `.plistZ` is a zlib-compressed `NSKeyedArchiver` plist (`$top` keys point
+into `$objects` by `CF$UID`). The older shape is a plain `data.plist` with the same channel keys
+beside `#Root.cst`. Read on Logic's own default patches, 2026-09-13; `--build` writes the older
+shape from a `.cst`.
+
+### Audio files and regions (`logic regions`, measured 2026-09-13)
+
+An import adds an `lFuA` file record and a `gRuA` region record directly before the first
+`lytS`, and a type-0x24 entry in the song container whose `+44` word is four times the region's
+ordinal; both records carry the same word in their header slot (`+10`). The file record: `+8`
+the name's length in UTF-16 units and the name (big-endian), then `LFUA`; from that magic `+8`
+u8 1 on the newest import only, `+139` the Media folder's path in a 256-byte NUL-padded buffer,
+`+401` u8 channels, `+407` u32 file size, `+457` the format as a reversed four-CC (`EVAW`), `+465`
+u32 data offset, `+469` u32 frames, `+477` u32 sample rate, `+481` u16 channels, `+483` u16 bits,
+`+513` u32 ord (1-based), `+519` u32 link — the next file's word, `0xFFFFFFFF` on the last — the
+file as Logic stored it, converted to the project's rate on import. The region record: `+22` u32
+length in frames, `+38` u8 1 on the newest import only, `+42` u64 a time in 100 ns on the clock
+of the region's UUID, `+74` the name (u16 length, then the text, padded to an even length), a v1
+UUID 47 bytes before its end followed by `ffffffff`. An import clears the selected bit (`+15`
+bit 7) on every other song-container entry. Logic's first import writes one kind-0x0b entry
+directly before the 0x0c run in each `gnoS` stride (24- and 16-byte); each later import appends
+one after it, valued four times the ordinal. Measured on Logic's first, second and third imports
+onto one blank-born project; projects whose regions were deleted or recorded carry sparse words
+and link chains out of file order, and how Logic pairs those is unmeasured.
+
+### Session Player regions (`logic sessionplayer`, measured 2026-09-13)
+
+The settings are JSON in a `MneG` record: `+0` u32 the payload size, `+28` u32 the JSON's
+length, the document at `+36`. Its top-level scalars are the editor: `rComp` Complexity,
+`fillsAmount` Fill Amount, `swing` Swing (one move per save), `fillsComp`, `humanize`,
+`dynamics`, `ghostNotes`, `pushPull`, the enable flags, `CharacterIdentifier` the drummer,
+`Preset.Name` the preset, `PresetDirty` once anything moved. `GeneratorMemento` is the
+generator's bookkeeping; the performance is the notes in the region's own sequence, whose
+`qeSM` names it "Drummer - …". One region measured; records pair with drummer sequences in
+file order.
+
+### Plug-in identity (`logic plugins`)
+
+A native slot carries its type id in the `GAMETSPP` block (`insert.find_blocks`); a third-party
+slot embeds an AU preset plist whose `type`, `subtype` and `manufacturer` integers are the
+component's four-character codes (`au.services.embed`). The name string a slot may carry is a
+preset name, not the plug-in's.
+
 ### Hidden
 
 `karT +0` bit `0x04000000`. The values seen are `0x24000001`, `0x241c0001`, `0x24080001`
@@ -395,28 +471,79 @@ whole structure. A group is a **sequence triple of its own** — `qeSM` / zero-s
 |---|---|
 | `qeSM +8` | the triple id, repeated as the `qSvE`'s owner; any unused id (Logic gave 82, then 43) |
 | `qeSM +16` | u16 name length; the name follows, padded to an even length |
-| `qeSM +70` + padded name | u32 **settings**, one bit per box: 0 Volume, 1 Pan, 2 Mute, 3 Solo, 8-15 Send 1-8, 16 Editing (Selection), 17 Track Zoom, 18 Color, 20 Record, 21 Hide, 22 Quantize-Locked (Audio) **inverted** (set while the box is off), 23 Track Alternatives, 24 Automation Mode, 26 Input. A fresh group is `0x81400005`; bit 31 is set on every group 12.3.1 made and clear on one older template group — unmeasured |
+| `qeSM +70` + padded name | u32 **settings**, one bit per box: 0 Volume, 1 Pan, 2 Mute, 3 Solo, 8-15 Send 1-8, 16 Editing (Selection), 17 Track Zoom, 18 Color, 20 Record, 21 Hide, 22 Quantize-Locked (Audio) **inverted** (set while the box is off), 23 Track Alternatives, 24 Automation Mode, 26 Input. A fresh group is `0x81400005`; bit 31 is the table's **On** box (clear on a switched-off group; two groups switched off, 2026-09-13) |
 | `qSvE` | one 32-byte **event per member per linked fader** — Volume, Mute, Solo, Pan; every other box is flag-only — then a 16-byte tail. `+4` = the member's object id × 2; `+12` the fader as Logic numbers them (7 Volume, 9 Mute, 3 Solo, 10 Pan); `+8` u32 the member's value for it as its channel stores it (the fader's fixed-point word, `0x5a000000` at unity; the pan byte in the top byte, 64 = centre; 0 for Mute and Solo), its halves repeated at `+20` and `+30`. A fresh group writes Mute then Volume per member; Solo then Pan |
-| `ivnE +24` | the member's **group number** |
+| `ivnE +24` | the member's **groups as a bitmask**, bit N−1 = group N (measured on a Create Group that put overhead tracks already in group 1 into group 4: they read 9) |
 | `gnoS` | a `<0x11><slot>` entry per group in both runs, directly before the object entries |
 
 Nothing else moves: the row's `+4` and the channel's `+92`, both candidates before the saves,
 stay put. `services/groups.py` reads and writes all of it; the writer reproduces six of the
-saves byte for byte in the triple, the numbers and the registry pair. Leaving a group is
-composed (events out, number cleared), not measured. `apply-template` carries the template's
+saves byte for byte in the triple, the numbers and the registry pair. Create Group sets the new bit and leaves
+a member's other groups and their events alone; leaving a group is composed (events out,
+bit cleared), not measured. `apply-template` carries the template's
 groups by name — made in the session when missing, paired rows put in them, a row grouped where
 its template row is not taken out — as its last step, so the events carry the fader the template
 set. Confirmed: the migrated song opened in Logic with `1: OH` / `2: Room` in the mixer's Group
 row, and Logic's re-save kept both group records byte for byte and the row list unchanged.
 
-**Open (2026-09-08):** a track added *after* members are assigned leaves the group with fewer
-fader events than members ("2 event(s) for 2 member(s), 4 expected"), so `apply-template` runs
-over another lineage need `--skip group` until the add re-syncs the events.
+A track added *after* members are assigned once left the group short of fader events ("2
+event(s) for 2 member(s), 4 expected"), which is why `apply-template` runs over another lineage
+passed `--skip group`. On Logic's blank-born project the sequence create, assign, add, assign
+keeps one event per member per fader (`tests/goldens/test_groups.py`, 2026-09-13); drop the skip
+and report the message if it returns on a converted session.
 
 Leaving a group was composed until 2026-09-12: Logic's own No Group on one member of a group
 made by `logic group` on a blank project (Logic re-saved that group intact first) changed the
-group record, the object's group number and nothing else the leave owns — `assign(…, 0)`
+group record, the object's group bit and nothing else the leave owns — `assign(…, 0)`
 reproduces it; the bytes that differ are the selection made by clicking the track.
+
+### Flex and audio quantize (one tracking project, eleven single-change saves, 2026-09-13)
+
+The owner's live-drum quantize procedure, saved after every step, then re-saved after a flex
+mode change and after each of four Quantize values. Everything below is from those saves; the
+project is private, so the facts are pinned here and in synthetic tests.
+
+- **Region entries live in the song container's `qSvE`** (the sequence named after the project,
+  head `70 03 01 00`), 80 bytes each; `+44` is four times a **counter that keeps counting past
+  deleted regions**, so neither the counter nor its distance from the smallest is a record
+  index; `regions.py` ranks the counters of every sequence.
+- **Enabling flex on a region** (Quantize-Locked (Audio) does it for every group member) sets
+  the entry's `+15` bit 4 (bit 7 there is *selected*) and appends two 80-byte **marker blocks**:
+  byte 7 = `0xAA` on every block; `+6` = `07` start anchor, `03` end anchor, `01` transient;
+  `+0` i32 **source** in samples, `+12` i32 **target** in ticks (960 per quarter, 3840 per 4/4
+  bar; the region start is 0), `+8..11` the target's fraction, `0x88` at `+23`, `+39`, `+55`,
+  `+71`. The start anchor sits one beat before the region (`-13230` samples at 200 BPM, 44.1
+  kHz; target `-960`); the end anchor sits 1024 samples past the region's last frame while it
+  is only flexed and **at the last frame once quantized** (target = frames in ticks, with the
+  fraction). A written anchor left at +1024 comes back as kind `04` with Logic's own `03`
+  before it; two hits snapping to one grid target come back as the one nearest it; with
+  Quantize Off the hits are kind `05` with their unmoved, fractional targets.
+  `regions.entry_offsets` steps over the blocks.
+- **Quantize** on a flexed region: `+13` = 1, `+48` bit 7, `+32` = the slot of a new sequence
+  triple per region named **RBA Sequence** (309-byte `qeSM`, empty `qSvE`, a registry pair):
+  `+8` its id, `+88` the region length in ticks with fraction, **`+102` i16 the Quantize value**
+  — 0 Off, `-2·(7 − log2 d)` for 1/d (1/4 = -10, 1/8 = -8, 1/16 = -6, 1/32 = -4). Logic then
+  writes one transient marker per detected hit with the target on the grid; on the first
+  quantize only the first Q-Reference region carried them (214 markers for 12 regions), a later
+  value change wrote the full list on every member. **Logic does not rebuild the markers on
+  load**: a save with the markers stripped and the parameter kept came back with two anchors
+  per region. The markers are the quantize; a writer has to make them.
+- **Per channel object** (`ivnE`): `+80` = 1 while the track is selected (many at once);
+  `+154` bit 4 = **Q-Reference off** (`0x80` → `0x90`), bit 5 = flex mode other than Slicing;
+  three bytes at the padded name's end + 402 − 18 hold the **flex mode**: `02 03 02` Slicing,
+  `05 00 05` Monophonic (the Q-locked group takes one member's mode for all).
+- **Writing it** (`services/quantize_drums.py`, `logic quantize-drums`): `onsets.py` finds the
+  hits in the reference mics (peak envelope, a 24 dB rise over the quietest 30 ms before, at
+  most 21 dB under the track's peak). Tuned against the union of the transients Logic marked
+  on the take at 1/16, 1/8, 1/4 and 1/32 (310; the later lists' sources are mostly the raw
+  positions, a minority re-detected a few ms early on the rendered audio): 78% of them found
+  within 10 ms, 88% of ours among them, 0.5 ms median position error on the exact subset, `flexmarkers.py` writes the blocks and the RBA triple, `flexmode.py` the
+  object's Q-Reference and mode bytes; the region's first frame in its file (`gRuA +6`) is
+  taken off every hit.
+- **The audio file** grows too: Logic appends `LGBM` (a beat-marker cache, 8.6 KB for 212
+  markers, pointer-like words, unread here) once flex is on, and `EAPD`/`EAFP` (pitch analysis,
+  ~500 KB) for Monophonic; every recorded file already carries `ResU` (zlib JSON, the Smart
+  Tempo recording context) and `LGWV`. RIFF chunks after `data` are byte-padded; `data` is not.
 
 ### What a track add writes (two clean saves, 2026-09-01, Logic 12.3.1)
 
@@ -1010,7 +1137,9 @@ Twelve sections of one song, with quarter-bar lengths, reproduced Logic's displa
 **Tempo** (`services/tempo.py`): `gnoS +110` is `bpm × 10000` — the tempo the LCD showed
 when the song was saved — and +114 the tempo at bar 1 (+198 repeats it). Events of type
 0x60 carry `bpm × 10000` at data +0; a head flag 0x40 marks a point Logic generated for a
-ramp (one every 480 ticks). A step Logic draws from the tempo track is two events one tick
+ramp (one every 480 ticks); data +8 is the point's time in 1/2000 s from Logic's SMPTE origin
+(01:00:00:00 = 7 200 000 at bar 1), which Logic's own list points and curve runs carry to the
+digit. A step Logic draws from the tempo track is two events one tick
 apart with 0xb4/0xb1 lines; one added from the Tempo List is a single bare event. Matched on
 every song on hand, a ramp and two step songs included. The 0xb4 line's four fields are
 undecoded. The event type is the u16 at +0: a change Logic added carried a nonzero word at +2.
@@ -1030,13 +1159,14 @@ slot space, the registry is untouched — with the head Logic writes for a fresh
 event joins the sequence in tick order. Ours reproduced Logic's add record for record, and
 Logic's re-save of a section and a tempo change we added kept both. `tempo --add BAR=BPM`
 writes what Logic's own added change was: one bare 32-byte event — no curve lines — with the
-bpm word, `40 88` at +22 of the data line and an ascending stamp at +8;
-the word Logic put at head +2 is undecoded and written as zero, which Logic accepted.
+bpm word, `40 88` at +22 of the data line and the point's time word at +8, the same word
+Logic's Tempo List wrote for its own point on the blank project (2026-09-14); the word Logic
+put at head +2 on one of its adds is undecoded and written as zero, which Logic accepted.
 `tempo --ramp BAR=BPM:BAR=BPM [--density N]` writes what Logic's Tempo Operations "Create Tempo
 Curve" writes (linear, 1/8, continue with the new tempo): one plain event per division from
 the start bar to the end bar, each holding the tempo at the middle of its division, the
 last one the end tempo exactly, no curve lines. Logic's re-save of ours kept all sixty-six
-events and rewrote only their stamps. A curve drawn by hand on the tempo track is the
+events and rewrote only their time words, then still a guess. A curve drawn by hand on the tempo track is the
 other shape — ramp points flagged 0x40 with a 0xb4 curve line on the first — and is read only. Adding a
 section needs an index-table slot for its text record, and adding a tempo change the 0xb4
 curve line — both unmeasured, so neither is offered.
@@ -1057,7 +1187,15 @@ bar line of the new meter, so `--time` refuses songs with later changes), C to G
 /48; A minor and E minor (2026-09-07). `--key-at BAR=KEY` and `--time-at BAR=N/D` add changes
 after bar 1 the way Logic's Signature List does: a key change is a bare 0x32 event with its own
 tick at data +12, a meter change a 0x30 event with the bar index at data +8 and one empty
-continuation line; Logic's re-save of ours kept all four events byte for byte.
+continuation line; Logic's re-save of ours kept all four events byte for byte. Logic's own
+Signature List on the blank project (2026-09-14, `signature-meter-created-logic` …
+`signature-key-a-minor-logic`): Create with the playhead at bar 5 beat 3 made a 5/4 on the next
+bar line, bar 6, and with the type set to Key an F major at the playhead itself; a Tempo List
+Create made a point at the playhead. Those events match ours byte for byte but for two words:
+head +15 is 0x80 on the event just created and gains bit 0 once the list edits it (ours write
+0x01), and data +12 holds the playhead's tick on a created meter change and 0 on a created key
+change, where ours write the event's tick. A meter change made equal to its predecessor is
+dropped by Logic on the next edit.
 
 **Channel records past a session's count** (`services/channel_alloc.py`,
 `services/inputs_create.py`; `add-track` and `apply-template` use them). When no `Audio N` stub
@@ -1257,3 +1395,15 @@ the template has it.
 Compressor thresholds are absolute dB and depend on your incoming track levels.
 Treat a spec's thresholds as starting points and nudge ±4 dB
 once you hear real takes.
+
+**Making the track** (Logic's own first section on a song without one, 2026-09-13): after the
+last `tSxT` Logic inserts the section sequence triple (`qeSM` 341, `karT` 36, `qSvE` with the
+section event), a second triple with an empty `qSvE`, and a `snrT` (504 bytes); it replaces the
+68-byte `OgnS` before the first `rpyH` with a 774-byte one, appends a 734-byte `MneG` (a bplist)
+and two `qSxT` — an empty text at slot 0, the section's name at slot 4. `arrangement --add`
+writes the same from `arrangement-track-12.3.1.json`, and Logic re-saved one with the section
+intact. The time signature line (`0x30`) carries the denominator's log2 at `+11` and the
+numerator at `+12`; the key line (`0x32`) the key's index in the circle of fifths at `+12`
+(C major 7) — read since 2026-09-06, the field offsets confirmed on the blank project's meter
+edits.
+

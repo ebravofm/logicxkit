@@ -27,6 +27,12 @@ from ._song import register as register_song
 from ._header import register as register_header
 from ._prefs import register as register_prefs
 from ._chains_cmd import register as register_chains
+from ._midi_cmd import register as register_midi
+from ._plugins_cmd import register as register_plugins
+from ._patch_cmd import register as register_patch
+from ._regions_cmd import register as register_regions
+from ._sessionplayer_cmd import register as register_sessionplayer
+from ._quantize_cmd import register as register_quantize
 from ._diagnose import register as register_diagnose
 from ._inspect import (
     cmd_diff,
@@ -228,8 +234,9 @@ def _retrack_channels(args) -> int:
 def cmd_donors(args) -> int:
     """Harvest plugin-slot donor records from a project into the reusable library."""
     from ..utils.data import data_dir
+    from .services.chain_report import PLUGIN_NAMES
     lib = Path(args.library) if args.library else data_dir("donors")
-    names = {}
+    names = dict(PLUGIN_NAMES)
     settings = factory_settings()
     if settings.is_dir():
         for folder in settings.iterdir():
@@ -352,7 +359,7 @@ def cmd_decode(args) -> int:
 # Every path argument, so a quoted "~/Music/…" is a path and not a directory named "~".
 _PATH_ARGS = ("project", "logicx", "out", "to", "spec", "library", "file", "image", "map",
               "propose_map", "export", "from_", "config", "template", "src", "dst", "a", "b",
-              "baseline", "apply", "backup_dir", "controlbar_from")
+              "baseline", "apply", "backup_dir", "controlbar_from", "build", "audio")
 
 
 def _expand(value):
@@ -398,6 +405,12 @@ def main(argv: list[str] | None = None) -> int:
     dn.add_argument("--library", default=None, help="donor library (default: the data root's donors/)")
     dn.set_defaults(func=cmd_donors)
     register_chains(sub)
+    register_midi(sub)
+    register_plugins(sub)
+    register_patch(sub)
+    register_regions(sub)
+    register_sessionplayer(sub)
+    register_quantize(sub)
     register_capabilities(sub)
     register_header(sub)
     register_controlbar(sub)

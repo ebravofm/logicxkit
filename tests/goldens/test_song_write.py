@@ -141,13 +141,44 @@ class AddTempoTest(unittest.TestCase):
         eo, el = (events(r[tempo_sequence(r)].raw[HEADER:])[1] for r in (ro, rl))
         self.assertEqual(len(ro[tempo_sequence(ro)].raw), len(rl[tempo_sequence(rl)].raw))
         self.assertEqual(eo.head[4:15], el.head[4:15])            # tick and the 0x7f byte; +2 and +15 differ by design
-        self.assertEqual(eo.data[:8], el.data[:8])                # the bpm word and `40 88`
+        self.assertEqual(eo.data[:12], el.data[:12])              # the bpm word, `40 88` and the time word
         self.assertEqual((eo.lines[1:], el.lines[1:]), ((), ()))
 
     def test_refuses_a_second_event_on_the_same_tick(self):
         from logicxkit.logic.services.tempo_write import add_tempo
         with self.assertRaises(ValueError):
             add_tempo(project_data(TEMPO_BASE), BAR_ONE, 120)
+
+
+@_goldens.needs("signature-key-a-minor-logic", "tempo-point-created-logic", "tempo-point-140-logic")
+class TempoListPointTest(unittest.TestCase):
+    """Logic's own Tempo List point on the blank project, and our add of the same point."""
+
+    def test_reader_sees_the_point_and_its_edit(self):
+        for key in ("tempo-point-created-logic", "tempo-point-140-logic"):
+            got = read_tempo_events(project_data(_goldens.path(key)))
+            with self.subTest(key=key):
+                self.assertEqual([[e.position, e.bpm] for e in got], _goldens.fact(key, "tempos"))
+
+    def test_our_add_is_logics_point_byte_for_byte(self):
+        import struct
+        from logicxkit.logic.services.events import events
+        from logicxkit.logic.services.insert import HEADER, project_records
+        from logicxkit.logic.services.tempo import TIME_AT, tempo_sequence
+        from logicxkit.logic.services.tempo_write import add_tempo
+        base = project_data(_goldens.path("signature-key-a-minor-logic"))
+        (tick, bpm) = _goldens.fact("tempo-point-140-logic", "tempos")[1]
+        ours = add_tempo(base, tick, bpm)
+        require_no_regression(base, ours)
+        ro, rl = project_records(ours), project_records(project_data(_goldens.path("tempo-point-140-logic")))
+        po, pl = (r[tempo_sequence(r)].raw[HEADER:] for r in (ro, rl))
+        self.assertEqual(len(po), len(pl))
+        eo, el = events(po)[1], events(pl)[1]
+        self.assertEqual(bytes(b & 0x7F if i == 15 else b for i, b in enumerate(eo.head)),
+                         bytes(b & 0x7F if i == 15 else b for i, b in enumerate(el.head)))
+        self.assertEqual(eo.lines, el.lines)
+        self.assertEqual([struct.unpack_from("<I", e.data, TIME_AT)[0] for e in events(po) if e.type == 0x60],
+                         _goldens.fact("tempo-point-140-logic", "time_words"))
 
 
 @unittest.skipUnless(ADD_BASE and OUR_ADDS_LOGIC, "no re-save of our adds")
@@ -288,3 +319,39 @@ class BarArgumentMeterTest(unittest.TestCase):
             data = data_file.read_bytes()
         m = meter(data)
         self.assertEqual([m.bar(e.position) for e in read_tempo_events(data) if e.bpm == 151], [9.0])
+
+
+@_goldens.needs("stack-folder-flattened-logic", "arrangement-first-section-logic")
+class ArrangementTrackTest(unittest.TestCase):
+    """Adding a section to a song without an arrangement track writes what Logic's own first
+    section wrote, less what Logic adds on any load (the click's editor records, the
+    transient triple, the MIDI port refresh)."""
+
+    LOAD_NOISE = {(b"UCuA", 1957): 1, (b"UCuA", 867): 1, (b"qeSM", None): 1, (b"karT", 36): 1, (b"qSvE", 52): 1}
+    UNSIZED = (b"gnoS", b"qeSM", b"MroC", b"OCuA")   # grow on any load, or carry the project's name
+
+    @classmethod
+    def _shape(cls, data: bytes):
+        from collections import Counter
+        from logicxkit.logic.services.insert import project_records
+        return Counter((r.tag, None if r.tag in cls.UNSIZED else len(r.raw)) for r in project_records(data))
+
+    def test_the_section_and_its_track_read_like_logics(self):
+        from collections import Counter
+        from logicxkit.logic.services.validate import validate_project
+        base = project_data(_goldens.path("stack-folder-flattened-logic"))
+        logic = project_data(_goldens.path("arrangement-first-section-logic"))
+        want = [(s.name, s.start, s.length, s.kind) for s in read_sections(logic)]
+        out = w.add_section(base, want[0][0], start=want[0][1], length=want[0][2], kind=want[0][3])
+        self.assertEqual([(s.name, s.start, s.length, s.kind) for s in read_sections(out)], want)
+        self.assertEqual(validate_project(out), [])
+        self.assertEqual(self._shape(out), self._shape(logic) - Counter(self.LOAD_NOISE))
+
+
+@_goldens.needs("arrangement-ours", "arrangement-resave-logic")
+class LogicResavedArrangementTrackTest(unittest.TestCase):
+    def test_logic_kept_the_made_track_and_its_section(self):
+        ours, logic = (project_data(_goldens.path(k)) for k in ("arrangement-ours", "arrangement-resave-logic"))
+        mine = [(s.name, s.start, s.length, s.kind) for s in read_sections(ours)]
+        self.assertEqual([n for n, *_ in mine], _goldens.fact("arrangement-ours", "names"))
+        self.assertEqual(mine, [(s.name, s.start, s.length, s.kind) for s in read_sections(logic)])

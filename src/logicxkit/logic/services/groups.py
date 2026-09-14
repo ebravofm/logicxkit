@@ -14,12 +14,13 @@ The `qSvE` holds one 32-byte event per member per linked fader — Volume, Mute,
 Pan; every other box is flag-only — then a 16-byte tail. Event `+4` is the member's object
 id doubled, `+12` the fader as Logic numbers them (7 Volume, 9 Mute, 3 Solo, 10 Pan), `+8`
 the member's value for it as the channel stores it (the fader's fixed-point word; the pan
-byte in the top byte), its halves repeated at `+20` and `+30`. A member's `ivnE` carries
-the group number at `+24` (0 = none), and the registry holds a `<0x11><slot>` entry per
-group in both runs, directly before the object entries. The row's `+4` and the channel's
-`+92` do not change. Bit 31 of the flags is set on every group Logic 12.3.1 made and clear on
-one older template group; its meaning is unmeasured, as is leaving a group (composed here:
-the member's events go, its `+24` clears).
+byte in the top byte), its halves repeated at `+20` and `+30`. A member's `ivnE` carries a
+**bitmask of its groups** at `+24` (bit N-1 = group N; 0 = none — a channel in groups 1 and 4
+reads 9), and the registry holds a `<0x11><slot>` entry per group in both runs, directly
+before the object entries. The row's `+4` and the channel's `+92` do not change. Bit 31 of
+the flags is the table's **On** box (clear on a switched-off group; measured on two groups
+switched off). Create Group in Logic sets the new bit and leaves a member's other groups and
+their events alone; leaving is composed here (the member's events go, its bit clears).
 """
 
 from __future__ import annotations
@@ -37,7 +38,7 @@ from .registry import GNOS_TAG, register_group
 from .sequence import free_seq_id, is_group, sequences
 from .validate import require_full_walk, require_valid
 
-GROUP_AT = 24                       # ivnE: the member's group number, u32
+GROUP_AT = 24                       # ivnE: u32 bitmask of the member's groups, bit N-1 = group N
 ID_AT, NAME_AT = 8, 16
 FLAGS_AFTER_NAME = 70
 SLOT_STEP = 4
@@ -45,6 +46,7 @@ EVENT, TAIL = 32, 16
 EVENT_OBJECT_AT, EVENT_FADER_AT, EVENT_VALUE_AT = 4, 12, 8
 EVENT_VALUE_HI_AT, EVENT_VALUE_LO_AT = 20, 30
 DEFAULT_FLAGS = 0x81400005
+GROUP_ON = 1 << 31                  # the table's On box (clear on a switched-off group)
 BEFORE_TAG = b"rpyH"                # the first group's triple follows the last of these
 _NAME_MAX = 63
 _DATA = "group-12.3.1.json"                # under the data root, `utils.data`
@@ -76,6 +78,10 @@ class Group:
     @property
     def settings(self) -> list[str]:
         return settings_of(self.flags)
+
+    @property
+    def on(self) -> bool:
+        return bool(self.flags & GROUP_ON)
 
     @property
     def label(self) -> str:
@@ -171,15 +177,23 @@ def _event_objects(events: bytes) -> list[int]:
     return seen
 
 
+def _bit(number: int) -> int:
+    return 1 << (number - 1)
+
+
+def _numbers(mask: int) -> tuple[int, ...]:
+    return tuple(n for n in range(1, mask.bit_length() + 1) if mask & _bit(n))
+
+
 def _object_groups(records) -> dict[int, int]:
-    """object id -> group number, for the objects in a group."""
+    """object id -> group mask, for the objects in at least one group."""
     out = {}
     for r in records:
         oid = object_id_of(r)
         if oid is not None:
-            n = struct.unpack_from("<I", r.raw, HEADER + GROUP_AT)[0]
-            if n:
-                out[oid] = n
+            mask = struct.unpack_from("<I", r.raw, HEADER + GROUP_AT)[0]
+            if mask:
+                out[oid] = mask
     return out
 
 
@@ -192,8 +206,8 @@ def _groups(records) -> list[Group]:
         number = k + 1
         p = records[t.start].raw[HEADER:]
         members = _event_objects(records[t.end].raw[HEADER:])
-        members = [m for m in members if in_group.get(m) == number]
-        members += [oid for oid, n in in_group.items() if n == number and oid not in members]
+        members = [m for m in members if in_group.get(m, 0) & _bit(number)]
+        members += [oid for oid, mask in in_group.items() if mask & _bit(number) and oid not in members]
         out.append(Group(number, t.slot, t.seq_id, _name_of(p), struct.unpack_from("<I", p, _flags_at(p))[0],
                          tuple(members), t.start))
     return out
@@ -204,14 +218,14 @@ def read_groups(data: bytes) -> list[Group]:
     return _groups(project_records(data))
 
 
-def group_of(data: bytes) -> dict[int, int]:
-    """object id -> group number, for every object in a group."""
-    return _object_groups(project_records(data))
+def group_of(data: bytes) -> dict[int, tuple[int, ...]]:
+    """object id -> its group numbers, for every object in at least one group."""
+    return {oid: _numbers(mask) for oid, mask in _object_groups(project_records(data)).items()}
 
 
-def _with_group(raw: bytes, number: int) -> bytes:
+def _with_group(raw: bytes, mask: int) -> bytes:
     buf = bytearray(raw)
-    struct.pack_into("<I", buf, HEADER + GROUP_AT, number)
+    struct.pack_into("<I", buf, HEADER + GROUP_AT, mask)
     return bytes(buf)
 
 
@@ -221,9 +235,9 @@ def _rebuild_events(raw: bytes, flags: int, members, values: dict[int, dict[str,
 
 
 def _rewritten(data: bytes, groups: list[Group], changed: dict[int, tuple[bytes, bytes, tuple[int, ...]]],
-               numbers: dict[int, int]) -> bytes:
-    """``changed``: group number -> (qeSM raw, qSvE raw, members); ``numbers``: object id ->
-    group number for every object whose number moves."""
+               masks: dict[int, int]) -> bytes:
+    """``changed``: group number -> (qeSM raw, qSvE raw, members); ``masks``: object id ->
+    group mask for every object whose groups change."""
     records = project_records(data)
     by_start = {g.start: g for g in groups}
     out = []
@@ -236,8 +250,8 @@ def _rewritten(data: bytes, groups: list[Group], changed: dict[int, tuple[bytes,
             raw = changed[by_start[i - 2].number][1]
         else:
             oid = object_id_of(r)
-            if oid in numbers:
-                raw = _with_group(raw, numbers[oid])
+            if oid in masks:
+                raw = _with_group(raw, masks[oid])
         out.append(raw)
     return reassemble(data, out)
 
@@ -284,42 +298,23 @@ def create_group(data: bytes, *, name: str = "", members=(), settings=None,
     uuid = fresh_uuid()
     for i, r in enumerate(records):
         raw = r.raw
+        oid = object_id_of(r)
         if r.tag == GNOS_TAG:
             raw = rec(GNOS_TAG, raw, register_group(raw[HEADER:], slot=slot, uuid=uuid))
-        elif object_id_of(r) in members:
-            raw = _with_group(raw, number)
+        elif oid in members:
+            raw = _with_group(raw, old.get(oid, 0) | _bit(number))     # its other groups stay
         out.append(raw)
         if i == after:
             out += [qesm, marker, qsve]
     result = reassemble(data, out)
-    moved = {m for m in members if old.get(m)}
-    if moved:                                        # out of their old groups' event lists
-        result = _drop_members(result, moved)
     require_valid(result)
     made = next(g for g in _groups(project_records(result)) if g.number == number)
     return result, made
 
 
-def _drop_members(data: bytes, gone: set[int]) -> bytes:
-    """Rebuild every group's events without ``gone`` — objects whose number no longer says
-    they belong."""
-    records = project_records(data)
-    groups = _groups(records)
-    values = _values(data)
-    changed = {}
-    for g in groups:
-        events = records[g.start + 2].raw
-        stale = set(_event_objects(events[HEADER:])) & gone
-        if stale:
-            keep = [m for m in _event_objects(events[HEADER:]) if m not in stale and m in g.members]
-            keep += [m for m in g.members if m not in keep]
-            changed[g.number] = (records[g.start].raw, _rebuild_events(events, g.flags, keep, values), tuple(keep))
-    return _rewritten(data, groups, changed, {}) if changed else data
-
-
 def assign(data: bytes, object_id: int, number: int) -> bytes:
-    """Put ``object_id``'s track in group ``number`` (0 = no group): its object's number,
-    an event per linked fader at the end of the group's list, and out of its old group."""
+    """Put ``object_id``'s track in group ``number`` alone (0 = no group): its object's bit,
+    an event per linked fader at the end of the group's list, and out of every other group."""
     require_full_walk(data)
     records = project_records(data)
     groups = _groups(records)
@@ -329,25 +324,27 @@ def assign(data: bytes, object_id: int, number: int) -> bytes:
     if all(object_id_of(r) != object_id for r in records):
         raise ValueError(f"no channel object {object_id}")
     old = _object_groups(records).get(object_id, 0)
-    if old == number:
+    if old == (_bit(number) if number else 0):
         return data
     changed, values = {}, _values(data)
     if number:
         g = by_number[number]
         members = tuple(m for m in g.members if m != object_id) + (object_id,)
         changed[number] = (records[g.start].raw, _rebuild_events(records[g.start + 2].raw, g.flags, members, values), members)
-    if old:
-        g = by_number[old]
-        members = tuple(m for m in g.members if m != object_id)
-        changed[old] = (records[g.start].raw, _rebuild_events(records[g.start + 2].raw, g.flags, members, values), members)
-    result = _rewritten(data, groups, changed, {object_id: number})
+    for n in _numbers(old):
+        if n != number and n in by_number:
+            g = by_number[n]
+            members = tuple(m for m in g.members if m != object_id)
+            changed[n] = (records[g.start].raw, _rebuild_events(records[g.start + 2].raw, g.flags, members, values), members)
+    result = _rewritten(data, groups, changed, {object_id: _bit(number) if number else 0})
     require_valid(result)
     return result
 
 
-def set_group(data: bytes, number: int, *, name: str | None = None, settings=None) -> bytes:
-    """Rename group ``number`` and/or set its boxes; a changed fader set rewrites every
-    member's events."""
+def set_group(data: bytes, number: int, *, name: str | None = None, settings=None,
+              on: bool | None = None) -> bytes:
+    """Rename group ``number``, set its boxes and/or switch it on or off; a changed fader
+    set rewrites every member's events."""
     require_full_walk(data)
     records = project_records(data)
     groups = _groups(records)
@@ -357,6 +354,8 @@ def set_group(data: bytes, number: int, *, name: str | None = None, settings=Non
     qesm = records[g.start].raw
     payload = qesm[HEADER:]
     flags = flags_for(settings, base=g.flags) if settings is not None else g.flags
+    if on is not None:
+        flags = (flags | GROUP_ON) if on else (flags & ~GROUP_ON)
     if name is not None:
         payload = _with_name(payload, name)
     payload = _with_flags(payload, flags)
@@ -377,7 +376,7 @@ def group_errors(data: bytes) -> list[str]:
     groups = _groups(records)
     numbers = {g.number for g in groups}
     out = [f"object {oid}: in group {n}, which does not exist"
-           for oid, n in _object_groups(records).items() if n not in numbers]
+           for oid, mask in _object_groups(records).items() for n in _numbers(mask) if n not in numbers]
     g_reg = next((r.raw[HEADER:] for r in records if r.tag == GNOS_TAG), None)
     for g in groups:
         events = records[g.start + 2].raw[HEADER:]

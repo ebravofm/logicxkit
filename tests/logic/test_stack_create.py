@@ -208,3 +208,39 @@ class RefusalTest(unittest.TestCase):
     def test_a_corrupt_stream(self):
         with self.assertRaises(ValueError):
             create_stack(session() + b"\x00" * 5, name="X", members=[504], track_count=TRACKS)
+
+
+def flat_session() -> bytes:
+    """Kick, Snare, Master — no stack anywhere, with the structures a writer needs."""
+    mixer = [88, 92, 80]
+    table = b"".join(index_entry(oid, 1 + k, 20 + 4 * k) for k, oid in enumerate(mixer))
+    return proj(
+        count_record(6, [2, 0, 0, 1, 1, 0, 0], 6),
+        gnos(88, 92),
+        env_obj(88, "Kick"), env_obj(92, "Snare"), env_obj(80, "Master", grouping=True),
+        chan(0, "Audio 1", uuid=uuid(88)), chan(1, "Audio 2", uuid=uuid(92)),
+        chan(400, "Master", size=201, in_use=False),
+        chan(401, "Input 1-2", size=201, in_use=False),
+        chan(402, "Output 1-2", uuid=uuid(80), size=201),
+        seq_triple(1, big=table),
+        track(0, 88), track(1, 92), track(2, 80, flag=3), marker(),
+        *(track(k, oid) for k, oid in enumerate([296, 300, 304] + mixer)), marker(),
+        *(seq_triple(2 + k, slot=20 + 4 * k, object_id=oid, index=1 + k)
+          for k, oid in enumerate(mixer)),
+        seq_triple(5, slot=100, size=341))
+
+
+class StacklessSessionTest(unittest.TestCase):
+    def test_a_session_with_no_stack_gets_one_from_the_packaged_pattern(self):
+        out, report = create_stack(flat_session(), name="Drums", members=[88, 92], track_count=3)
+        (stack,) = read_stacks(out, 4)
+        self.assertEqual((stack.name, stack.kind, [n for _k, n in stack.members]),
+                         ("Drums", "folder", ["Kick", "Snare"]))
+        self.assertEqual(validate_project(out), [])
+
+    def test_the_sub_strip_lands_after_the_master_strip(self):
+        out, report = create_stack(flat_session(), name="Drums", members=[88, 92], track_count=3)
+        labels = {o: c.label for o, c in channels(out).items()}
+        self.assertEqual(report["label"], "Sub 1")
+        self.assertEqual([labels[o] for o in sorted(labels) if o >= 400],
+                         ["Master", "Sub 1", "Input 1-2", "Output 1-2"])

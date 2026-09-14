@@ -1,0 +1,343 @@
+[
+ {
+  "kind": "menu",
+  "path": [
+   "Record",
+   "Allow Quick Punch-In"
+  ],
+  "label": "Quick Punch-In"
+ },
+ {
+  "kind": "menu",
+  "path": [
+   "Record",
+   "Use Musical Grid"
+  ],
+  "label": "Use Musical Grid"
+ },
+ {
+  "kind": "menu",
+  "path": [
+   "Record",
+   "Count-in",
+   "2 Bars"
+  ],
+  "label": "Count-in 2 Bars"
+ },
+ {
+  "kind": "menu",
+  "path": [
+   "Record",
+   "Count-in",
+   "3/4"
+  ],
+  "label": "Count-in 3 beats"
+ },
+ {
+  "kind": "menu",
+  "path": [
+   "Record",
+   "Count-in",
+   "1 Bar"
+  ],
+  "label": "Count-in 1 Bar"
+ },
+ {
+  "kind": "press",
+  "pane": "Metronome",
+  "name": "Simple mode",
+  "label": "Metronome Simple mode"
+ },
+ {
+  "kind": "press",
+  "pane": "Metronome",
+  "name": "Click while recording",
+  "label": "Metronome Click while recording"
+ },
+ {
+  "kind": "press",
+  "pane": "Metronome",
+  "name": "Only during count-in",
+  "label": "Metronome Only during count-in"
+ },
+ {
+  "kind": "press",
+  "pane": "Metronome",
+  "name": "Click while playing",
+  "label": "Metronome Click while playing"
+ },
+ {
+  "kind": "press",
+  "pane": "Metronome",
+  "name": "Polyphonic clicks",
+  "label": "Metronome Polyphonic clicks"
+ },
+ {
+  "kind": "press",
+  "pane": "Metronome",
+  "name": "Audio Click (Klopfgeist)",
+  "label": "Metronome Audio Click (Klopfgeist)"
+ },
+ {
+  "kind": "press",
+  "pane": "Metronome",
+  "name": "Bar",
+  "label": "Metronome Bar"
+ },
+ {
+  "kind": "press",
+  "pane": "Metronome",
+  "name": "Group",
+  "label": "Metronome Group"
+ },
+ {
+  "kind": "press",
+  "pane": "Metronome",
+  "name": "Beat",
+  "label": "Metronome Beat"
+ },
+ {
+  "kind": "press",
+  "pane": "Metronome",
+  "name": "Division",
+  "label": "Metronome Division"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 1,
+  "label": "Metronome slider 1"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 2,
+  "label": "Metronome slider 2"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 3,
+  "label": "Metronome slider 3"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 4,
+  "label": "Metronome slider 4"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 5,
+  "label": "Metronome slider 5"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 6,
+  "label": "Metronome slider 6"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 7,
+  "label": "Metronome slider 7"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 8,
+  "label": "Metronome slider 8"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 9,
+  "label": "Metronome slider 9"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 10,
+  "label": "Metronome slider 10"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 11,
+  "label": "Metronome slider 11"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 12,
+  "label": "Metronome slider 12"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 13,
+  "label": "Metronome slider 13"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 14,
+  "label": "Metronome slider 14"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 15,
+  "label": "Metronome slider 15"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 16,
+  "label": "Metronome slider 16"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 17,
+  "label": "Metronome slider 17"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 18,
+  "label": "Metronome slider 18"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 19,
+  "label": "Metronome slider 19"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 20,
+  "label": "Metronome slider 20"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 21,
+  "label": "Metronome slider 21"
+ },
+ {
+  "kind": "increment",
+  "pane": "Metronome",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 22,
+  "label": "Metronome slider 22"
+ },
+ {
+  "kind": "choose",
+  "pane": "Metronome",
+  "role": "AXPopUpButton",
+  "name": "Output:",
+  "arg": "1-2",
+  "label": "Metronome Output 1-2"
+ },
+ {
+  "kind": "press",
+  "pane": "Recording",
+  "name": "Automatically colorize takes",
+  "label": "Recording Automatically colorize takes"
+ },
+ {
+  "kind": "press",
+  "pane": "Recording",
+  "name": "Allow tempo change recording",
+  "label": "Recording Allow tempo change recording"
+ },
+ {
+  "kind": "press",
+  "pane": "Recording",
+  "name": "MIDI data reduction",
+  "label": "Recording MIDI data reduction"
+ },
+ {
+  "kind": "press",
+  "pane": "Recording",
+  "name": "Automatically erase duplicates",
+  "label": "Recording Automatically erase duplicates"
+ },
+ {
+  "kind": "press",
+  "pane": "Recording",
+  "role": "AXRadioButton",
+  "name": "Pre-roll",
+  "label": "Recording Pre-roll"
+ },
+ {
+  "kind": "increment",
+  "pane": "Recording",
+  "role": "AXSlider",
+  "name": "slider",
+  "nth": 1,
+  "label": "Recording pre-roll time"
+ },
+ {
+  "kind": "press",
+  "pane": "Recording",
+  "role": "AXRadioButton",
+  "name": "Count-in",
+  "label": "Recording Count-in radio"
+ },
+ {
+  "kind": "choose",
+  "pane": "Recording",
+  "role": "AXPopUpButton",
+  "name": "Count-in",
+  "arg": "2 Bars",
+  "label": "Recording Count-in 2 Bars"
+ }
+]

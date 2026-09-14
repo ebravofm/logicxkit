@@ -90,8 +90,9 @@ unless you pass `--install`.** A spec cannot reach your library by omitting a ke
 is separately required to replace an existing file. To write elsewhere, set `output_root`, or
 give an absolute `output_dir`.
 
-`donors` writes into the data root rather than a project. `retrack` repoints strip references
-after a library rename — it changes a label, never a chain.
+`donors` writes into the data root rather than a project; `chains` reads the data root's donors
+first and the package's native ones second. `retrack` repoints strip references after a library
+rename — it changes a label, never a chain.
 
 ## Decoding plugin state
 
@@ -106,7 +107,29 @@ the host is unavailable and the ladder falls back on its own.
 
 `au params` dumps a live parameter table from an installed plugin; `au tables` lists the tables
 already in the data root. `logic neural` decodes Neural DSP knob values specifically, from
-either a strip or a whole project.
+either a strip or a whole project. `logic plugins` stops at identity: every slot's plug-in, and
+which third-party components `auval -a` does not list on this Mac. `logic midi` reads the MIDI
+regions and `--export` writes them as a Standard MIDI File with the song's tempo map and time
+signatures, bar 1 at tick 0; a song with events before bar 1 is refused. `--region` and
+`--note` write a region and notes on a copy through the integrity gate; a note goes into the
+region on its track that holds its bar, and is refused when none or several do. `logic regions`
+lists every region with its audio file, and `--audio` imports a PCM WAV at the project's sample
+rate — other rates are refused, since Logic converts on import and this does not. It writes onto
+a project with no audio regions or with the ones Logic's own imports leave, and refuses any
+other layout and a WAV whose name the project already holds, before anything is copied.
+`logic sessionplayer` reads a Session Player region's settings and generated notes. `logic
+patch` reads a Library patch bundle; `--build` writes one from a `.cst`, refuses a file that does
+not read as a channel strip before writing anything, replaces an existing bundle with
+`--overwrite` only once the new one is complete, and like `build` refuses to write into Logic's
+own library without `--install`. `logic quantize-drums` quantizes a multitrack drum take on
+a copy without Logic: the members of a folder stack (or `--track`s) go into a Drums group with
+Editing (Selection) and Quantize-Locked (Audio), the groups named by `--off` are switched
+off, Q-Reference stays on the `--ref` tracks, every member is on flex Slicing, and each
+member region gets one flex marker per hit found in the reference tracks' audio with its
+target on the `--grid` (1/16 by default). The audio is read from where the file record says,
+from `Audio Files` beside the project, from the bundle's Media, or from `--audio DIR`; it may be
+16/24/32-bit PCM or 32/64-bit float WAV. A song whose tempo changes, and reference audio with no
+hits, are refused and nothing is written.
 
 ## Logic's own settings
 

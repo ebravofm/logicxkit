@@ -53,6 +53,8 @@ config/local/
 # Local run output
 logs/
 *.jsonl
+tools/driver/drive.log
+tools/driver/bin/
 
 # pf-core docs symlink (bin/run setup recreates it)
 docs/pf-core

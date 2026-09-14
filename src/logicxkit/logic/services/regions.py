@@ -32,6 +32,21 @@ def song_container(records: list[ProjRecord], run: list[int]) -> Triple | None:
     return next((t for t in sequences(records) if t.start < run[0] < t.end), None)
 
 
+MARKER_KIND_AT, MARKER_KIND = 7, 0xAA        # a flex marker block after a flexed entry
+
+
+def entry_offsets(events: bytes) -> list[int]:
+    """Offsets of the 80-byte region entries in a song container's events: a flexed entry is
+    followed by 80-byte flex marker blocks (byte 7 = 0xAA), which are not entries."""
+    out, off = [], 0
+    while off + ENTRY <= len(events) - TAIL:
+        out.append(off)
+        off += ENTRY
+        while off + ENTRY <= len(events) - TAIL and events[off + MARKER_KIND_AT] == MARKER_KIND:
+            off += ENTRY
+    return out
+
+
 def _rows(records: list[ProjRecord], run: list[int]) -> dict[int, int]:
     """Object id -> 1-based position of its first arrange row."""
     out: dict[int, int] = {}
@@ -49,7 +64,7 @@ def placements(records: list[ProjRecord], track_count: int | None = None) -> lis
     rows = _rows(records, run)
     events = records[song.end].raw[HEADER:]
     out = []
-    for off in range(0, len(events) - TAIL, ENTRY):
+    for off in entry_offsets(events):
         oid = struct.unpack_from("<H", events, off + TRACK_OBJECT_AT)[0]
         if oid in rows:
             out.append((off, oid, struct.unpack_from("<H", events, off + TRACK_ROW_AT)[0]))

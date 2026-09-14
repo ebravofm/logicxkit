@@ -26,3 +26,18 @@ class GoldenRoutingTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@_goldens.needs("route-ours", "route-resave-logic")
+class LogicResavedRouteTest(unittest.TestCase):
+    def test_logic_kept_the_rerouted_output(self):
+        from logicxkit.logic.services.binding import channels
+        from logicxkit.logicx import project_data
+        ours, logic = (project_data(_goldens.path(k)) for k in ("route-ours", "route-resave-logic"))
+        labels = {o: c.label for o, c in channels(logic).items()}
+        want = (_goldens.fact("route-ours", "channel"), _goldens.fact("route-ours", "output"))
+        for data in (ours, logic):
+            routed = {labels[o]: labels.get(d) for o, d in output_routing(data).items() if o in labels}
+            self.assertEqual(routed[want[0]], want[1])
+        self.assertEqual({o: d for o, d in output_routing(ours).items() if o in labels},
+                         {o: d for o, d in output_routing(logic).items() if o in labels})

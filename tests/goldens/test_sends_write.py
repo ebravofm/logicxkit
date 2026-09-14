@@ -7,6 +7,7 @@ and the target `Bus N` channel's UUID at `+60`; the level bytes ride along from 
 The real-file part of tests/logic/test_sends_write.py; skips without the owner's files."""
 
 import unittest
+import _goldens
 import _paths
 from logicxkit.logic.services.insert import project_records
 from logicxkit.logic.services.sends import read_sends
@@ -64,3 +65,21 @@ class MixTemplateSendTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@_goldens.needs("send-packaged-ours", "send-packaged-resave-logic")
+class LogicResavedPackagedSendTest(unittest.TestCase):
+    """A send added to a project that had none to clone: the packaged template, re-saved."""
+
+    def test_logic_kept_the_send_and_its_channel(self):
+        from logicxkit.logic.services.channel_alloc import is_mixer_record
+        from logicxkit.logic.services.insert import project_records
+        from logicxkit.logic.services.sends import read_sends
+        from logicxkit.logicx import project_data
+        ours, logic = (project_data(_goldens.path(k)) for k in ("send-packaged-ours", "send-packaged-resave-logic"))
+        owner = _goldens.fact("send-packaged-ours", "owner")
+        (mine,), (theirs,) = read_sends(ours)[owner], read_sends(logic)[owner]
+        self.assertEqual((mine.bus, mine.level), (_goldens.fact("send-packaged-ours", "bus"), _goldens.fact("send-packaged-ours", "level_byte")))
+        self.assertEqual(mine.raw, theirs.raw)
+        strip = lambda data: next(r.raw for r in project_records(data) if is_mixer_record(r) and r.owner == owner)  # noqa: E731
+        self.assertEqual(strip(ours), strip(logic))

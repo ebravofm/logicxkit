@@ -15,7 +15,8 @@ from .insert import HEADER
 # The verbs are the config's own donor types (the spec's `donors` map).
 PLUGIN_NAMES = {236: "Channel EQ", 154: "Compressor", 157: "Enveloper", 199: "Limiter",
                 183: "Gain", 147: "Echo", 287: "ChromaVerb", 150: "SilverVerb",
-                166: "EnVerb", 231: "Space Designer"}
+                166: "EnVerb", 231: "Space Designer", 158: "Klopfgeist"}
+NATIVE_INSTRUMENTS = {158}          # type ids that sit in the instrument slot, not an insert
 
 
 def _slot_name(payload: bytes, type_id: int | None = None) -> str:

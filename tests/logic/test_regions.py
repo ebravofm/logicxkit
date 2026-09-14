@@ -109,3 +109,35 @@ class TailTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FlexEntryTest(unittest.TestCase):
+    def test_flex_marker_blocks_after_an_entry_are_not_entries(self):
+        from logicxkit.logic.services.regions import entry_offsets
+        marker_block = bytearray(ENTRY)
+        marker_block[6:8] = b"\x01\xaa"                  # a transient marker, as Logic writes it
+        events = entry(10, 1) + bytes(marker_block) * 3 + entry(20, 2) + TAIL_BYTES
+        self.assertEqual(entry_offsets(events), [0, 4 * ENTRY])
+        rows = [track(0, 10), track(1, 20)]
+        data = proj(env_obj(10, "a"), env_obj(20, "b"), env_obj(30, "c"),
+                    *song(rows, [entry(10, 1), bytes(marker_block), entry(20, 2)]), *flat(10, 20, 30))
+        self.assertEqual([(o, r) for _off, o, r in placements(project_records(data), None)], [(10, 1), (20, 2)])
+        self.assertEqual(region_errors(data, None), [])
+
+
+class RegionRankTest(unittest.TestCase):
+    def test_counters_rank_across_every_sequence_take_folders_included(self):
+        from _records import seq_triple
+        from logicxkit.logic.services.audio_regions import region_ranks
+
+        def audio_entry(counter: int) -> bytes:
+            e = bytearray(ENTRY)
+            struct.pack_into("<I", e, 0, 0x24)
+            struct.pack_into("<I", e, 44, 4 * counter)
+            return bytes(e)
+
+        rows = [track(0, 10), track(1, 20)]
+        take_folder = seq_triple(9, slot=48, big=audio_entry(43) + audio_entry(44) + TAIL_BYTES)
+        data = proj(env_obj(10, "a"), env_obj(20, "b"), env_obj(30, "c"),
+                    *song(rows, [audio_entry(47), audio_entry(63)]), take_folder, *flat(10, 20, 30))
+        self.assertEqual(region_ranks(project_records(data)), {43: 0, 44: 1, 47: 2, 63: 3})

@@ -3,6 +3,96 @@
 Notable changes to logicxkit. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versions follow [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.3.0 — 2026-09-14
+
+### Added
+
+- `logic quantize-drums`: the live-drum quantize on a copy without Logic — the drum group with
+  Editing (Selection) and Quantize-Locked (Audio), other groups off, Q-Reference on the
+  reference tracks, flex Slicing, and one flex marker per hit found in the reference audio with
+  its target on the 1/N grid (`services/onsets.py`, `flexmarkers.py`, `quantize_drums.py`).
+  CONFIRMED: Logic re-saved a written take with every marker intact.
+- `logic regions` reads a region's first frame within its file.
+- `midi --region` and `regions --audio` place their entry correctly on a project whose regions
+  carry flex markers.
+- `logic regions` maps an entry to its region record by ranking the counters of every audio
+  entry in every sequence, take folders included; the earlier base-offset rule mislabelled a
+  project with take folders.
+- `logic quantize-drums` takes a reference's audio from the file named after its region,
+  handles member regions that start at different bars, and names the files it used.
+- `logic project` names a native insert from its type id when the slot carries no name string,
+  as `plugins` does; a built patch's eight inserts read as eight.
+- The drum-quantize onset detector is tuned against the transients Logic marked across four
+  grids: 78% of them found, 88% of its own among them (was 55% and 90%).
+- The package carries Logic's own record templates and native plug-in donor slots, regenerated
+  from the public corpus by `bin/regen_data.py`, so `add-track`, `stack-create`, `send --add`,
+  `arrangement --add` and native `chains` work after `pip install` alone; a data root
+  (`LOGICXKIT_DATA`) still takes precedence, and `chains` reads both donor libraries.
+- `stack-create` works on a session with no stack, patterning on Logic's own first stack;
+  `arrangement --add` makes the arrangement track when the song has none; `send --add` works on
+  a project with no send to clone.
+- `logic midi` reads a song's MIDI regions — notes, controllers, program changes, pitch bends,
+  loop flag — and `--export` writes a format-1 Standard MIDI File.
+- `logic plugins` names every slot's plug-in and reports which third-party components this Mac
+  lacks, for one project or a folder of them.
+- `logic patch` reads a Library patch bundle — its nodes, each channel's settings, strip and
+  plug-ins — in both shapes Logic writes.
+- The group-events loss reported on 2026-09-08 does not reproduce on the blank-born project;
+  `tests/goldens/test_groups.py` pins create, assign, add, assign.
+- `logic midi --region` and `--note` write an empty MIDI region and notes on a copy; Logic re-saved
+  one with its notes intact.
+- `logic regions` reads every MIDI and audio region with its file record (name, format, frames,
+  rate, channels, bits); `--audio` imports a PCM WAV at the project's rate as a region.
+- `logic sessionplayer` reads a Session Player region's drummer, preset and settings (the JSON in
+  its record) and its generated notes; Complexity, Fill Amount and Swing pinned by one editor
+  move per save.
+- `logic patch --build` writes a patch bundle from a `.cst`, into Logic's own library only with
+  `--install`; a built patch loaded from the Library with all its inserts.
+- Nine more public goldens: a third send and the slot base it moves to 4, the Signature List's
+  meter and key creates and edits after bar 1, and a Tempo List point and its edit.
+- Sixty-two more public goldens: MIDI region writes and their re-saves, audio region writes and
+  a re-save, three audio imports, a Session Player track and three settings, a Library-saved
+  patch and a built one loaded.
+- `tools/driver` and `tools/stage_public.py`: the accessibility driver that records goldens from
+  Logic, with the recipe and the traps; CONTRIBUTING describes recording one.
+- Forty-three public goldens: the arrangement track and sections, an instrument track, a track
+  header click, eight native inserts, MIDI events one field per save, meter changes, and
+  Logic's re-saves of route, transplant, bypass, send, stack-create, arrangement and reorder
+  outputs.
+
+### Changed
+
+- `tempo --add` and `--ramp` write each point's time word (data +8, 1/2000 s from the SMPTE
+  origin) as Logic computes it; Logic's own points and curve runs match to the digit.
+- `route`, `transplant`, `bypass` and `reorder` are CONFIRMED: Logic re-saved one write of each
+  with the written bytes intact.
+- `logic donors` names Logic's plug-ins that ship without factory presets (Gain, EnVerb).
+
+### Fixed
+
+- `logic regions --audio` numbers an import as Logic's own imports do — entry word, record header
+  slots, file ordinal and link chain, registry entry, current and selected marks — and refuses a
+  project whose audio regions are in any other layout, or a WAV whose name it already holds,
+  before anything is copied. Logic re-saved two such imports with every region record kept.
+- `logic midi --note` goes into the region on the named track that holds its bar, never another
+  track's region at the same tick, and is refused when no region or several hold it.
+- `logic midi --region` writes a region's length and track for a name of any length; Logic
+  re-saved regions named four and nine bytes long as written.
+- `logic midi --export` writes the song's tempo map and time signatures, and refuses events
+  before bar 1 instead of raising.
+- `logic quantize-drums` reads 32/64-bit float and extensible WAVs, and refuses a song whose tempo
+  changes and reference audio with no hits.
+- `logic patch --build` refuses a file that is not a channel strip, leaves nothing behind when it
+  fails, and replaces a bundle with `--overwrite` only once the new one is complete, exiting 1
+  with the path of a replaced bundle it could not remove.
+- A channel's group field is a bitmask, one bit per group: `logic group` reads a channel that
+  is in several groups, or in group 3 or higher, as Logic does; `--create` keeps a member's
+  other groups, `--assign` moves it out of every other one.
+- `logic group` shows a switched-off group and `--group N --on/--off` sets it (flags bit 31).
+- `logic regions` reads a recorded project's regions: the entry counter's base, the flex
+  marker blocks after a flexed entry, and a flexed audio region's RBA sequence is not a MIDI
+  region.
+
 ## 0.2.0 — 2026-09-12
 
 ### Fixed

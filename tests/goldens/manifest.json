@@ -1384,5 +1384,1039 @@
    ],
    "left": "Audio 1"
   }
+ },
+ "arrangement-track-logic": {
+  "path": "public/arrangement-01-track.logicx",
+  "note": "Track > Global Tracks > Arrangement Track shown on the flattened three-track project",
+  "facts": {
+   "sections": 0,
+   "arrangement_track": true,
+   "tracks": 3
+  }
+ },
+ "arrangement-first-section-logic": {
+  "path": "public/arrangement-02-first-section.logicx",
+  "note": "the arrangement track's + pressed once",
+  "facts": {
+   "sections": 1,
+   "names": [
+    "Intro"
+   ],
+   "bars": [
+    8
+   ]
+  }
+ },
+ "arrangement-two-sections-logic": {
+  "path": "public/arrangement-03-second-section.logicx",
+  "note": "+ pressed again",
+  "facts": {
+   "sections": 2,
+   "names": [
+    "Intro",
+    "Verse"
+   ],
+   "bars": [
+    8,
+    8
+   ]
+  }
+ },
+ "arrangement-section-1-selected-logic": {
+  "path": "public/arrangement-04-section-1-selected.logicx",
+  "note": "section 1 clicked in the arrangement lane",
+  "facts": {
+   "sections": 2,
+   "selected": 1
+  }
+ },
+ "tracks-instrument-logic": {
+  "path": "public/tracks-05-instrument.logicx",
+  "note": "Track > New Software Instrument Track with Audio 1 selected",
+  "facts": {
+   "tracks": 4,
+   "kind": "instrument",
+   "position": 1,
+   "label": "Inst 1"
+  }
+ },
+ "select-audio-1-logic": {
+  "path": "public/select-06-audio-1.logicx",
+  "note": "Audio 1's track header clicked (the instrument track was selected before)",
+  "facts": {
+   "selected": "Audio 1",
+   "before": "Inst 1"
+  }
+ },
+ "inserts-channel-eq-logic": {
+  "path": "public/inserts-07-channel-eq.logicx",
+  "note": "Channel EQ inserted on Audio 1 from the inspector strip's Audio FX menu",
+  "facts": {
+   "channel": "Audio 1",
+   "inserts": [
+    "Channel EQ"
+   ]
+  }
+ },
+ "inserts-native-logic": {
+  "path": "public/inserts-08-compressor.logicx",
+  "note": "Compressor inserted below Channel EQ on Audio 1",
+  "facts": {
+   "channel": "Audio 1",
+   "inserts": [
+    "Channel EQ",
+    "Compressor"
+   ]
+  }
+ },
+ "inserts-native-all-logic": {
+  "path": "public/inserts-09-native-all.logicx",
+  "note": "Gain, ChromaVerb, SilverVerb, EnVerb, Echo and Enveloper inserted after the first two",
+  "facts": {
+   "channel": "Audio 1",
+   "inserts": [
+    "Channel EQ",
+    "Compressor",
+    "Gain",
+    "ChromaVerb",
+    "SilverVerb",
+    "EnVerb",
+    "Echo",
+    "Enveloper"
+   ],
+   "types": [
+    236,
+    154,
+    183,
+    287,
+    150,
+    166,
+    147,
+    157
+   ]
+  }
+ },
+ "midi-empty-region-logic": {
+  "path": "public/midi-10-empty-region.logicx",
+  "note": "Pencil tool click on Inst 1 at bar 3: one empty one-bar MIDI region",
+  "facts": {
+   "track": "Inst 1",
+   "regions": 1,
+   "start_bar": 3,
+   "notes": 0
+  }
+ },
+ "midi-one-note-logic": {
+  "path": "public/midi-11-one-note.logicx",
+  "note": "Event List > Create new Event with the playhead at bar 3: one note; ticks are absolute, bar 1 = 38400 (the region starts at bar 3 = 46080)",
+  "facts": {
+   "notes": 1,
+   "pitch": 60,
+   "channel": 1,
+   "position": "3 1 1 1",
+   "length": "0 0 1 0",
+   "tick": 46080
+  }
+ },
+ "midi-note-pitch-62-logic": {
+  "path": "public/midi-12-note-pitch-62.logicx",
+  "note": "the note's Num set to 62 in the Event List",
+  "facts": {
+   "notes": 1,
+   "pitch": 62,
+   "velocity": 80,
+   "tick": 46080,
+   "length_ticks": 240,
+   "channel": 1
+  }
+ },
+ "midi-note-base-logic": {
+  "path": "public/midi-16-note-base.logicx",
+  "note": "the pitch-62 note again, with cycle on and the Event List open: base for the note-edit pairs",
+  "facts": {
+   "notes": 1,
+   "pitch": 62,
+   "velocity": 80,
+   "tick": 46080,
+   "length_ticks": 240,
+   "channel": 1
+  }
+ },
+ "midi-note-velocity-79-logic": {
+  "path": "public/midi-17-note-velocity-79.logicx",
+  "note": "the note's Val nudged in the Event List (80 -> 79)",
+  "facts": {
+   "notes": 1,
+   "pitch": 62,
+   "velocity": 79,
+   "tick": 46080,
+   "length_ticks": 240,
+   "channel": 1
+  }
+ },
+ "midi-note-length-960-logic": {
+  "path": "public/midi-18-note-length-1-beat.logicx",
+  "note": "the note's Length set to 0 1 0 0 (one beat)",
+  "facts": {
+   "notes": 1,
+   "pitch": 62,
+   "velocity": 79,
+   "tick": 46080,
+   "length_ticks": 960,
+   "channel": 1
+  }
+ },
+ "midi-note-beat-2-logic": {
+  "path": "public/midi-19-note-beat-2.logicx",
+  "note": "the note's Position set to 3 2 1 1",
+  "facts": {
+   "notes": 1,
+   "pitch": 62,
+   "velocity": 79,
+   "tick": 47040,
+   "length_ticks": 960,
+   "channel": 1
+  }
+ },
+ "midi-note-channel-2-logic": {
+  "path": "public/midi-20-note-channel-2.logicx",
+  "note": "the note's Ch set to 2",
+  "facts": {
+   "notes": 1,
+   "pitch": 62,
+   "velocity": 79,
+   "tick": 47040,
+   "length_ticks": 960,
+   "channel": 2
+  }
+ },
+ "midi-two-notes-logic": {
+  "path": "public/midi-21-two-notes.logicx",
+  "note": "Create new Event again with the playhead at bar 3: a second note",
+  "facts": {
+   "notes": 2,
+   "pitches": [
+    60,
+    62
+   ],
+   "ticks": [
+    46080,
+    47040
+   ],
+   "channels": [
+    2,
+    2
+   ]
+  }
+ },
+ "midi-pitch-bend-logic": {
+  "path": "public/midi-23-pitch-bend.logicx",
+  "note": "Create with the type popup on Pitch Bend",
+  "facts": {
+   "notes": 2,
+   "events": [
+    "note",
+    "pitch_bend",
+    "note"
+   ],
+   "bend_value": 64
+  }
+ },
+ "midi-controller-logic": {
+  "path": "public/midi-22-controller.logicx",
+  "note": "Create with the type popup on Controller",
+  "facts": {
+   "notes": 2,
+   "controller": 1,
+   "controller_value": 0
+  }
+ },
+ "midi-program-change-logic": {
+  "path": "public/midi-24-program-change.logicx",
+  "note": "Create with the type popup on Progr. Change",
+  "facts": {
+   "notes": 2,
+   "program": 0
+  }
+ },
+ "midi-region-unlooped-logic": {
+  "path": "public/midi-25-region-unlooped.logicx",
+  "note": "a re-save of the program-change state; base for the loop pair",
+  "facts": {
+   "regions": 1,
+   "loop": false
+  }
+ },
+ "midi-region-looped-logic": {
+  "path": "public/midi-25-region-looped.logicx",
+  "note": "the region selected and L pressed (Loop on in the region inspector)",
+  "facts": {
+   "regions": 1,
+   "loop": true
+  }
+ },
+ "signature-meter-3-4-logic": {
+  "path": "public/signature-27-meter-3-4.logicx",
+  "note": "the initial time signature's numerator set to 3 in the Signature List",
+  "facts": {
+   "meter": [
+    3,
+    4
+   ],
+   "key": "C Major"
+  }
+ },
+ "signature-meter-3-8-logic": {
+  "path": "public/signature-28-meter-3-8.logicx",
+  "note": "its denominator set to /8",
+  "facts": {
+   "meter": [
+    3,
+    8
+   ],
+   "key": "C Major"
+  }
+ },
+ "route-ours": {
+  "path": "public/route-b01-ours.logicx",
+  "note": "logic route --output 'Audio 2=Bus 1' on the flattened three-track project",
+  "facts": {
+   "channel": "Audio 2",
+   "output": "Bus 1"
+  }
+ },
+ "route-resave-logic": {
+  "path": "public/route-b01-resave.logicx",
+  "note": "Logic's re-save of route-ours",
+  "facts": {
+   "channel": "Audio 2",
+   "output": "Bus 1"
+  }
+ },
+ "transplant-ours": {
+  "path": "public/transplant-b02-ours.logicx",
+  "note": "logic transplant of Audio 1's Channel EQ + Compressor from the inserts save onto the flattened project",
+  "facts": {
+   "channel": "Audio 1",
+   "inserts": [
+    "Channel EQ",
+    "Compressor"
+   ]
+  }
+ },
+ "transplant-resave-logic": {
+  "path": "public/transplant-b02-resave.logicx",
+  "note": "Logic's re-save of transplant-ours",
+  "facts": {
+   "channel": "Audio 1",
+   "inserts": [
+    "Channel EQ",
+    "Compressor"
+   ]
+  }
+ },
+ "bypass-ours": {
+  "path": "public/bypass-b03-ours.logicx",
+  "note": "logic bypass --channel 'Audio 1' on transplant-ours",
+  "facts": {
+   "channel": "Audio 1",
+   "bypassed_keys": [
+    2,
+    3
+   ]
+  }
+ },
+ "bypass-resave-logic": {
+  "path": "public/bypass-b03-resave.logicx",
+  "note": "Logic's re-save of bypass-ours",
+  "facts": {
+   "channel": "Audio 1",
+   "bypassed_keys": [
+    2,
+    3
+   ]
+  }
+ },
+ "send-packaged-ours": {
+  "path": "public/send-b04-packaged-ours.logicx",
+  "note": "logic send --add 'Audio 1=Bus 1' on a project with no send: the packaged send template",
+  "facts": {
+   "owner": 0,
+   "bus": 1,
+   "level_byte": 0
+  }
+ },
+ "send-packaged-resave-logic": {
+  "path": "public/send-b04-packaged-resave.logicx",
+  "note": "Logic's re-save of send-packaged-ours",
+  "facts": {
+   "owner": 0,
+   "bus": 1,
+   "level_byte": 0
+  }
+ },
+ "stack-ours": {
+  "path": "public/stack-b05-ours.logicx",
+  "note": "logic stack-create --name Drums over Audio 1 and Audio 2 on Logic's three flat tracks: the packaged first-stack pattern",
+  "facts": {
+   "stacks": 1,
+   "name": "Drums",
+   "kind": "folder",
+   "members": [
+    "Audio 1",
+    "Audio 2"
+   ],
+   "owner": 270
+  }
+ },
+ "stack-resave-logic": {
+  "path": "public/stack-b05-resave.logicx",
+  "note": "Logic's re-save of stack-ours",
+  "facts": {
+   "stacks": 1,
+   "name": "Drums",
+   "kind": "folder",
+   "members": [
+    "Audio 1",
+    "Audio 2"
+   ],
+   "owner": 270
+  }
+ },
+ "arrangement-ours": {
+  "path": "public/arrangement-b06-ours.logicx",
+  "note": "logic arrangement --add 1:8:Intro:custom on the flattened project, which had no arrangement track",
+  "facts": {
+   "sections": 1,
+   "names": [
+    "Intro"
+   ],
+   "bars": [
+    8
+   ]
+  }
+ },
+ "arrangement-resave-logic": {
+  "path": "public/arrangement-b06-resave.logicx",
+  "note": "Logic's re-save of arrangement-ours",
+  "facts": {
+   "sections": 1,
+   "names": [
+    "Intro"
+   ],
+   "bars": [
+    8
+   ]
+  }
+ },
+ "stack-sub2-ours": {
+  "path": "public/stack-b07-sub2-ours.logicx",
+  "note": "logic stack-create --name Drums on the flattened project, whose flattened stack left a Sub 1 strip behind",
+  "facts": {
+   "stacks": 1,
+   "name": "Drums",
+   "kind": "folder",
+   "members": [
+    "Audio 1",
+    "Audio 2"
+   ],
+   "owner": 271,
+   "label": "Sub 2"
+  }
+ },
+ "stack-sub2-resave-logic": {
+  "path": "public/stack-b07-sub2-resave.logicx",
+  "note": "Logic's re-save of stack-sub2-ours",
+  "facts": {
+   "stacks": 1,
+   "name": "Drums",
+   "kind": "folder",
+   "members": [
+    "Audio 1",
+    "Audio 2"
+   ],
+   "owner": 271,
+   "label": "Sub 2"
+  }
+ },
+ "midi-import-resave-logic": {
+  "path": "public/midi-b08-import-resave.logicx",
+  "note": "Logic's new project from the .mid that `logic midi --export` wrote from midi-region-looped-logic, saved once",
+  "facts": {
+   "regions": 1,
+   "events": [
+    "program",
+    "controller",
+    "note",
+    "bend",
+    "note"
+   ],
+   "pitches": [
+    60,
+    62
+   ],
+   "channels": [
+    2,
+    2
+   ],
+   "velocity": 79,
+   "length_ticks": 960
+  }
+ },
+ "reorder-ours": {
+  "path": "public/reorder-b09-ours.logicx",
+  "note": "logic reorder --move 'Audio 3:before:Audio 1' on Logic's three flat tracks",
+  "facts": {
+   "order": [
+    "Audio 3",
+    "Audio 1",
+    "Audio 2",
+    "Stereo Out"
+   ]
+  }
+ },
+ "reorder-resave-logic": {
+  "path": "public/reorder-b09-resave.logicx",
+  "note": "Logic's re-save of reorder-ours; the moved row's selection mark (+79 bit 6) came back cleared, every other row byte held",
+  "facts": {
+   "order": [
+    "Audio 3",
+    "Audio 1",
+    "Audio 2",
+    "Stereo Out"
+   ]
+  }
+ },
+ "midi-write-ours": {
+  "path": "public/midi-b10-write-ours.logicx",
+  "note": "logic midi --region 'Inst 1:3:1' --note 'Inst 1:3:60:80:240' --note 'Inst 1:3.5:64:100:480:2' on the eight-insert save",
+  "facts": {
+   "regions": 1,
+   "start": 46080,
+   "notes": [
+    [
+     46080,
+     1,
+     60,
+     80,
+     240
+    ],
+    [
+     48000,
+     2,
+     64,
+     100,
+     480
+    ]
+   ]
+  }
+ },
+ "midi-write-resave-logic": {
+  "path": "public/midi-b10-write-resave.logicx",
+  "note": "Logic's re-save of midi-write-ours; Logic re-numbered the sequence ids and showed the instrument's preset name on the un-named track",
+  "facts": {
+   "regions": 1,
+   "start": 46080,
+   "notes": [
+    [
+     46080,
+     1,
+     60,
+     80,
+     240
+    ],
+    [
+     48000,
+     2,
+     64,
+     100,
+     480
+    ]
+   ]
+  }
+ },
+ "audio-one-region-logic": {
+  "path": "public/audio-c01-one-region.logicx",
+  "note": "File > Import > Audio File\u2026 of a one-second 44.1 kHz mono WAV onto Audio 2 at bar 1 (the bundle's Media folder is not staged; the file record names it)",
+  "facts": {
+   "regions": 1,
+   "track": "Audio 2",
+   "start_bar": 1,
+   "frames": 44100,
+   "rate": 44100,
+   "channels": 1,
+   "bits": 16,
+   "file": "v030-tone.wav"
+  }
+ },
+ "audio-three-regions-logic": {
+  "path": "public/audio-c03-three-regions.logicx",
+  "note": "the same WAV imported again onto Audio 3 (Logic copied it as v030-tone_1.wav), then a two-second 48 kHz stereo WAV onto Audio 3 (converted to 44.1 kHz on import)",
+  "facts": {
+   "regions": 3,
+   "tracks": [
+    "Audio 3",
+    "Audio 3",
+    "Audio 2"
+   ],
+   "files": [
+    "v030-tone.wav",
+    "v030-tone_1.wav",
+    "v030-tone2.wav"
+   ],
+   "frames": [
+    44100,
+    44100,
+    88200
+   ],
+   "channels": [
+    1,
+    1,
+    2
+   ]
+  }
+ },
+ "audio-write-ours": {
+  "path": "public/audio-c05-write-ours.logicx",
+  "note": "logic regions --audio 'Audio 2:1:v030-tone.wav' on the MIDI-write re-save (the bundle's Media folder is not staged)",
+  "facts": {
+   "regions": 1,
+   "track": "Audio 2",
+   "name": "v030-tone",
+   "start": 38400,
+   "frames": 44100,
+   "file": "v030-tone.wav"
+  }
+ },
+ "audio-write-resave-logic": {
+  "path": "public/audio-c05-write-resave.logicx",
+  "note": "staged as Logic's re-save of audio-write-ours, but its records are Logic's own import (audio-one-region-logic) saved again: the region record and its UUID match that save, not ours; only the folder path and one qeSM differ",
+  "facts": {
+   "regions": 1,
+   "track": "Audio 2",
+   "name": "v030-tone",
+   "start": 38400,
+   "frames": 44100,
+   "file": "v030-tone.wav"
+  }
+ },
+ "sessionplayer-track-logic": {
+  "path": "public/sessionplayer-c06-track.logicx",
+  "note": "Track > New Session Player SI Track\u2026 with the defaults (Create): a drummer track with one generated region",
+  "facts": {
+   "track": "SoCal",
+   "region": "Drummer - Pop Rock",
+   "character": "Acoustic Drummer - Pop Rock",
+   "preset": "Half-pipe",
+   "complexity": 40.790332823991776,
+   "fills": 35.292966438062265,
+   "swing": 0,
+   "notes": 56,
+   "bars": 16
+  }
+ },
+ "sessionplayer-complexity-logic": {
+  "path": "public/sessionplayer-c07-complexity.logicx",
+  "note": "the editor's Complexity slider dragged up",
+  "facts": {
+   "complexity": 66.79032897949219,
+   "fills": 35.292966438062265,
+   "swing": 0
+  }
+ },
+ "sessionplayer-fills-logic": {
+  "path": "public/sessionplayer-c08-fills.logicx",
+  "note": "the Fill Amount knob dragged up",
+  "facts": {
+   "complexity": 66.79032897949219,
+   "fills": 48.292964935302734,
+   "swing": 0
+  }
+ },
+ "sessionplayer-swing-logic": {
+  "path": "public/sessionplayer-c09-swing.logicx",
+  "note": "the Swing knob dragged up",
+  "facts": {
+   "complexity": 66.79032897949219,
+   "fills": 48.292964935302734,
+   "swing": 13
+  }
+ },
+ "patch-audio-1-logic": {
+  "path": "public/patch-c10-audio-1.patch",
+  "note": "Library > Save\u2026 on Audio 1 of the eight-insert project: the patch bundle Logic 12.3.1 writes (#Root.cst + data.plist)",
+  "facts": {
+   "channels": 1,
+   "strip": "#Root.cst",
+   "plugins": [
+    "Channel EQ",
+    "Compressor",
+    "Gain",
+    "ChromaVerb",
+    "SilverVerb",
+    "EnVerb",
+    "Echo",
+    "Enveloper"
+   ],
+   "name": "CLAUDE v030 patch"
+  }
+ },
+ "patch-built-loaded-logic": {
+  "path": "public/patch-c12-built-loaded.logicx",
+  "note": "the patch logic patch --build made from the saved patch's #Root.cst, installed in the user library and chosen from the Library's User Patches on Audio 2",
+  "facts": {
+   "channel": "Audio 2",
+   "inserts": [
+    "Channel EQ",
+    "Compressor",
+    "Gain",
+    "ChromaVerb",
+    "SilverVerb",
+    "EnVerb",
+    "Echo",
+    "Enveloper"
+   ]
+  }
+ },
+ "send-three-base-4-logic": {
+  "path": "public/send-04-third-send.logicx",
+  "note": "a third send (Audio 1 -> Bus 3) picked in the Sends slot's search field: Logic moved every channel's slot base word from 3 to 4",
+  "facts": {
+   "owner": 0,
+   "sends": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "slot_base": 4
+  }
+ },
+ "signature-list-base-logic": {
+  "path": "public/signature-30-list-base.logicx",
+  "note": "the blank project with the List Editors pane shown and the playhead put at bar 5 beat 3 by a click on the ruler",
+  "facts": {
+   "meters": [
+    [
+     4,
+     4
+    ]
+   ],
+   "meter_ticks": [
+    0
+   ],
+   "keys": [
+    7
+   ],
+   "key_ticks": [
+    0
+   ],
+   "playhead_tick": 55680
+  }
+ },
+ "signature-meter-created-logic": {
+  "path": "public/signature-31-meter-created.logicx",
+  "note": "Create pressed in the Signature List (type Time): Logic made 5/4 on the next bar line after the playhead, bar 6",
+  "facts": {
+   "meters": [
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     4
+    ]
+   ],
+   "meter_ticks": [
+    0,
+    57600
+   ],
+   "change_bar": 6,
+   "keys": [
+    7
+   ],
+   "key_ticks": [
+    0
+   ]
+  }
+ },
+ "signature-meter-5-8-bar-6-logic": {
+  "path": "public/signature-32-meter-5-8-bar-6.logicx",
+  "note": "the new event's denominator set to /8 in the list",
+  "facts": {
+   "meters": [
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     8
+    ]
+   ],
+   "meter_ticks": [
+    0,
+    57600
+   ],
+   "change_bar": 6,
+   "keys": [
+    7
+   ],
+   "key_ticks": [
+    0
+   ]
+  }
+ },
+ "signature-meter-3-8-bar-6-logic": {
+  "path": "public/signature-33-meter-3-8-bar-6.logicx",
+  "note": "its numerator set to 3",
+  "facts": {
+   "meters": [
+    [
+     4,
+     4
+    ],
+    [
+     3,
+     8
+    ]
+   ],
+   "meter_ticks": [
+    0,
+    57600
+   ],
+   "change_bar": 6,
+   "keys": [
+    7
+   ],
+   "key_ticks": [
+    0
+   ]
+  }
+ },
+ "signature-key-created-logic": {
+  "path": "public/signature-34-key-created.logicx",
+  "note": "Create with the type set to Key: Logic made F major at the playhead, bar 5 beat 3",
+  "facts": {
+   "meters": [
+    [
+     4,
+     4
+    ],
+    [
+     3,
+     8
+    ]
+   ],
+   "meter_ticks": [
+    0,
+    57600
+   ],
+   "keys": [
+    7,
+    6
+   ],
+   "key_ticks": [
+    0,
+    55680
+   ],
+   "key_names": [
+    "C major",
+    "F major"
+   ]
+  }
+ },
+ "signature-key-a-minor-logic": {
+  "path": "public/signature-35-key-a-minor.logicx",
+  "note": "the new key event set to A minor in its popup",
+  "facts": {
+   "meters": [
+    [
+     4,
+     4
+    ],
+    [
+     3,
+     8
+    ]
+   ],
+   "meter_ticks": [
+    0,
+    57600
+   ],
+   "keys": [
+    7,
+    23
+   ],
+   "key_ticks": [
+    0,
+    55680
+   ],
+   "key_names": [
+    "C major",
+    "A minor"
+   ]
+  }
+ },
+ "tempo-point-created-logic": {
+  "path": "public/tempo-01-point-created.logicx",
+  "note": "Create pressed in the Tempo List: a 120 bpm point at the playhead, bar 5 beat 3",
+  "facts": {
+   "tempos": [
+    [
+     38400,
+     120.0
+    ],
+    [
+     55680,
+     120.0
+    ]
+   ],
+   "time_words": [
+    7200000,
+    7218000
+   ]
+  }
+ },
+ "tempo-point-140-logic": {
+  "path": "public/tempo-02-point-140.logicx",
+  "note": "the new point set to 140 bpm in the list",
+  "facts": {
+   "tempos": [
+    [
+     38400,
+     120.0
+    ],
+    [
+     55680,
+     140.0
+    ]
+   ],
+   "time_words": [
+    7200000,
+    7218000
+   ]
+  }
+ },
+ "audio-write-two-ours": {
+  "path": "public/audio-c13-write-two-ours.logicx",
+  "note": "logic regions --audio 'Audio 2:1:v030-tone.wav' --audio 'Audio 3:2:v030-tone2.wav' (1 s mono, then 2 s stereo, 44.1 kHz) on the MIDI-write re-save (the bundle's Media folder is not staged)",
+  "facts": {
+   "regions": [
+    [
+     "Audio 2",
+     "v030-tone",
+     38400,
+     44100,
+     "v030-tone.wav",
+     1
+    ],
+    [
+     "Audio 3",
+     "v030-tone2",
+     42240,
+     88200,
+     "v030-tone2.wav",
+     2
+    ]
+   ]
+  }
+ },
+ "audio-write-two-resave-logic": {
+  "path": "public/audio-c13-write-two-resave.logicx",
+  "note": "Logic's re-save of audio-write-two-ours; on load Logic rewrote each file record's folder path and file size, and the stereo file's +531 word",
+  "facts": {
+   "regions": [
+    [
+     "Audio 2",
+     "v030-tone",
+     38400,
+     44100,
+     "v030-tone.wav",
+     1
+    ],
+    [
+     "Audio 3",
+     "v030-tone2",
+     42240,
+     88200,
+     "v030-tone2.wav",
+     2
+    ]
+   ]
+  }
+ },
+ "midi-names-ours": {
+  "path": "public/midi-c14-region-names-ours.logicx",
+  "note": "logic midi --region 'Inst 1:2:2:Keys' --region 'Inst 1:5:1:Pad Layer' --note 'Inst 1:2:60:100:480' --note 'Inst 1:5.5:64:90:240' on the instrument-track save",
+  "facts": {
+   "regions": [
+    [
+     "Keys",
+     42240,
+     [
+      [
+       42240,
+       60,
+       100,
+       480
+      ]
+     ]
+    ],
+    [
+     "Pad Layer",
+     53760,
+     [
+      [
+       55680,
+       64,
+       90,
+       240
+      ]
+     ]
+    ]
+   ]
+  }
+ },
+ "midi-names-resave-logic": {
+  "path": "public/midi-c14-region-names-resave.logicx",
+  "note": "Logic's re-save of midi-names-ours; Logic renumbered the sequence ids and rewrote the byte 225 past each region's name",
+  "facts": {
+   "regions": [
+    [
+     "Keys",
+     42240,
+     [
+      [
+       42240,
+       60,
+       100,
+       480
+      ]
+     ]
+    ],
+    [
+     "Pad Layer",
+     53760,
+     [
+      [
+       55680,
+       64,
+       90,
+       240
+      ]
+     ]
+    ]
+   ]
+  }
  }
 }

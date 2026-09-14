@@ -208,3 +208,29 @@ class NativeParamsTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class NativeTypeIdTest(unittest.TestCase):
+    """A native slot with no plug-in name string in its window is named from its GAMETSPP type
+    id, as `plugins` names it (ChromaVerb, SilverVerb, EnVerb and Echo on a built patch)."""
+
+    def _channel(self, type_ids):
+        from _records import chan, rec
+        out = chan(282, "Audio 2")
+        for k, type_id in enumerate(type_ids):
+            slot = bytearray(432)
+            slot[6] = k
+            slot[184:192] = b"GAMETSPP"
+            struct.pack_into("<I", slot, 192, type_id)
+            out += rec(b"UCuA", 282, 4 + k, bytes(slot), 5)
+        return out
+
+    def test_a_nameless_native_slot_is_named_from_its_type_id(self):
+        self.assertEqual(channel_chain(self._channel([287, 150, 166, 147])),
+                         [("ChromaVerb", None), ("SilverVerb", None), ("EnVerb", None), ("Echo", None)])
+
+    def test_an_unknown_type_id_is_still_an_insert(self):
+        self.assertEqual(channel_chain(self._channel([236, 999])), [("Channel EQ", None), ("type 999", None)])
+
+    def test_a_native_instrument_is_not_an_insert(self):
+        self.assertEqual(channel_chain(self._channel([158, 236])), [("Channel EQ", None)])

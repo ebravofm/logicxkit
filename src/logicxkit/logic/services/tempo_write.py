@@ -1,9 +1,9 @@
 """Set the project tempo — the bar-1 event and the `gnoS` words that held its value — and
 add a tempo change. `--set 180` showed on Logic's LCD and survived its re-save (2026-09-06).
 A change Logic added itself is one bare 32-byte event:
-type 0x60, the tick, 0x7f at +12, the bpm word on the data line with `40 88` at +22 and an
-ascending stamp at +8 — no curve lines; the word at head +2 it filled with is undecoded and
-written as zero here. A ramp is what Logic's Tempo Operations "Create Tempo Curve" writes
+type 0x60, the tick, 0x7f at +12, the bpm word on the data line with `40 88` at +22 and the
+point's time word at +8 (`time_word`) — no curve lines; the word at head +2 it filled with is
+undecoded and written as zero here. A ramp is what Logic's Tempo Operations "Create Tempo Curve" writes
 (linear, density 1/8, continue with the new tempo): one such event per division from
 the start bar to the end bar, each holding the tempo at the middle of its division, the last
 one the end tempo exactly, no curve lines; Logic left every event selected (head +15 0x80).
@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import struct
 
-from .events import DATA_LINE, LINE, Event, events
+from .events import DATA_LINE, LINE, PPQ, Event, events
 from .insert import HEADER, project_records, reassemble
 from .recbuild import rec
 from .registry import GNOS_TAG
@@ -24,6 +24,8 @@ from .tempo import (
     TEMPO_ALT_AT,
     TEMPO_AT,
     TEMPO_THIRD_AT,
+    TIME_AT,
+    TIME_UNIT,
     tempo_sequence,
 )
 
@@ -64,7 +66,26 @@ def set_tempo(data: bytes, bpm: float) -> bytes:
     return reassemble(data, out)
 
 
-STAMP_AT, STAMP_STEP = 8, 0x10000
+def _points(tempos: list[Event]) -> list[tuple[int, float]]:
+    return sorted((e.tick, struct.unpack_from("<I", e.data, BPM_AT)[0] / SCALE) for e in tempos)
+
+
+def time_word(points: list[tuple[int, float]], origin_tick: int, origin_word: int, tick: int) -> int:
+    """The data +8 word of a point at ``tick``: the origin's word plus the seconds the tempo map
+    (``points`` as (tick, bpm)) puts between the origin and the tick, in ``TIME_UNIT`` per second."""
+    seconds = 0.0
+    pts = sorted(points)
+    for k, (t, bpm) in enumerate(pts):
+        end = pts[k + 1][0] if k + 1 < len(pts) else tick
+        lo, hi = max(t, origin_tick), min(end, tick)
+        if hi > lo:
+            seconds += (hi - lo) / PPQ * 60 / bpm
+    return origin_word + round(seconds * TIME_UNIT)
+
+
+def _origin(tempos: list[Event]) -> tuple[int, int]:
+    first = min(tempos, key=lambda e: e.tick)
+    return first.tick, struct.unpack_from("<I", first.data, TIME_AT)[0]
 
 
 def add_tempo(data: bytes, tick: int, bpm: float) -> bytes:
@@ -85,8 +106,7 @@ def add_tempo(data: bytes, tick: int, bpm: float) -> bytes:
     if any(e.tick == tick for e in tempos):
         raise ValueError(f"the track already has a tempo event at tick {tick}")
     body = sum(len(e.head) + LINE * len(e.lines) for e in evs)
-    stamp = max(struct.unpack_from("<I", e.data, STAMP_AT)[0] for e in tempos) + STAMP_STEP
-    new = _new_event(tempos[0], tick=tick, word=int(round(bpm * SCALE)), stamp=stamp)
+    new = _new_event(tempos[0], tick=tick, word=int(round(bpm * SCALE)), time=time_word(_points(tempos), *_origin(tempos), tick))
     kept = [e.head + b"".join(e.lines) for e in evs] + [new]
     kept.sort(key=lambda raw: struct.unpack_from("<I", raw, 4)[0])
     out = [r.raw for r in records]
@@ -94,7 +114,7 @@ def add_tempo(data: bytes, tick: int, bpm: float) -> bytes:
     return reassemble(data, out)
 
 
-def _new_event(pattern: Event, *, tick: int, word: int, stamp: int) -> bytes:
+def _new_event(pattern: Event, *, tick: int, word: int, time: int) -> bytes:
     head = bytearray(pattern.head)
     struct.pack_into("<HHI", head, 0, EVENT_TYPE, 0, tick)
     head[8:12] = bytes(4)
@@ -102,7 +122,7 @@ def _new_event(pattern: Event, *, tick: int, word: int, stamp: int) -> bytes:
     line = bytearray(pattern.data)
     struct.pack_into("<I", line, BPM_AT, word)
     line[6], line[7] = 0x40, DATA_LINE
-    struct.pack_into("<I", line, STAMP_AT, stamp)
+    struct.pack_into("<I", line, TIME_AT, time)
     line[12:] = bytes(4)
     return bytes(head) + bytes(line)
 
@@ -141,10 +161,11 @@ def add_ramp(data: bytes, start: int, bpm1: float, end: int, bpm2: float, per_ba
     if inside:
         raise ValueError(f"the track already has tempo events inside the ramp, at ticks {inside}")
     body = sum(len(e.head) + LINE * len(e.lines) for e in evs)
-    stamp = max(struct.unpack_from("<I", e.data, STAMP_AT)[0] for e in tempos) + STAMP_STEP
+    points, origin = _points(tempos), _origin(tempos)
     new = []
-    for k, (tick, bpm) in enumerate(ramp_events(start, bpm1, end, bpm2, per_bar)):
-        raw = _new_event(tempos[0], tick=tick, word=int(round(bpm * SCALE)), stamp=stamp + k * 0x200)
+    for tick, bpm in ramp_events(start, bpm1, end, bpm2, per_bar):
+        raw = _new_event(tempos[0], tick=tick, word=int(round(bpm * SCALE)), time=time_word(points, *origin, tick))
+        points.append((tick, bpm))
         new.append(raw[:15] + b"\x00" + raw[16:])                  # not marked as the last edit
     kept = [e.head + b"".join(e.lines) for e in evs] + new
     kept.sort(key=lambda raw: struct.unpack_from("<I", raw, 4)[0])

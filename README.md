@@ -31,8 +31,8 @@ deliberate change per Logic save, then a byte diff against the save before it. T
 is the tidiest example — every button id was pinned on fifty single-toggle saves (2026-09-04),
 and a control bar written by this tool and copied whole onto another project came up in Logic
 with that exact set. That standard is not uniform across the tool. Some commands have been
-opened in Logic and confirmed, some are reasoned from diffs and never opened, and a few carry
-defects reproduced on real projects. **[`docs/CAPABILITIES.md`][caps]
+opened in Logic and confirmed, some are reasoned from diffs and never opened, and a defect
+reproduced on a real project is recorded until a regression test closes it. **[`docs/CAPABILITIES.md`][caps]
 carries the level and the evidence for every command, and `bin/run logic capabilities` prints
 the same table.** Read it before you point a writer at a session you care about.
 
@@ -60,7 +60,8 @@ pip install logicxkit
 logicxkit logic project ~/Music/Logic/Song.logicx    # read-only, to see it working
 ```
 
-That gets you the `logicxkit` command. To work on it instead, clone it and let `bin/run` build
+That gets you the `logicxkit` command, and with it the record templates and native plug-in
+donors the writers need — Logic's own, taken from its saves of a blank project. To work on it instead, clone it and let `bin/run` build
 the venv — every command below is written that way, and `bin/run logic …` and
 `logicxkit logic …` are the same thing:
 
@@ -82,6 +83,12 @@ bin/run logic levels "<song.logicx>"                     # channel fader + pan
 bin/run logic stacks "<song.logicx>" [--tracks]          # track stacks / arrange list
 bin/run logic ocr "<song.logicx>"                        # OCR the auto-saved WindowImage
 bin/run logic neural "<strip.cst | song.logicx>"         # Neural DSP knob values
+bin/run logic midi "<song.logicx>" [--export out.mid]      # MIDI regions, or a .mid of them
+bin/run logic plugins "<song.logicx | folder>"            # plug-ins referenced, and which are missing
+bin/run logic patch "<name.patch | folder>"               # a Library patch: channels, strips, plug-ins
+bin/run logic regions "<song.logicx>"                     # every MIDI and audio region, with files
+bin/run logic sessionplayer "<song.logicx>"               # Session Player drummer, preset, settings
+bin/run logic quantize-drums "<song.logicx>" --out DIR    # quantize a drum take to the grid, no Logic
 bin/run au strip "<strip.cst | song.logicx>"             # every embedded 3rd-party state
 bin/run au preset "<preset.aupreset | .ffp>"             # a preset file, named, in real units
 bin/run logic capabilities -v                            # what each writer is trusted for
@@ -95,7 +102,12 @@ bin/run logic capabilities -v                            # what each writer is t
   (extract the auto-saved WindowImage) and **`logic ocr`** (Apple-Vision OCR of it — reads the
   mixer as Logic drew it); **`logic levels`** (fader + pan, read and copy between projects);
   **`logic stacks`** (folder stacks and the arrange track list, and `--move` to put a track into
-  a stack); **Neural DSP state decode** (`logic neural`); and the project editors — track
+  a stack); **`logic midi`** (MIDI regions and their export as a `.mid`); **`logic plugins`**
+  (every referenced plug-in, and which this Mac lacks); **`logic patch`** (a Library patch
+  bundle's channels, strips and plug-ins, and `--build` to make one); **`logic regions`** (MIDI
+  and audio regions with their files, and `--audio` to import a WAV); **`logic sessionplayer`**
+  (a Session Player region's settings and generated notes); **Neural DSP state decode** (`logic
+  neural`); and the project editors — MIDI regions and notes, track
   header, control bar, toolbar, transport modes, metronome, channel width, mixer groups,
   arrangement sections, tempo, time signature and key, track add/rename/colour/hide/reorder,
   sends, routing, and `apply-template` to move a session onto another project's layout. See
@@ -152,7 +164,7 @@ Three more things write outside `--out`, and one warning:
   slot keys, ending at its `.cst` reference record; a clone that overruns that run deletes the
   reference, and `validate_project` cannot see the loss. A clone across record class versions
   cannot be legalised either. Both stop the run and say what to do instead; `--force` writes
-  anyway. The remaining open defects are listed in
+  anyway. Any open defect is listed in
   [`docs/CAPABILITIES.md`][caps].
 
 ## Layout
@@ -194,9 +206,10 @@ release asset and fetched by `bin/run fetch-corpus` into `resources/public/`, pi
 checksum in `tests/goldens/corpus.json`. `tests/goldens/manifest.json` names each save by a
 neutral key with the facts a test may assert. The **owner's corpus** — controlled saves cut
 from real sessions, project templates, finished mixes, a channel-strip library snapshot — is
-Logic-authored material containing real music and **is not here**; the same goes for the
-data root the tools load (record templates Logic wrote, plugin-slot donor records, AU
-parameter tables), none of which are ours to publish.
+Logic-authored material containing real music and **is not here**. The record templates and
+native plug-in donors the writers need ship inside the package (`src/logicxkit/data`, Logic's
+own from the public corpus); a data root (`LOGICXKIT_DATA`) adds third-party donors and AU
+parameter tables, which are not ours to publish.
 
 The consequence for a fresh clone: **`bin/run pytest` runs green, but every golden skips until
 `bin/run fetch-corpus` has run**, and the keys only the owner's corpus has skip regardless. The

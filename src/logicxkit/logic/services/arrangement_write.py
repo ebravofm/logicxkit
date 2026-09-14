@@ -28,13 +28,17 @@ from .arrangement import (
     read_sections,
     section_sequence,
 )
+from ...utils.data import data_file
 from .events import DATA_LINE, LINE, events
 from .insert import HEADER, project_records, reassemble
-from .recbuild import rec, slot_of, with_slot
+from .recbuild import rec, slot_of, with_owner, with_slot
+from .sequence import QESM_ID_AT, free_seq_id, sequences
 
 PLAIN = 0x01000011
 _SIZE_AT, _TEXT_AT_AT, _SIZE2_AT, _FORM_AT = 0, 16, 20, 24
 _TEXT_DATA = "section-text-12.3.1.json"    # under the data root, `utils.data`
+_TRACK_DATA = "arrangement-track-12.3.1.json"
+_TRACK_ROLES = ("section_qesm", "section_marker", "section_qsve", "track_qesm", "track_marker", "track_qsve", "snrt")
 
 
 def plain_text_payload(name: str) -> bytes:
@@ -66,11 +70,12 @@ def rename_section(data: bytes, number: int, name: str) -> bytes:
     return reassemble(data, out)
 
 
-def _rewrite_events(data: bytes, edit) -> bytes:
-    """``edit(list of (head, lines)) -> list`` over the arrangement sequence's events; the
-    payload is rebuilt in tick order with its end marker kept."""
+def _rewrite_events(data: bytes, edit, at: int | None = None) -> bytes:
+    """``edit(list of (head, lines)) -> list`` over the arrangement sequence's events (record
+    ``at``, else the one holding sections); the payload is rebuilt in tick order with its end
+    marker kept."""
     records = project_records(data)
-    i = section_sequence(records)
+    i = section_sequence(records) if at is None else at
     if i is None:
         raise ValueError("the song has no arrangement track")
     payload = records[i].raw[HEADER:]
@@ -167,6 +172,62 @@ def new_section_event(template_head: bytes, *, start: int, length: int, kind: in
     return bytes(head) + bytes(data) + bytes(tail)
 
 
+def _track_template() -> dict[str, bytes]:
+    spec = json.loads(data_file("logic", _TRACK_DATA).read_text())
+    return {role: bytes.fromhex(r["header"]) + bytes.fromhex(r["payload"]) for role, r in spec["records"].items()}
+
+
+def _with_seq_id(qesm: bytes, seq_id: int) -> bytes:
+    buf = bytearray(qesm)
+    struct.pack_into("<I", buf, HEADER + QESM_ID_AT, seq_id)
+    return bytes(buf)
+
+
+def _anchor(records) -> int:
+    """Record index the arrangement track's triples follow: the last `tSxT`."""
+    at = max((i for i, r in enumerate(records) if r.tag == b"tSxT"), default=None)
+    if at is None:
+        raise ValueError("no tSxT record to place the arrangement track after")
+    return at
+
+
+def _empty_section_sequence(records) -> int:
+    """The section sequence's `qSvE` right after `ensure_arrangement_track` wrote it."""
+    return _anchor(records) + 3
+
+
+def ensure_arrangement_track(data: bytes) -> bytes:
+    """The song with an arrangement track, as Logic writes one with its first section: the
+    section sequence (empty) and the track sequence with the `snrT` after the last `tSxT`,
+    the `OgnS` before the first `rpyH` replaced, the `MneG` and the empty text record after
+    the last `MneG` (`arrangement-track-12.3.1.json`). A no-op when the track exists."""
+    records = project_records(data)
+    if section_sequence(records) is not None:
+        return data
+    anchor = _anchor(records)
+    if [r.tag for r in records[anchor + 1:anchor + 8]] == [b"qeSM", b"karT", b"qSvE"] * 2 + [b"snrT"]:
+        return data
+    t = _track_template()
+    taken = {s.seq_id for s in sequences(records)}
+    section_id = free_seq_id(sequences(records))
+    track_id = min(set(range(1, 512)) - taken - {section_id})
+    section_qsve = rec(b"qSvE", t["section_qsve"], t["section_qsve"][-LINE:])
+    new = [_with_seq_id(t["section_qesm"], section_id), t["section_marker"], with_owner(section_qsve, section_id),
+           _with_seq_id(t["track_qesm"], track_id), t["track_marker"], with_owner(t["track_qsve"], track_id),
+           t["snrt"]]
+    first_rpyh = next((i for i, r in enumerate(records) if r.tag == b"rpyH"), len(records))
+    ogns = max((i for i, r in enumerate(records[:first_rpyh]) if r.tag == b"OgnS"), default=None)
+    last_mneg = max((i for i, r in enumerate(records) if r.tag == b"MneG"), default=len(records) - 1)
+    out = []
+    for i, r in enumerate(records):
+        out.append(t["ogns"] if i == ogns else r.raw)
+        if i == anchor:
+            out += new
+        if i == last_mneg:
+            out += [t["mneg"], t["text_empty"]]
+    return reassemble(data, out)
+
+
 def add_section(data: bytes, name: str, *, start: int, length: int, kind: int = 0) -> bytes:
     """A new section ``name`` from tick ``start`` for ``length`` ticks, of ``kind``."""
     if length <= 0 or start < 0:
@@ -176,13 +237,14 @@ def add_section(data: bytes, name: str, *, start: int, length: int, kind: int = 
     records = project_records(data)
     i = section_sequence(records)
     if i is None:
-        raise ValueError("the song has no arrangement track")
+        data = ensure_arrangement_track(data)
+        records = project_records(data)
+        i = _empty_section_sequence(records)
     evs = events(records[i].raw[HEADER:])
-    if not evs:
-        raise ValueError("the arrangement track has no section to pattern the event on")
+    head = evs[0].head if evs else _track_template()["section_qsve"][HEADER:HEADER + LINE]
     slot = free_text_slot(records)
     text = new_text_record(name, slot)
-    event = new_section_event(evs[0].head, start=start, length=length, kind=kind, slot=slot)
+    event = new_section_event(head, start=start, length=length, kind=kind, slot=slot)
     texts = [(k, slot_of(r.raw)) for k, r in enumerate(records) if r.tag == TEXT_TAG]
     after = next((k for k, s in reversed(texts) if s < slot), None)
     at = after + 1 if after is not None else texts[0][0]
@@ -193,4 +255,4 @@ def add_section(data: bytes, name: str, *, start: int, length: int, kind: int = 
     def edit(hl):
         hl.append((bytearray(event[:LINE]), [bytearray(event[LINE:2 * LINE]), bytearray(event[2 * LINE:])]))
         return hl
-    return _rewrite_events(out, edit)
+    return _rewrite_events(out, edit, at=i + 1 if at <= i else i)

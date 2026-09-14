@@ -2,16 +2,18 @@
 
 A send sits right after its channel's `OCuA` in key order, before the plugin slots (key 4+);
 `sends.py` has the layout. Nothing is synthesised: a new send is a clone of one the project
-already carries, so the level bytes and the undecoded `+8` word come from the template, and
-only the fields the file proves are set — owner, key, `+4`, `+20`, a fresh instance UUID at
-`+44` and the target bus channel's UUID at `+60` — plus the slot's flag on the channel's own
-record. Not yet confirmed by opening in Logic.
+already carries, else of the one Logic made on a blank project (packaged `send-12.3.1.json`),
+so the level bytes and the undecoded `+8` word come from the template, and only the fields
+the file proves are set — owner, key, `+4`, `+20`, a fresh instance UUID at `+44` and the
+target bus channel's UUID at `+60` — plus the slot's flag on the channel's own record.
 """
 
 from __future__ import annotations
 
+import json
 import struct
 
+from ...utils.data import data_file
 from .binding import Channel, channels
 from .keyflags import sync_key_flags
 from .insert import CHANNEL_TAG, HEADER, KEY_OFF, ProjRecord, project_records, reassemble
@@ -31,6 +33,7 @@ from .sends import (
 from .validate import require_full_walk, require_valid
 
 UUID_LEN = 16
+_DATA = "send-12.3.1.json"
 
 
 def _bus_uuid(chans: dict[int, Channel], bus: int) -> bytes:
@@ -41,11 +44,13 @@ def _bus_uuid(chans: dict[int, Channel], bus: int) -> bytes:
 
 
 def _template(records: list[ProjRecord], owner: int) -> bytes:
-    """A send to clone: one of the channel's own if it has any, else the project's first."""
+    """A send to clone: the channel's own, else the project's first, else the one Logic made
+    on a blank project (packaged `send-12.3.1.json`)."""
     sends = [r for r in records if is_send(r)]
-    if not sends:
-        raise ValueError("this project carries no send to clone; a donor project is needed")
-    return next((r.raw for r in sends if r.owner == owner), sends[0].raw)
+    if sends:
+        return next((r.raw for r in sends if r.owner == owner), sends[0].raw)
+    t = json.loads(data_file("logic", _DATA).read_text())
+    return bytes.fromhex(t["header"]) + bytes.fromhex(t["payload"])
 
 
 def _clone(template: bytes, *, owner: int, key: int, bus: int, bus_uuid: bytes, base: int,

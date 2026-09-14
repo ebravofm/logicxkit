@@ -130,11 +130,6 @@ class AddSendTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             add_send(session(), owner=2, bus=10, key=4)
 
-    def test_refuses_without_a_send_to_clone(self):
-        data = proj(chan(3, "Audio 4"), slot(3, 4), bus(15))
-        with self.assertRaisesRegex(ValueError, "donor"):
-            add_send(data, owner=3, bus=15)
-
     def test_refuses_a_bus_the_project_lacks(self):
         with self.assertRaises(ValueError):
             add_send(session(), owner=3, bus=99)
@@ -262,3 +257,11 @@ class RemoveSendsTest(unittest.TestCase):
     def test_refuses_a_corrupt_stream(self):
         with self.assertRaises(ValueError):
             remove_sends(session() + b"\x00" * 5, owner=2)
+
+
+class PackagedSendTemplateTest(unittest.TestCase):
+    def test_a_project_without_sends_gets_one_from_the_package(self):
+        data = proj(chan(0, "Audio 1", uuid=uuid(88)), bus(1))
+        out, report = add_send(data, owner=0, bus=1)
+        (made,) = read_sends(out)[0]
+        self.assertEqual((made.bus, made.level, report["key"]), (1, 0, 0))

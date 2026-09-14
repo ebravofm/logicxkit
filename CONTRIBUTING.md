@@ -52,6 +52,15 @@ diff the record list against the input.
   and not history.
 - Tests travel with the change.
 
+## Recording a golden
+
+Every format claim rests on one deliberate change in Logic and a byte diff against the save
+before it. `tools/driver/README.md` has the loop and the traps; `tools/driver/drive.py` performs
+one action and one Save As per step, `tools/driver/diff.py` diffs two saves, and
+`tools/stage_public.py` files the saves under `resources/public/` with a manifest key and the
+facts a test may assert. Only saves of a project born in Logic on your own machine go into the
+public corpus; a session that holds anyone's music or third-party plug-in state stays out.
+
 ## Licensing of contributions
 
 logicxkit is Apache-2.0. Under section 5 of that licence, anything you deliberately submit for

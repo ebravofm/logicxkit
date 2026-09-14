@@ -186,6 +186,19 @@ def slot_errors(data: bytes) -> list[str]:
     return out
 
 
+def register_slot(payload: bytes, *, slot: int) -> bytes:
+    """The pair of slot entries for a sequence that is no object's — a region's — and the list
+    stamps; what Logic added to the registry for a new MIDI region (2026-09-13)."""
+    g = bytearray(payload)
+    slot_uuid = fresh_uuid()
+    for stride in (UUID_STRIDE, TIME_STRIDE):
+        if any(s == slot for _at, s in run_entries(g, SLOT_TYPE, stride)):
+            _stamp(g, SLOT_TYPE, slot, _slot_value(slot, slot_uuid, stride)[8:], stride)
+        else:
+            _insert_slot(g, slot, slot_uuid, stride)
+    return bytes(touch_lists(g))
+
+
 def touch_lists(payload: bytes) -> bytes:
     """Re-stamp the arrange and flat lists, as Logic does when a row is added or moved."""
     g = bytearray(payload)

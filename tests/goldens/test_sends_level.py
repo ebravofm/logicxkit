@@ -20,15 +20,23 @@ class SendLevelTest(unittest.TestCase):
                 self.assertEqual(int(send.level_exact), send.level)
 
 
-@_goldens.needs("send-two-base-3-logic")
+BASE_KEYS = ["send-two-base-3-logic", "send-three-base-4-logic"]
+
+
+@_goldens.needs(*BASE_KEYS)
 class SlotBaseFollowsSendsTest(unittest.TestCase):
-    """Two sends on a blank project moved its slot base to 3; the channels' own base word says
-    so unanimously, and the reader must follow it rather than a vote over slot-shaped records."""
+    """Two sends on a blank project moved its slot base to 3 and a third to 4; the channels' own
+    base word says so unanimously, and the reader must follow it rather than a vote over
+    slot-shaped records."""
 
     def test_the_slot_base_is_the_channels_word(self):
         from logicxkit.logic.services.insert import slot_index_base
-        self.assertEqual(slot_index_base(project_data(_goldens.path("send-two-base-3-logic"))),
-                         _goldens.fact("send-two-base-3-logic", "slot_base"))
+        for key in BASE_KEYS:
+            data = project_data(_goldens.path(key))
+            with self.subTest(key=key):
+                self.assertEqual(slot_index_base(data), _goldens.fact(key, "slot_base"))
+                sends = read_sends(data)[_goldens.fact(key, "owner")]
+                self.assertEqual([[k, s.bus] for k, s in enumerate(sends)], _goldens.fact(key, "sends"))
 
 
 if __name__ == "__main__":

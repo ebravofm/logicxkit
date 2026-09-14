@@ -125,18 +125,24 @@ def harvest_donors(data: bytes, library: Path, names: dict[int, str] | None = No
     return sorted(written)
 
 
-def load_donor_library(library: Path) -> dict[str, tuple[bytes, int, int]]:
-    """key -> (record, plugin type id, class version)."""
-    library = Path(library)
-    if not library.is_dir():
-        return {}
-    out = {}
-    for path in sorted(library.glob(f"*{SUFFIX}")):
-        raw = path.read_bytes()
-        blocks = find_blocks(raw[HEADER:])
-        if not blocks:
+def load_donor_library(libraries: list[Path] | Path) -> dict[str, tuple[bytes, int, int]]:
+    """key -> (record, plugin type id, class version); with several directories the first
+    holding a key wins."""
+    if isinstance(libraries, (str, Path)):
+        libraries = [libraries]
+    out: dict[str, tuple[bytes, int, int]] = {}
+    for library in libraries:
+        library = Path(library)
+        if not library.is_dir():
             continue
-        out[path.stem] = (raw, blocks[0][1], struct.unpack_from("<H", raw, VER_OFF)[0])
+        for path in sorted(library.glob(f"*{SUFFIX}")):
+            if path.stem in out:
+                continue
+            raw = path.read_bytes()
+            blocks = find_blocks(raw[HEADER:])
+            if not blocks:
+                continue
+            out[path.stem] = (raw, blocks[0][1], struct.unpack_from("<H", raw, VER_OFF)[0])
     return out
 
 

@@ -1,0 +1,65 @@
+{
+  "147-v5": {
+    "bytes": 328,
+    "floats": 28,
+    "plugin": "Echo",
+    "type": 147,
+    "version": 5
+  },
+  "150-v5": {
+    "bytes": 272,
+    "floats": 14,
+    "plugin": "SilverVerb",
+    "type": 150,
+    "version": 5
+  },
+  "154-v5": {
+    "bytes": 340,
+    "floats": 31,
+    "plugin": "Compressor",
+    "type": 154,
+    "version": 5
+  },
+  "157-v5": {
+    "bytes": 248,
+    "floats": 8,
+    "plugin": "Enveloper",
+    "type": 157,
+    "version": 5
+  },
+  "158-v5": {
+    "bytes": 256,
+    "floats": 15,
+    "plugin": "Klopfgeist",
+    "type": 158,
+    "version": 5
+  },
+  "166-v5": {
+    "bytes": 280,
+    "floats": 16,
+    "plugin": "EnVerb",
+    "type": 166,
+    "version": 5
+  },
+  "183-v5": {
+    "bytes": 256,
+    "floats": 10,
+    "plugin": "Gain",
+    "type": 183,
+    "version": 5
+  },
+  "236-v5": {
+    "bytes": 432,
+    "floats": 52,
+    "plugin": "Channel EQ",
+    "type": 236,
+    "version": 5
+  },
+  "287-v5": {
+    "bytes": 540,
+    "floats": 81,
+    "plugin": "ChromaVerb",
+    "type": 287,
+    "version": 5
+  }
+}

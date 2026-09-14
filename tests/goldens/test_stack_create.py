@@ -7,6 +7,7 @@ The real-file part of tests/logic/test_stack_create.py; skips without the owner'
 
 import unittest
 from collections import Counter
+import _goldens
 import _paths
 from logicxkit.logic.services.binding import channels
 from logicxkit.logic.services.environment import channel_objects
@@ -83,3 +84,43 @@ class MixTemplateStackTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@_goldens.needs("tracks-three-audio-logic", "stack-folder-logic")
+class PublicStacklessTest(unittest.TestCase):
+    """Our stack over Logic's three flat tracks against Logic's own Create Track Stack."""
+
+    def test_our_stack_reads_like_logics(self):
+        from logicxkit.logic.services.stack_create import create_stack
+        from logicxkit.logic.services.stacks import read_stacks, read_tracks
+        base = _goldens.path("tracks-three-audio-logic").joinpath("Alternatives/000/ProjectData").read_bytes()
+        ids = [r["object_id"] for r in read_tracks(base, 3) if r["name"].startswith("Audio")]
+        out, _ = create_stack(base, name="Sub 1", members=ids, track_count=3)
+        logic = _goldens.path("stack-folder-logic").joinpath("Alternatives/000/ProjectData").read_bytes()
+        (ours,), (logics,) = read_stacks(out, 4), read_stacks(logic, 4)
+        self.assertEqual([n for _k, n in ours.members], [n for _k, n in logics.members])
+        self.assertEqual((ours.kind, ours.index, ours.owner), (logics.kind, logics.index, logics.owner))
+
+
+class LogicResavedStacksTest(unittest.TestCase):
+    """Our stacks on stack-less sessions, re-saved by Logic: one on three flat tracks, one on a
+    project whose flattened stack left a `Sub 1` strip behind."""
+
+    def _check(self, ours_key: str, logic_key: str):
+        from logicxkit.logic.services.stacks import read_stacks
+        from logicxkit.logicx import project_data
+        ours, logic = (project_data(_goldens.path(k)) for k in (ours_key, logic_key))
+        (mine,), (theirs,) = read_stacks(ours, 4), read_stacks(logic, 4)
+        self.assertEqual((mine.name, mine.kind, mine.owner, [n for _k, n in mine.members]),
+                         (_goldens.fact(ours_key, "name"), _goldens.fact(ours_key, "kind"),
+                          _goldens.fact(ours_key, "owner"), _goldens.fact(ours_key, "members")))
+        self.assertEqual((mine.name, mine.kind, mine.owner, mine.index, mine.members),
+                         (theirs.name, theirs.kind, theirs.owner, theirs.index, theirs.members))
+
+    @_goldens.needs("stack-ours", "stack-resave-logic")
+    def test_the_first_stack(self):
+        self._check("stack-ours", "stack-resave-logic")
+
+    @_goldens.needs("stack-sub2-ours", "stack-sub2-resave-logic")
+    def test_a_stack_after_a_leftover_sub_strip(self):
+        self._check("stack-sub2-ours", "stack-sub2-resave-logic")

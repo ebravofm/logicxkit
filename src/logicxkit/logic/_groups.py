@@ -14,7 +14,7 @@ def _print(groups, objs) -> None:
         print("  no groups")
     for g in groups:
         members = ", ".join(objs[m].name if m in objs else str(m) for m in g.members)
-        print(f"  {g.number:2d}  {g.label:16s} {', '.join(g.settings)}")
+        print(f"  {g.number:2d}  {g.label:16s} {', '.join(g.settings)}{'' if g.on else '  (off)'}")
         print(f"      {members or '(no members)'}")
 
 
@@ -24,7 +24,8 @@ def cmd_group(args) -> int:
     from .services.retrack import find_project
     from logicxkit.logicx import project_data
 
-    writing = bool(args.create or args.assign or args.name or args.setting is not None)
+    on = True if args.on else (False if args.off else None)
+    writing = bool(args.create or args.assign or args.name or args.setting is not None or on is not None)
     if not writing:
         project = find_project(Path(args.project))
         data = project_data(project)
@@ -34,8 +35,8 @@ def cmd_group(args) -> int:
     if not args.out:
         print("  --out is needed to write")
         return 2
-    if (args.name or args.setting is not None) and not args.create and not args.group:
-        print("  --group N says which group --name / --setting change")
+    if (args.name or args.setting is not None or on is not None) and not args.create and not args.group:
+        print("  --group N says which group --name / --setting / --on / --off change")
         return 2
 
     def step(data, count, _file):
@@ -44,9 +45,9 @@ def cmd_group(args) -> int:
             data, g = create_group(data, name=args.create, members=members, settings=args.setting)
             print(f"  group {g.number} {g.label!r}: {', '.join(g.settings)}; {len(members)} member(s)")
         elif args.group:
-            data = set_group(data, args.group, name=args.name, settings=args.setting)
+            data = set_group(data, args.group, name=args.name, settings=args.setting, on=on)
             g = read_groups(data)[args.group - 1]
-            print(f"  group {g.number} {g.label!r}: {', '.join(g.settings)}")
+            print(f"  group {g.number} {g.label!r}: {', '.join(g.settings)}{'' if g.on else ' (off)'}")
         for spec in args.assign or []:
             name, _, number = spec.rpartition("=")
             if not name or not number.isdigit():
@@ -73,6 +74,9 @@ def register(sub) -> None:
     gp.add_argument("--assign", action="append", metavar="TRACK=N", help="put a track in group N (0 = out)")
     gp.add_argument("--group", type=int, metavar="N", help="the group --name / --setting change")
     gp.add_argument("--name", metavar="NAME", help="rename --group N")
+    onoff = gp.add_mutually_exclusive_group()
+    onoff.add_argument("--on", action="store_true", help="switch --group N on (the table's On box)")
+    onoff.add_argument("--off", action="store_true", help="switch --group N off")
     gp.add_argument("--setting", action="append", metavar="BOX",
                     help=f"a box to tick, repeatable; the rest come off. One of: {', '.join(FLAGS)}")
     gp.set_defaults(func=cmd_group)

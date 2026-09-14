@@ -9,6 +9,7 @@ from _records import chan, env_obj, gnos, group_triple, marker, proj, rec, track
 from logicxkit.logic.services.groups import (
     DEFAULT_FLAGS,
     FLAGS,
+    GROUP_ON,
     assign,
     create_group,
     flags_for,
@@ -98,7 +99,15 @@ class ReadTest(unittest.TestCase):
                          [(1, 0, 82, "", (KICK, SNARE)), (2, 4, 43, "Room", (OH_L,))])
         self.assertEqual(groups[1].label, "Room")
         self.assertEqual(groups[0].label, "Group 1")
-        self.assertEqual(group_of(data), {KICK: 1, SNARE: 1, OH_L: 2})
+        self.assertEqual(group_of(data), {KICK: (1,), SNARE: (1,), OH_L: (2,)})
+
+    @needs("logic", "group-12.3.1.json")
+    def test_the_objects_word_is_a_bitmask_so_a_channel_can_be_in_two_groups(self):
+        data = session(group_triple(4, 43, name="Room"), group_triple(0, 82, events=member_events(DEFAULT_FLAGS, KICK)),
+                       numbers={KICK: 1, SNARE: 1, OH_L: 0b11}, registry=(0, 4))
+        groups = read_groups(data)
+        self.assertEqual([g.members for g in groups], [(KICK, SNARE, OH_L), (OH_L,)])
+        self.assertEqual(group_of(data), {KICK: (1,), SNARE: (1,), OH_L: (1, 2)})
 
     def test_a_project_without_groups(self):
         self.assertEqual(read_groups(session()), [])
@@ -114,7 +123,7 @@ class CreateTest(unittest.TestCase):
         at = t.index(b"rpyH")
         self.assertEqual(t[at:at + 5], [b"rpyH", b"qeSM", b"karT", b"qSvE", b"ivnE"])
         self.assertEqual(events_of(out, 1), [(OH_L, 9), (OH_L, 7), (OH_R, 9), (OH_R, 7)])
-        self.assertEqual(group_of(out), {OH_L: 1, OH_R: 1})
+        self.assertEqual(group_of(out), {OH_L: (1,), OH_R: (1,)})
         self.assertEqual(group_errors(out), [])
         self.assertEqual(read_groups(out), [g])
 
@@ -144,7 +153,7 @@ class CreateTest(unittest.TestCase):
         at = t.index(b"rpyH")
         self.assertEqual(t[at:at + 8], [b"rpyH", b"qeSM", b"karT", b"qSvE", b"qeSM", b"karT", b"qSvE", b"ivnE"])
         self.assertEqual(events_of(out, 2), [(KICK, 3), (KICK, 10)])
-        self.assertEqual(group_of(out), {OH_L: 1, OH_R: 1, KICK: 2})
+        self.assertEqual(group_of(out), {OH_L: (1,), OH_R: (1,), KICK: (2,)})
         reg = next(r.raw[HEADER:] for r in project_records(out) if r.tag == b"gnoS")
         self.assertEqual([[s for _a, s in group_entries(reg, stride)] for stride in (24, 16)], [[0, 4], [0, 4]])
         self.assertEqual(group_errors(out), [])
@@ -156,11 +165,13 @@ class CreateTest(unittest.TestCase):
         records = project_records(out)
         self.assertEqual(records[b.start + 2].owner, b.group_id)
 
-    def test_a_member_moves_out_of_its_old_group(self):
+    def test_a_member_keeps_its_old_groups(self):
         out, _ = create_group(session(), members=[KICK, SNARE])
         out, _ = create_group(out, members=[SNARE])
-        self.assertEqual(events_of(out, 1), [(KICK, 9), (KICK, 7)])
-        self.assertEqual(group_of(out), {KICK: 1, SNARE: 2})
+        self.assertEqual(events_of(out, 1), [(KICK, 9), (KICK, 7), (SNARE, 9), (SNARE, 7)])
+        self.assertEqual(events_of(out, 2), [(SNARE, 9), (SNARE, 7)])
+        self.assertEqual(group_of(out), {KICK: (1,), SNARE: (1, 2)})
+        self.assertEqual([g.members for g in read_groups(out)], [(KICK, SNARE), (SNARE,)])
         self.assertEqual(group_errors(out), [])
 
     def test_refusals(self):
@@ -180,14 +191,14 @@ class AssignTest(unittest.TestCase):
     def test_joining_appends_the_members_events(self):
         out = assign(self.data, OH_R, 1)
         self.assertEqual(events_of(out, 1), [(OH_L, 9), (OH_L, 7), (OH_R, 9), (OH_R, 7)])
-        self.assertEqual(group_of(out), {OH_L: 1, OH_R: 1})
+        self.assertEqual(group_of(out), {OH_L: (1,), OH_R: (1,)})
         self.assertEqual(read_groups(out)[0].members, (OH_L, OH_R))
         self.assertEqual(group_errors(out), [])
 
     def test_leaving_drops_them_and_clears_the_number(self):
         out = assign(assign(self.data, OH_R, 1), OH_L, 0)
         self.assertEqual(events_of(out, 1), [(OH_R, 9), (OH_R, 7)])
-        self.assertEqual(group_of(out), {OH_R: 1})
+        self.assertEqual(group_of(out), {OH_R: (1,)})
         self.assertEqual(group_errors(out), [])
 
     def test_moving_between_groups(self):
@@ -195,7 +206,16 @@ class AssignTest(unittest.TestCase):
         out = assign(out, OH_L, 2)
         self.assertEqual(events_of(out, 1), [])
         self.assertEqual(events_of(out, 2), [(KICK, 9), (KICK, 7), (OH_L, 9), (OH_L, 7)])
-        self.assertEqual(group_of(out), {KICK: 2, OH_L: 2})
+        self.assertEqual(group_of(out), {KICK: (2,), OH_L: (2,)})
+
+    def test_leaving_takes_a_channel_out_of_every_group_it_is_in(self):
+        out, _ = create_group(self.data, name="Room", members=[OH_L, KICK])
+        self.assertEqual(group_of(out), {OH_L: (1, 2), KICK: (2,)})
+        out = assign(out, OH_L, 0)
+        self.assertEqual(events_of(out, 1), [])
+        self.assertEqual(events_of(out, 2), [(KICK, 9), (KICK, 7)])
+        self.assertEqual(group_of(out), {KICK: (2,)})
+        self.assertEqual(group_errors(out), [])
 
     def test_no_change_is_no_change(self):
         self.assertEqual(assign(self.data, OH_L, 1), self.data)
@@ -229,6 +249,18 @@ class SetGroupTest(unittest.TestCase):
         self.assertEqual(events_of(out, 1), [(OH_L, 9), (OH_L, 3), (OH_R, 9), (OH_R, 3)])
         self.assertEqual(group_errors(out), [])
 
+    def test_switching_off_clears_bit_31_and_nothing_else(self):
+        self.assertTrue(read_groups(self.data)[0].on)
+        out = set_group(self.data, 1, on=False)
+        g = read_groups(out)[0]
+        self.assertFalse(g.on)
+        self.assertEqual(g.flags, DEFAULT_FLAGS & ~GROUP_ON)
+        self.assertEqual((g.settings, g.members), (read_groups(self.data)[0].settings, (OH_L, OH_R)))
+        self.assertEqual(events_of(out, 1), events_of(self.data, 1))
+        self.assertTrue(read_groups(set_group(out, 1, on=True))[0].on)
+        self.assertEqual(set_group(out, 1, settings=["Pan"]).count(b"qeSM"), self.data.count(b"qeSM"))
+        self.assertFalse(read_groups(set_group(out, 1, settings=["Pan"]))[0].on)
+
     def test_refusals(self):
         with self.assertRaises(ValueError):
             set_group(self.data, 2, name="x")
@@ -237,6 +269,13 @@ class SetGroupTest(unittest.TestCase):
 class ErrorsTest(unittest.TestCase):
     def test_a_number_without_a_group(self):
         self.assertEqual(group_errors(session(numbers={KICK: 1})), ["object 88: in group 1, which does not exist"])
+        self.assertEqual(group_errors(session(numbers={KICK: 0b100})), ["object 88: in group 3, which does not exist"])
+
+    @needs("logic", "group-12.3.1.json")
+    def test_only_the_missing_group_of_a_channels_bits_is_reported(self):
+        data = session(group_triple(0, 82, events=member_events(DEFAULT_FLAGS, KICK)), numbers={KICK: 0b101},
+                       registry=(0,))
+        self.assertEqual(group_errors(data), ["object 88: in group 3, which does not exist"])
 
     def test_events_that_do_not_match_the_members(self):
         data = session(group_triple(0, 82), numbers={KICK: 1}, registry=(0,))

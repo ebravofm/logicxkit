@@ -58,3 +58,14 @@ class SummingStackMoveTest(unittest.TestCase):
     def test_moving_a_top_level_row_in_is_refused(self):
         with self.assertRaisesRegex(ValueError, "different parents"):
             move_track(self.data, self.rows["Stereo Out"], after=self.rows["Audio 1"], track_count=5)
+
+
+@_goldens.needs("reorder-ours", "reorder-resave-logic")
+class LogicResavedPlainMoveTest(unittest.TestCase):
+    def test_logic_kept_the_order(self):
+        from logicxkit.logic.services.stacks import read_tracks
+        from logicxkit.logicx import project_data
+        ours, logic = (project_data(_goldens.path(k)) for k in ("reorder-ours", "reorder-resave-logic"))
+        order = lambda data: [r["name"] for r in read_tracks(data, 3)]  # noqa: E731
+        self.assertEqual(order(ours), _goldens.fact("reorder-ours", "order"))
+        self.assertEqual(order(ours), order(logic))

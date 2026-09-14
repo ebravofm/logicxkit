@@ -153,3 +153,22 @@ class BaseDonorFallbackTest(unittest.TestCase):
             (lib / "236-v5.slot").write_bytes(self._eq_slot(5))
             eq, _comp, _from_lib = base_donors(bytes(24), 3, lib)
             self.assertIsNone(eq, "a v5 record must not be transplanted into a v3 project")
+
+
+class MergedLibrariesTest(unittest.TestCase):
+    def test_the_first_library_shadows_the_second_and_both_are_read(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            first, second = Path(tmp, "a"), Path(tmp, "b")
+            first.mkdir()
+            second.mkdir()
+            (first / "147-v5.slot").write_bytes(slot(147, ver=5, n=8))
+            (second / "147-v5.slot").write_bytes(slot(147, ver=5, n=9))
+            (second / "150-v5.slot").write_bytes(slot(150, ver=5))
+            lib = load_donor_library([first, second])
+            self.assertEqual(sorted(lib), ["147-v5", "150-v5"])
+            self.assertEqual(lib["147-v5"][0], slot(147, ver=5, n=8))
+
+    def test_a_single_path_still_works(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            Path(tmp, "150-v5.slot").write_bytes(slot(150, ver=5))
+            self.assertEqual(list(load_donor_library(Path(tmp))), ["150-v5"])

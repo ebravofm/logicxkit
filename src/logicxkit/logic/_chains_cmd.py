@@ -129,8 +129,8 @@ def cmd_chains(args) -> int:
         print("  --out is required unless you pass --plan")
         return 2
     cfg = load_chain_config(Path(args.config))
-    from ..utils.data import data_dir
-    library = Path(args.library) if args.library else data_dir("donors")
+    from ..utils.data import data_dirs
+    library = [Path(args.library)] if args.library else data_dirs("donors")
 
     if args.plan:
         project = find_project(Path(args.project))

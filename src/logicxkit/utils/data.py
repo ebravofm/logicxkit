@@ -1,13 +1,15 @@
-"""Where the untracked data lives: Logic-written record templates, the plugin-slot donor
-library and the AU parameter tables. None of it is authored here — Logic and the plugin
-vendors wrote those bytes — so it stays out of the tracked tree, under one root:
+"""Where the data lives: Logic-written record templates, the plugin-slot donor library and the
+AU parameter tables. None of it is authored here — Logic and the plugin vendors wrote those
+bytes. Two places, the first wins:
 
     LOGICXKIT_DATA          env override, absolute
-    <repo>/resources/data   the default, gitignored; see resources/data/README.md
+    <repo>/resources/data   the default root, gitignored; see resources/data/README.md
+    logicxkit/data/         the package's own copy of what Logic wrote on a blank project
+                            (`logic/` templates, `donors/` native plug-ins only)
 
     <root>/donors/*.slot     plugin-slot donors and their manifest (`logic donors` harvests them)
     <root>/logic/*.json      record templates Logic saved (aux, instrument, audio, group, section)
-    <root>/au/*.json         AU parameter tables (`au params` regenerates them)
+    <root>/au/*.json         AU parameter tables (`au params` regenerates them) — root only
 """
 
 from __future__ import annotations
@@ -18,10 +20,12 @@ from .env import env_path
 
 ENV = "LOGICXKIT_DATA"
 KINDS = ("donors", "logic", "au")
+PACKAGED = Path(__file__).resolve().parents[1] / "data"
+PACKAGED_KINDS = ("donors", "logic")
 
 
 class MissingData(FileNotFoundError):
-    """A data file the operation needs is not present under the data root."""
+    """A data file the operation needs is in neither the data root nor the package."""
 
 
 def data_root() -> Path:
@@ -34,16 +38,21 @@ def data_dir(kind: str) -> Path:
     return data_root() / kind
 
 
+def data_dirs(kind: str) -> list[Path]:
+    """Every directory holding ``kind``, the data root first, the package second."""
+    candidates = [data_dir(kind)] + ([PACKAGED / kind] if kind in PACKAGED_KINDS else [])
+    return [d for d in candidates if d.is_dir()]
+
+
 def data_file(kind: str, name: str) -> Path:
-    """The path of one data file, or `MissingData` naming what to set."""
-    p = data_dir(kind) / name
-    if not p.exists():
-        raise MissingData(f"{p} is missing — it is Logic- or vendor-written data kept outside the "
-                          f"repo; set {ENV} to a directory that holds {kind}/{name} "
-                          "(resources/data/README.md says how each kind is made)")
-    return p
+    """One data file: the data root's, else the package's, else `MissingData` naming both."""
+    for d in data_dirs(kind):
+        if (d / name).exists():
+            return d / name
+    raise MissingData(f"{kind}/{name} is in neither {data_dir(kind)} ({ENV}) nor the package's "
+                      "logicxkit/data — Logic- or vendor-written data; resources/data/README.md "
+                      "says how each kind is made")
 
 
 def have_data(kind: str, *names: str) -> bool:
-    d = data_dir(kind)
-    return d.is_dir() and all((d / n).exists() for n in names)
+    return any(all((d / n).exists() for n in names) for d in data_dirs(kind))

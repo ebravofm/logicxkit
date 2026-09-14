@@ -6,6 +6,7 @@ tempo track is the sequence triple near the head whose `qSvE` events (`events.py
 type 0x60:
 
     head +15  u8    flags — 0x40 marks a point Logic generated for a ramp
+    data +8   u32   the point's time in 1/2000 s from Logic's SMPTE origin (01:00:00:00 = 7 200 000)
     data +0   u32   bpm x 10000                    data +8   u32   a stamp, ascending
     0xb4 line       curve parameters, undecoded    0xb1 line      zeros
 
@@ -27,6 +28,7 @@ SCALE = 10000
 EVENT_TYPE = 0x60
 FLAGS_AT, GENERATED = 15, 0x40
 BPM_AT = 0
+TIME_AT, TIME_UNIT = 8, 2000
 _MIN, _MAX = 5 * SCALE, 990 * SCALE
 
 

@@ -48,6 +48,21 @@ def _plugin_name(window: bytes) -> str | None:
     return None
 
 
+def _slot_name(payload: bytes) -> str | None:
+    """The name string in the slot's window, else the native block's type id as `plugins`
+    names it (a native slot need not carry a name string at all)."""
+    name = _plugin_name(payload[:_SLOT_WINDOW])
+    if name is not None:
+        return name
+    from .._binary import find_blocks
+    from .chain_report import NATIVE_INSTRUMENTS, PLUGIN_NAMES
+    blocks = find_blocks(payload)
+    if not blocks or blocks[0][1] in NATIVE_INSTRUMENTS:
+        return None
+    type_id = blocks[0][1]
+    return PLUGIN_NAMES.get(type_id) or f"type {type_id}"
+
+
 def _preset_name(window: bytes) -> str | None:
     m = _PRESET.search(window)
     if not m:
@@ -88,7 +103,7 @@ def _chain_from_records(records) -> list[tuple[str, str | None]]:
         if not any(is_plugin_slot(r, prop, base) for base in (4, 3, 2)):
             continue
         head = r.raw[HEADER:HEADER + _SLOT_WINDOW]
-        name = _plugin_name(head)
+        name = _slot_name(r.raw[HEADER:])
         if name is not None:
             chain.append((name, _preset_name(head)))
     return chain
@@ -102,7 +117,7 @@ def _chain_from_windows(seg: bytes) -> list[tuple[str, str | None]]:
     chain: list[tuple[str, str | None]] = []
     for i in range(len(tags) - 1):
         window = seg[tags[i]:min(tags[i + 1], tags[i] + _SLOT_WINDOW)]
-        name = _plugin_name(window)
+        name = _slot_name(seg[tags[i]:tags[i + 1]])
         if name is None:
             continue
         slot = (name, _preset_name(window))

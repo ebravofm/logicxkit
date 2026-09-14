@@ -1,6 +1,6 @@
 """Create a folder stack from existing arrange rows.
 
-Logic's own Create Track Stack has not been sampled; this composes the measured pieces — a
+Logic's own Create Track Stack on a blank project is the packaged pattern for a session that has no stack; otherwise this composes the measured pieces — a
 track add (`addtrack.py`), a drag into a stack (`stacks.move_to_stack`) and the `Sub` strips
 the existing stacks bind to. A folder stack is a kind-0 Environment object bound to a `Sub N`
 strip, its arrange row followed by its members' rows with `+14` set. What this writes:
@@ -22,6 +22,10 @@ Members already inside a stack are refused: nesting has not been measured.
 
 from __future__ import annotations
 
+import json
+import struct
+
+from ...utils.data import data_file
 from .binding import bound_channels, channels, set_stack_index
 from .channel_alloc import (
     COUNT_CLASS_AT,
@@ -37,6 +41,7 @@ from .channel_alloc import (
 from .environment import (
     DEFAULT_COLOUR,
     ENV_TAG,
+    STAMP_AT,
     UUID_LEN,
     channel_objects,
     clone_object,
@@ -47,13 +52,13 @@ from .environment import (
     set_parent,
     shifted_object,
 )
-from .insert import HEADER, project_records, reassemble
+from .insert import CHANNEL_BASE_AT, HEADER, project_records, reassemble, slot_index_base
 from .keyflags import sync_key_flags
 from .recbuild import fresh_uuid, rec
 from .registry import GNOS_TAG, register_object
 from .regions import sync_region_tracks, sync_row_count
 from .selection import select_track
-from .sequence import plan_sequence
+from .sequence import index_table, plan_sequence, table_entries
 from .stacks import read_stacks, read_tracks
 from .tracklist import (
     arrange_run,
@@ -67,6 +72,39 @@ from .tracklist import (
 from .validate import require_full_walk, require_valid
 
 SUB_NUMBER_AT = NUMBER_AT
+_DATA = "stack-folder-12.3.1.json"
+
+
+def _packaged_pattern() -> dict[str, bytes]:
+    """Logic's own first folder stack on a blank project: the `Sub 1` strip, the header object
+    and its arrange row (`stack-folder-12.3.1.json`, roles `strip`, `object`, `row`)."""
+    t = json.loads(data_file("logic", _DATA).read_text())
+    return {role: bytes.fromhex(r["header"]) + bytes.fromhex(r["payload"]) for role, r in t["records"].items()}
+
+
+def _first_stack(data: bytes, records, chans) -> tuple[int, int, int, bytes, bytes, bytes]:
+    """What a stack-less session's first stack patterns on -> ``(number, like, like_owner,
+    object, strip, row)``: Logic's own packaged pieces, the strip numbered and placed after the
+    last `Sub` strip (else after the Master strip) with the session's slot base, the object
+    stamped past every existing one, the sequence shaped like the highest-indexed object's."""
+    packaged = _packaged_pattern()
+    subs = {int(c.label[4:]): o for o, c in chans.items() if c.label.startswith("Sub ") and c.label[4:].isdigit()}
+    if subs:                                          # a flattened stack leaves its strip behind
+        number = max(subs) + 1
+        after = subs[max(subs)]
+    else:
+        number = 1
+        after = next((o for o, c in chans.items() if c.label == "Master"), None)
+        if after is None:
+            raise ValueError("no Master strip to place Sub 1 after")
+    strip = bytearray(packaged["strip"])
+    strip[HEADER + CHANNEL_BASE_AT] = slot_index_base(data)
+    top_stamp = max(object_stamp(r.raw) for r in records if r.tag == ENV_TAG and object_id_of(r) is not None)
+    obj = bytearray(packaged["object"])
+    struct.pack_into("<I", obj, HEADER + STAMP_AT, top_stamp)
+    table = records[index_table(records)].raw[HEADER:]
+    like = max(table_entries(table), key=lambda e: e[2])[1]
+    return number, like, after, bytes(obj), bytes(strip), packaged["row"]
 
 
 def _members_in_order(rows: list[dict], members: list[int], headers: set[int]) -> list[int]:
@@ -93,36 +131,36 @@ def create_stack(data: bytes, *, name: str, members: list[int], track_count: int
     chans = channels(data)
     owners_of = bound_channels(data)
     stacks = read_stacks(data, track_count)
-    if not stacks:
-        raise ValueError("no existing stack to clone the structures from")
     ordered = _members_in_order(read_tracks(data, track_count), members,
                                 {s.object_id for s in stacks})
-    pattern = max(stacks, key=lambda s: s.index)
-    number = pattern.index + 1
+    run = arrange_run(records, track_count)
+    run_rows = [records[i].raw for i in run]
+    if stacks:
+        pattern = max(stacks, key=lambda s: s.index)
+        number, like, like_owner = pattern.index + 1, pattern.object_id, pattern.owner
+        pattern_obj = object_record(records, like)
+        strip_template = mixer_record(records, like_owner)
+        row_template = next(raw for raw in run_rows if row_object(raw) == like)
+    else:
+        number, like, like_owner, pattern_obj, strip_template, row_template = _first_stack(data, records, chans)
     label = f"Sub {number}"
     if any(c.label == label for c in chans.values()):
         raise ValueError(f"{label} already exists")
-    like, like_owner = pattern.object_id, pattern.owner
     owner = like_owner + 1                            # inserted right after the pattern's strip
     object_id = next_object_id(records)
     top = max(objs)
-    run = arrange_run(records, track_count)
     plan = plan_sequence(records, like=like, object_id=object_id)
 
-    pattern_obj = object_record(records, like)
     pattern_stamp = object_stamp(pattern_obj)
     new_obj = clone_object(pattern_obj, object_id=object_id, name=name, owner=owner,
                            colour=colour, icon=None, stack_number=number)
     last_env = max(i for i, r in enumerate(records) if r.tag == ENV_TAG)
-    new_chan = new_sub_channel(mixer_record(records, like_owner), number=number, owner=owner,
-                               uuid=new_obj[-UUID_LEN:])
+    new_chan = new_sub_channel(strip_template, number=number, owner=owner, uuid=new_obj[-UUID_LEN:])
     last_like_record = max(i for i, r in enumerate(records)
                            if is_channel_record(r) and r.owner == like_owner)
 
-    run_rows = [records[i].raw for i in run]
     member_set = set(ordered)
-    header = new_row(next(raw for raw in run_rows if row_object(raw) == like),
-                     object_id=object_id, member=0, expanded=True)
+    header = new_row(row_template, object_id=object_id, member=0, expanded=True)
     moved = [with_member(raw, 1) for raw in run_rows if row_object(raw) in member_set]
     at = next(k for k, raw in enumerate(run_rows) if row_object(raw) == ordered[0])
     kept = [raw for raw in run_rows if row_object(raw) not in member_set]
