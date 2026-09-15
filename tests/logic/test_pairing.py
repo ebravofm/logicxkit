@@ -3,7 +3,15 @@
 import unittest
 
 import _paths  # noqa: F401
-from logicxkit.logic.services.pairing import extra_rows, format_map, pair_rows, parse_map, propose_map, row_key
+from logicxkit.logic.services.pairing import (
+    extra_rows,
+    format_map,
+    pair_rows,
+    parse_map,
+    parse_map_full,
+    propose_map,
+    row_key,
+)
 
 
 def row(key, oid, name, label, member=False, grouping=False):
@@ -160,6 +168,24 @@ class MapTest(unittest.TestCase):
         pairs = pair_rows(template, session, forced=parse_map(text))
         self.assertEqual([(p.template["name"], p.session and p.session["name"]) for p in pairs],
                          [("Vox", "Take #2"), ("Gtr -> Amp", "Gtr"), ("Vocal Harmony High", "Vocal Harmony High")])
+
+    def test_every_awkward_key_reads_back_as_format_map_wrote_it(self):
+        keys = ["Kick  #1 (Inst 4)", "Kick\t #1 (Audio 2)", " Lead (Audio 3)", "Lead  ", "+ Pad (Aux 1)",
+                "- Pad (Aux 2)", "Gtr -> Amp (Audio 5)", "Gtr ->", "#1 Vox (Audio 4)", 'Say "hi" (Audio 6)',
+                "Back\\slash (Audio 7)", "Take #2 (Audio 8)"]
+        template = [row(i, 100 + i, k, None) for i, k in enumerate(keys)] + [row(99, 999, "Spare  #9", None)]
+        entries = [{"session": k, "template": k, "confidence": "high", "why": "same  # name"} for k in keys]
+        forced, excluded = parse_map_full(format_map(entries, template))
+        self.assertEqual((forced, excluded), ({k: k for k in keys}, set()))
+        text = format_map(entries, template).replace("+ ", "- ", 1).replace("\n+ ", "\n- ")
+        self.assertEqual(parse_map_full(text)[1], {"Spare  #9"})
+
+    def test_a_comment_is_cut_only_outside_quotes(self):
+        self.assertEqual(parse_map_full('"A  #1 (Audio 1)" -> "B  #2 (Audio 2)"  # note -> here\n'),
+                         ({"A  #1 (Audio 1)": "B  #2 (Audio 2)"}, set()))
+        self.assertEqual(parse_map('A (Audio 1) -> B (Audio 2)  # was -> C\n'), {"A (Audio 1)": "B (Audio 2)"})
+        with self.assertRaises(ValueError):
+            parse_map_full('"A (Audio 1)" -> "B (Audio 2)" extra\n')
 
     def test_a_map_naming_a_missing_track_or_a_double_target_is_refused(self):
         with self.assertRaises(ValueError):

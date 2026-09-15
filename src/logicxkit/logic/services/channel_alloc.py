@@ -50,6 +50,7 @@ IN_USE_AT = 24
 LABEL_AT = 60
 LABEL_LEN = 16
 NUMBER_AT, INST_NUMBER2_AT = 6, 128
+LABEL_BASE = {"Sub ": 0}          # the label's number is +6 plus this; the 0-based classes add 1
 WIDTH = {78: {1: 211, 2: 215}, 86: {1: 0, 2: 1}, 123: {1: 1, 2: 2}}
 INST_FRESH = {78: 243, 81: 0, 86: 0, 92: 0, 123: 1, 188: 0}
 UUID_LEN = 16
@@ -216,7 +217,8 @@ def shifted_channel(raw: bytes, record: ProjRecord, relabel_prefix: str = "Inst 
         return raw
     number = struct.unpack_from("<H", p, NUMBER_AT)[0] + 1
     struct.pack_into("<H", p, NUMBER_AT, number)
-    p[LABEL_AT:LABEL_AT + LABEL_LEN] = f" {relabel_prefix.strip()} {number + 1}".encode().ljust(LABEL_LEN, b"\x00")
+    shown = number + LABEL_BASE.get(relabel_prefix, 1)
+    p[LABEL_AT:LABEL_AT + LABEL_LEN] = f" {relabel_prefix.strip()} {shown}".encode().ljust(LABEL_LEN, b"\x00")
     return raw[:HEADER] + bytes(p)
 
 

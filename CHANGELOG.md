@@ -3,6 +3,90 @@
 Notable changes to logicxkit. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versions follow [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.4.0 — 2026-09-15
+
+### Added
+
+- `logic regions` edits a region by its listing number on a copy: `--move`, `--trim`, `--split`,
+  `--loop`, `--mute`, `--rename`, `--fade-in`, `--fade-out`; the listing shows mutes, loops,
+  fades and a split piece's first frame. CONFIRMED: Logic's re-save of copies carrying every edit
+  kept each region, record, entry and split piece as written.
+  A flexed region is neither trimmed nor split, and a MIDI split's second piece — which plays the
+  parent's events from an offset — takes no `midi` edit. Regions playing one sequence take a mute each and no
+  other edit; `midi --copy-notes` copies the notes a region plays. A region or marker number means the same
+  region or marker in every alternative, refused where one lacks it.
+- `logic markers`: the marker track, and `--add`, `--rename`, `--move`, `--delete` on a copy.
+  CONFIRMED: reading matches Logic's Marker List on its five marker saves, and Logic's re-save of
+  a copy carrying all four edits kept both markers as written.
+- `logic migrate`: propose-map (or `--map`) and apply-template in one run into
+  `CLAUDE migrated - <song>.logicx`, with a checklist; `--save-map` keeps the draft, and
+  `--verify` has Logic Pro re-save the copy and compares the row lists. CONFIRMED: Logic's re-save
+  of a migrated legacy session kept its rows as written.
+- `logic midi` edits a region by its listing number on a copy: `--transpose`, `--velocity`,
+  `--move`, `--delete`, `--quantize`, `--copy-region`, `--copy-notes`. CONFIRMED: Logic's re-save
+  of a copy carrying every edit kept every region and event as written.
+- `logic midi --remap [N=]SRC:DST` translates drum notes between groovebin's note maps (`gm`,
+  `addictive-drums-2`, `drum-kit-designer`) and counts the notes left unmapped; `--map NAME` names
+  each note's stroke in the listing. CONFIRMED by the same re-save.
+- `logic beats place`: one pattern from a groovebin library as a MIDI region on a software
+  instrument track from a bar, `--repeat`, `--map` and `--velocity`, on a copy; refused where the
+  project's meter is not the pattern's. CONFIRMED by Logic's re-save (`beats-place-generate-*`).
+- `logic beats compose`: a region per Intro, Verse, Pre-Chorus, Chorus, Bridge or Outro section
+  from one group's patterns, `--fills` on each section's last bar, on a copy. CONFIRMED by Logic's
+  re-save (`beats-compose-*`).
+- `logic beats generate`: a seeded phrase picked bar by bar from library bars by kick and snare
+  onsets, `--fills` every fourth bar, into a copy. CONFIRMED by the same re-save as `place`.
+- logicxkit depends on `groovebin`, which owns the general-MIDI code: Standard MIDI File reading
+  and writing, the note maps, the note transforms and the pattern library (`groovebin index`,
+  `search`, `show`, `generate`); logicxkit keeps what writes Logic projects.
+- `logic drums-to-midi`: hits in audio tracks as notes on drum-map keys, velocity from each hit's
+  peak, in one new MIDI region on a copy, `--grid` to quantize and `--threshold` for the detector's
+  floor; a WAV whose rate or frame count disagrees with its file record is refused. CONFIRMED: Logic's
+  re-save of a copy written over a real drum take kept the region and every note.
+- `logic quantize-drums --bars FIRST-LAST` re-quantizes only the hits in those bars and keeps
+  every other marker block. CONFIRMED: Logic's re-save of a `--bars` copy of a take it had quantized
+  itself kept every marker list and the drum group.
+- The integrity gate refuses a write that loses a region entry, moves one to another track,
+  changes the file an audio region plays, adds region records past the file records or the
+  reverse, leaves a region's sequence slot unregistered (a lost registry included), breaks
+  marker-block framing, strips a flexed region's markers, puts markers on a MIDI region, writes
+  marker targets out of order, or leaves more RBA Sequences that no region names.
+
+### Changed
+
+- `logic midi` numbers regions across the song, keeps the numbers under `--track`, and `--json`
+  carries them as `number`.
+- A write by a CONFIRMED command prints the DERIVED notice when it uses a flag that is not yet
+  confirmed.
+- `logic midi --region` puts a MIDI region only on a software instrument track.
+- Region, sequence and audio file names outside ASCII are written as Logic writes them (UTF-8
+  with a byte length; UTF-16 LE with a unit count), library pattern names included.
+- `logic quantize-drums --grid` takes 4, 8, 16 or 32, the measured values, and defaults to each
+  region's own Quantize value under `--bars`.
+
+### Fixed
+
+- `logic regions` and `logic midi` read a split's second piece from its own record and file
+  (entries pair with records by slot word and piece number), a MIDI split piece's events at the
+  time Logic plays them (its sequence offset), the loop flag from the right bit (edited regions
+  no longer show as looped), and file names by their UTF-16 unit count.
+- `apply-template --map` keeps pairing a `Name (Sub N)` row after the run's own stack creation
+  renumbers the Sub strips.
+- `apply-template` on a project with several alternatives writes nothing unless the map fits the
+  first alternative, and a later alternative the map does not name keeps its bytes.
+- A map file round-trips track names with outer spaces or two spaces before `#`.
+- Every writer gives each alternative its own track count.
+- `stack-create` and `apply-template` keep a later Sub strip's label equal to its number, and
+  pattern a new folder stack on the highest folder stack, never a summing stack's Aux.
+- The onset detector (`quantize-drums`, `drums-to-midi`) finds a hit in a file's first samples.
+- `logic quantize-drums` treats a region whose slot names an RBA Sequence as quantized, so it never
+  gives it a second one.
+- `logic quantize-drums --bars` on a project Logic quantized itself: a member whose marker list
+  holds only the two anchors takes the reference region's hits, and the drum group is reused when
+  every member with audio regions is in it, instead of a second group being made.
+- The `logic midi` and `logic regions` listings read the project's track count, and print `-` for
+  a track name an old project does not carry.
+
 ## 0.3.0 — 2026-09-14
 
 ### Added

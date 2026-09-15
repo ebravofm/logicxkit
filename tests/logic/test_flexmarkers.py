@@ -8,7 +8,7 @@ import unittest
 import _paths  # noqa: F401
 from _data import needs
 from logicxkit.logic.services.flexmarkers import (
-    HIT, END_TAIL, MARKER, PPQ, anchors, flexed_entry, marker_block, quantize_code,
+    HIT, END_TAIL, MARKER, PPQ, anchors, block_fields, flexed_entry, marker_block, quantize_code,
     rba_triple, samples_per_tick, snap,
 )
 from logicxkit.logic.services.insert import HEADER
@@ -24,6 +24,7 @@ class BlockTest(unittest.TestCase):
         self.assertEqual(struct.unpack_from("<i", b, 0)[0], 158968)
         self.assertEqual(b[6:8], b"\x01\xaa")
         self.assertEqual(struct.unpack_from("<i", b, 12)[0], 11520)
+        self.assertEqual(block_fields(marker_block(-5, 7, HIT, 0x8000)), (-5, HIT, 7, 0x8000))
         self.assertEqual([b[k] for k in (23, 39, 55, 71)], [0x88] * 4)
         self.assertEqual(sum(b) - 0x88 * 4 - 0xaa - 1, sum(b[0:4]) + sum(b[12:16]))
 
@@ -58,8 +59,9 @@ class BlockTest(unittest.TestCase):
     def test_the_quantize_codes_match_logics_four_values(self):
         self.assertEqual([quantize_code(d) for d in (4, 8, 16, 32)], [-10, -8, -6, -4])
         self.assertEqual(quantize_code(0), 0)
-        with self.assertRaises(ValueError):
-            quantize_code(12)
+        for grid in (1, 2, 12, 64):                         # the formula's other values are unmeasured
+            with self.subTest(grid), self.assertRaisesRegex(ValueError, "1/4, 1/8, 1/16 or 1/32"):
+                quantize_code(grid)
 
 
 class EntryTest(unittest.TestCase):

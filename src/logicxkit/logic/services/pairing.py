@@ -30,16 +30,27 @@ def row_key(row: dict) -> str:
     return f"{row['name']} ({row['label']})" if row["label"] else str(row["name"])
 
 
+def forced_by_object(forced: dict[str, str | None], session_rows: list[dict]) -> dict[int, str | None]:
+    """A map's session side keyed by object id: a writer never changes a row's id, but every
+    stack it makes renumbers the ``Sub N`` in a row key."""
+    by_key = {row_key(r): r["object_id"] for r in reversed(session_rows)}
+    missing = next((k for k in forced if k not in by_key), None)
+    if missing is not None:
+        raise ValueError(f"map names a session track that does not exist: {missing!r}")
+    return {by_key[k]: t for k, t in forced.items()}
+
+
 def pair_rows(template_rows: list[dict], session_rows: list[dict],
-              forced: dict[str, str | None] | None = None,
+              forced: dict[str, str | None] | dict[int, str | None] | None = None,
               known: dict[int, int] | None = None,
               excluded: set[str] | None = None) -> list[Pair]:
     """Every template row paired with at most one session row, in template order.
 
-    ``forced`` maps session ``row_key`` -> template ``row_key`` (a map file, for projects of a
-    different lineage), or -> None for a row the map leaves alone, which no rule may then
-    claim; with a map the mixer-label rule is off, since across lineages it pairs unrelated
-    tracks that merely share an ``Audio N``. ``known`` maps a session object id -> the
+    ``forced`` maps session ``row_key`` (or object id, as ``forced_by_object`` keys it) ->
+    template ``row_key`` (a map file, for projects of a different lineage), or -> None for a
+    row the map leaves alone, which no rule may then claim; with a map the mixer-label rule is
+    off, since across lineages it pairs unrelated tracks that merely share an ``Audio N``.
+    ``known`` maps a session object id -> the
     template row's ``key`` for rows a writer made from that template row: they pair first,
     whatever they are called. ``excluded`` names template rows the map leaves out: they pair
     with nothing and are never added."""
@@ -66,21 +77,22 @@ def pair_rows(template_rows: list[dict], session_rows: list[dict],
         by_template[t_row] = ("made", lambda r, oid=oid: r["object_id"] == oid)
     if forced:
         seen = {}
-        session_by_key = {row_key(r): r for r in session_rows}
+        by_object = forced if all(isinstance(k, int) for k in forced) else forced_by_object(forced, session_rows)
+        key_of = {r["object_id"]: row_key(r) for r in reversed(session_rows)}
         template_keys = {row_key(t) for t in template_rows}
-        for s_key, t_key in forced.items():
-            if s_key not in session_by_key:
-                raise ValueError(f"map names a session track that does not exist: {s_key!r}")
+        for oid, t_key in by_object.items():
+            if oid not in key_of:
+                raise ValueError(f"map names a session track that no longer exists: object {oid}")
             if t_key is None:
-                taken.add(session_by_key[s_key]["key"])            # left alone: no rule may claim it
+                taken.update(r["key"] for r in session_rows if r["object_id"] == oid)   # left alone
                 continue
             if t_key not in template_keys:
                 raise ValueError(f"map names a template track that does not exist: {t_key!r}")
             if t_key in seen:
-                raise ValueError(f"map sends two tracks to {t_key!r}: {seen[t_key]!r} and {s_key!r}")
-            seen[t_key] = s_key
+                raise ValueError(f"map sends two tracks to {t_key!r}: {seen[t_key]!r} and {key_of[oid]!r}")
+            seen[t_key] = key_of[oid]
             t_row = next(t["key"] for t in template_rows if row_key(t) == t_key)
-            by_template.setdefault(t_row, ("map", lambda r, s_key=s_key: row_key(r) == s_key))
+            by_template.setdefault(t_row, ("map", lambda r, oid=oid: r["object_id"] == oid))
     pending = []
     for t in template_rows:
         named = by_template.get(t["key"])
@@ -185,16 +197,17 @@ def propose_map(template_rows: list[dict], session_rows: list[dict]) -> list[dic
 
 
 def _quoted(key: str) -> str:
-    """A row key as the map writes it: bare, or in double quotes when it would otherwise read
-    as an arrow or a comment."""
-    if " -> " in key or key.startswith("#") or '"' in key:
+    """A row key as the map writes it: bare, or in double quotes when bare it would read back
+    as something else — an arrow, a comment, a '+'/'-' line, or lose its outer spaces."""
+    if ("->" in key or key.startswith(("#", "+ ", "- ")) or '"' in key or key != key.strip()
+            or _COMMENT.search(key)):
         return '"' + key.replace("\\", "\\\\").replace('"', '\\"') + '"'
     return key
 
 
 def _unquote(text: str) -> tuple[str, str]:
     """``(key, rest)`` from the start of a map line side: a quoted key up to its closing
-    quote, else everything up to the first ' -> ' (or the end)."""
+    quote, else everything up to the first ' -> ' or comment (or the end), stripped."""
     if text.startswith('"'):
         out, i = [], 1
         while i < len(text):
@@ -208,15 +221,21 @@ def _unquote(text: str) -> tuple[str, str]:
             out.append(c)
             i += 1
         raise ValueError(f"map line with an unclosed quote: {text!r}")
-    at = text.find(" -> ")
-    return (text, "") if at < 0 else (text[:at], text[at:])
+    comment = _COMMENT.search(text)
+    body = text[:comment.start()] if comment else text
+    at = body.find(" -> ")
+    return (body.strip(), text[len(body):]) if at < 0 else (body[:at].strip(), text[at:])
+
+
+def _no_tail(tail: str) -> bool:
+    return not tail.strip() or _COMMENT.match(tail) is not None
 
 
 def format_map(entries: list[dict], template_rows: list[dict]) -> str:
     """The editable map file: one line per session track, ``->`` the template track."""
     lines = ["# session track -> template track. Edit the right-hand side; '(none)' leaves the track",
-             "# alone. Names are 'Name (Mixer label)', in double quotes when they hold ' -> ' or start",
-             "# with '#'. Two spaces and a '#' end a line's comment; lines starting with # are ignored.",
+             "# alone. Names are 'Name (Mixer label)', in double quotes when bare they would read as",
+             "# something else. Two spaces and a '#' outside quotes start a comment; so does a leading #.",
              "# Template tracks nobody maps to are listed below with a '+': added as new tracks where a",
              "# writer can. Change the '+' to '-' to leave one out.", ""]
     quoted = [(_quoted(e["session"]), _quoted(e["template"] or "(none)"), e) for e in entries]
@@ -243,22 +262,20 @@ def parse_map_full(text: str) -> tuple[dict[str, str | None], set[str]]:
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
-        line = _COMMENT.split(line, 1)[0].strip()
         if line[:2] in ("+ ", "- "):
-            key, tail = _unquote(line[2:].strip())
-            if tail.strip() or not key.strip():
+            key, tail = _unquote(line[2:].lstrip())
+            if not _no_tail(tail) or not key.strip():
                 raise ValueError(f"bad template-track line: {raw.strip()!r}")
             if line[0] == "-":
-                excluded.add(key.strip())
+                excluded.add(key)
             continue
         left, rest = _unquote(line)
         rest = rest.lstrip()
         if not rest.startswith("->"):
             raise ValueError(f"map line without '->': {raw.strip()!r}")
-        right, tail = _unquote(rest[2:].strip())
-        if tail.strip():
+        right, tail = _unquote(rest[2:].lstrip())
+        if not _no_tail(tail):
             raise ValueError(f"map line with more after the target: {raw.strip()!r}")
-        left, right = left.strip(), right.strip()
         if right:
             forced[left] = None if right == "(none)" else right
     return forced, excluded

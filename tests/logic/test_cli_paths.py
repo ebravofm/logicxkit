@@ -13,7 +13,8 @@ NOT_PATHS = {
     "add", "after", "assign", "by", "channel", "copy", "create", "hide", "input", "key", "key_at",
     "length", "mono", "move", "name", "output", "pane", "ramp", "remove", "rename", "row", "set",
     "audio", "note", "patch", "region", "setting", "show", "skip", "stack", "stereo", "time", "time_at", "track",
-    "ref", "group", "off",
+    "ref", "group", "off", "edits", "drum_map", "hit", "id", "category", "meter",
+    "tempo", "intensity", "role", "unmapped",
 }
 
 
@@ -30,11 +31,19 @@ def _string_dests() -> set[str]:
             cli.main([])
         except SystemExit:
             pass
-    sub = next(a for a in captured["parser"]._actions if isinstance(a, argparse._SubParsersAction))
     flags = (argparse._HelpAction, argparse._StoreTrueAction, argparse._StoreFalseAction,
              argparse._StoreConstAction, argparse._CountAction)
-    return {a.dest for p in sub.choices.values() for a in p._actions
-            if not isinstance(a, flags) and a.type in (None, str) and a.dest not in ("help", "func")}
+
+    def dests(parser) -> set[str]:
+        found = set()
+        for a in parser._actions:
+            if isinstance(a, argparse._SubParsersAction):
+                found |= {d for p in a.choices.values() for d in dests(p)}
+            elif not isinstance(a, flags) and a.type in (None, str) and a.dest not in ("help", "func"):
+                found.add(a.dest)
+        return found
+
+    return dests(captured["parser"])
 
 
 class PathArgsTest(unittest.TestCase):

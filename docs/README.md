@@ -53,6 +53,7 @@ inference. `None` beats a guess.
 |---|---|
 | [`resources/README.md`](../resources/README.md) | The reference corpus — what it contains, and how the controlled Logic saves are made |
 | [`resources/data/README.md`](../resources/data/README.md) | The data root, and how to regenerate each part of it |
+| [`src/logicxkit/data/README.md`](../src/logicxkit/data/README.md) | The record templates and native donors the package ships, where each came from, and which `bin/regen_data.py` regenerates |
 | [`CONTRIBUTING.md`](../CONTRIBUTING.md) | The development loop, house rules, and the evidence standard |
 | [`tools/driver/README.md`](../tools/driver/README.md) | Recording a golden: driving Logic through accessibility, one change per save, and staging the saves |
 | [`CHANGELOG.md`](../CHANGELOG.md) | What shipped in each release |

@@ -108,6 +108,74 @@ class ConsecutiveAddsTest(unittest.TestCase):
                          ["Cymbals", "Room L", "Room R", "Master"])
 
 
+class MapAcrossStacksTest(unittest.TestCase):
+    """A map names a stack as 'Name (Sub N)'; a stack the apply makes renumbers the Sub strips
+    above its own, and every later round must still pair the row the map named."""
+
+    def test_a_mapped_sub_row_survives_a_stack_made_below_it(self):
+        from _records import uuid as uid
+        from test_stack_create import TRACKS, session as stacked, sub
+        from logicxkit.logic.services.pairing import row_key
+        from logicxkit.logic.services.stack_create import create_stack
+        from logicxkit.logic.services.stacks import read_stacks
+        template, _ = create_stack(stacked(), name="Bounce", members=[504], track_count=TRACKS)
+        target = (stacked().replace(sub(379, 1, uuid=uid(192)), sub(379, 2, uuid=uid(192)))
+                  .replace(sub(380, 2, uuid=uid(196)), sub(380, 1, uuid=uid(196))))
+        s_keys = [row_key(r) for r in read_tracks(target, TRACKS)]
+        t_keys = [row_key(r) for r in read_tracks(template, TRACKS + 1) if r["name"] != "Bounce"]
+        self.assertIn("Bass (Sub 1)", s_keys)
+        out, ops, added = apply_template(template, target, template_count=TRACKS + 1, session_count=TRACKS,
+                                         forced=dict(zip(s_keys, t_keys, strict=True)))
+        self.assertEqual((added, [op.line() for op in ops if op.status == "failed"]), (1, []))
+        self.assertNotIn("Bass (Sub 1)", [row_key(r) for r in read_tracks(out, TRACKS + 1)])
+        stacks = {s.name: [n for _k, n in s.members] for s in read_stacks(out, TRACKS + 1)}
+        self.assertEqual((stacks["Bounce"], stacks["Bass"]), (["Test Bounce"], ["Bass DI"]))
+
+
+class AlternativesCliTest(unittest.TestCase):
+    """`apply-template --map` over two alternatives: the map is drafted from the first, so only
+    another alternative may be left as it was — and then byte for byte."""
+
+    MAP = ["Bounce (Inst 4) -> Test Bounce (Inst 4)"]
+
+    def setUp(self):
+        import shutil
+        import tempfile
+        from pathlib import Path
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp)
+
+    def run_cli(self, first: bytes, second: bytes) -> tuple[int, str]:
+        import contextlib
+        import io
+        from argparse import Namespace
+        from test_migrate import SYNTHETIC_SKIP, alternative, bundle, map_text, other_lineage, session as song_data
+        from logicxkit.logic._apply_template import cmd_apply_template
+        song = alternative(bundle(self.tmp / "s", "Song", first), "001", second)
+        (self.tmp / "map.txt").write_text(map_text(other_lineage(), self.MAP))
+        args = Namespace(template=str(bundle(self.tmp / "t", "Tmpl", song_data())), project=str(song),
+                         out=str(self.tmp / "out"), plan=False, keep_levels=False, skip=SYNTHETIC_SKIP,
+                         track=None, stack=None, propose_map=None, map=str(self.tmp / "map.txt"), force=False)
+        with contextlib.redirect_stdout(io.StringIO()) as buf:
+            return cmd_apply_template(args), buf.getvalue()
+
+    def test_a_map_the_first_alternative_does_not_fit_is_refused(self):
+        from test_migrate import other_lineage, session as song_data
+        with self.assertRaisesRegex(ValueError, "map names a session track that does not exist"):
+            self.run_cli(song_data({"Test Bounce": "Other"}, shift=1000), other_lineage())
+        self.assertEqual(list((self.tmp / "out").rglob("*.logicx")), [])
+
+    def test_another_alternative_the_map_misses_is_left_byte_for_byte(self):
+        from unittest import mock
+        from test_migrate import other_lineage, session as song_data
+        other = song_data({"Test Bounce": "Other"}, shift=1000)
+        with mock.patch("logicxkit.logic._apply_template._rebased", lambda d: d.replace(b"Other", b"Otter")):
+            rc, text = self.run_cli(other_lineage(), other)
+        self.assertEqual(rc, 0, text)
+        self.assertIn("001: left as it was", text)
+        self.assertEqual((self.tmp / "out/Song.logicx/Alternatives/001/ProjectData").read_bytes(), other)
+
+
 class SessionOnlyTest(unittest.TestCase):
     def test_rows_the_template_lacks_are_named(self):
         from logicxkit.logic.orchestrators.apply_template import session_only

@@ -64,3 +64,4 @@ def time_fields(uuid: bytes) -> bytes:
     mid = struct.unpack_from(">H", uuid, 4)[0]
     hi = struct.unpack_from(">H", uuid, 6)[0] & 0x0FFF
     return struct.pack("<IHH", low, mid, hi)
+

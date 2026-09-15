@@ -35,6 +35,15 @@ def track(hits: list[tuple[int, float]], seconds: float = 3.0, noise: float = 0.
     return x
 
 
+def slow_track(hits: list[tuple[int, float]], frames: int, attack: int = 132) -> list[float]:
+    """Hits whose peak comes ``attack`` samples after their onset."""
+    x = [0.0] * frames
+    for pos, amp in hits:
+        for i in range(4000):
+            x[pos + i] += amp * (i / attack if i < attack else 0.999 ** (i - attack)) * (1 if i % 2 == 0 else -1)
+    return x
+
+
 def write_wav(path: Path, x: list[float], bits: int = 24, channels: int = 1) -> None:
     with wave.open(str(path), "wb") as w:
         w.setnchannels(channels)
@@ -151,6 +160,13 @@ class DetectTest(unittest.TestCase):
     def test_a_second_hit_inside_the_gap_is_one_hit(self):
         x = track([(10000, 0.8), (10000 + int(0.02 * RATE), 0.8), (60000, 0.8)])
         self.assertEqual(len(onsets(x, RATE)), 2)
+
+    def test_a_hit_in_the_first_hop_is_found(self):
+        for first in (0, 16):
+            with self.subTest(first):
+                got = onsets(track([(first, 0.8), (30000, 0.8)]), RATE)
+                self.assertEqual(len(got), 2)
+                self.assertLessEqual(abs(got[0] - first), RATE // 1000)
 
     def test_silence_and_noise_give_nothing(self):
         self.assertEqual(onsets([0.0] * RATE, RATE), [])

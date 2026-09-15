@@ -20,6 +20,7 @@ from __future__ import annotations
 import json
 import shutil
 import struct
+import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -31,15 +32,18 @@ from .audio_regions import (
     FILE_TAG,
     FORMAT_AT,
     FRAMES_AT,
-    NAME_LEN_AT,
+    NAME_AT,
+    NAME_COUNT_AT,
     OFFSET_AT,
     PATH_AT,
     RATE_AT,
+    REGION_COUNT_AT,
     REGION_FRAMES_AT,
     REGION_NAME_AT,
     REGION_TAG,
     SIZE_AT,
     audio_entry_words,
+    magic_at,
     read_audio_files,
 )
 from .insert import HEADER, project_records, reassemble
@@ -57,7 +61,8 @@ _NEIGHBOURS = (0x0A, 0x0C)
 ORDINAL_AT, LINK_AT = FORMAT_AT + 56, FORMAT_AT + 62         # u32s from the format four-CC
 LAST_LINK = 0xFFFFFFFF
 FOLDER_LEN = 256
-FILE_CURRENT_AT, FILE_CHANNELS_AT = 8, 401                   # u8s from the LFUA magic
+FILE_CURRENT_AT, FILE_CHANNELS_AT = 7, 400                   # u8s from the LFUA magic
+MAX_NAME_UNITS = 0xFFFF
 REGION_UUID_FROM_END = 47
 REGION_CURRENT_AT, REGION_TIME_AT = 38, 42
 ENTRY_SELECTED_AT, SELECTED = 15, 0x80
@@ -105,7 +110,7 @@ def import_templates() -> dict[str, bytes]:
 
 def _magic(raw: bytes) -> int:
     """Offset in ``raw`` of a file record's `LFUA` magic, past the UTF-16 name."""
-    return HEADER + NAME_LEN_AT + 1 + 2 * raw[HEADER + NAME_LEN_AT]
+    return HEADER + magic_at(raw[HEADER:])
 
 
 def file_chain(raw: bytes) -> tuple[int, int]:
@@ -127,13 +132,14 @@ def superseded(raw: bytes, *, link: int | None = None) -> bytes:
 
 
 def file_record(template: bytes, *, name: str, folder: str, info: WavInfo, ordinal: int) -> bytes:
-    """The ``ordinal``-th file record (0-based), the last of the chain."""
+    """The ``ordinal``-th file record (0-based), the last of the chain. The name is UTF-16 LE
+    with its unit count, as Logic's imports of `é`, `🥁` and `日本` names wrote."""
     p = template[HEADER:]
-    old_n = p[NAME_LEN_AT]
-    old_magic = NAME_LEN_AT + 1 + 2 * old_n
-    encoded = name.encode("utf-16-be")
-    body = bytearray(p[:NAME_LEN_AT] + bytes([len(name)]) + encoded + p[old_magic:])
-    m = NAME_LEN_AT + 1 + len(encoded)
+    encoded = name.encode("utf-16-le")
+    if len(encoded) // 2 > MAX_NAME_UNITS:
+        raise ValueError(f"a WAV's name is at most {MAX_NAME_UNITS} UTF-16 units")
+    body = bytearray(p[:NAME_COUNT_AT] + struct.pack("<H", len(encoded) // 2) + encoded + p[magic_at(p):])
+    m = NAME_AT + len(encoded)
     path_bytes = folder.encode("utf-8")
     if len(path_bytes) >= FOLDER_LEN:
         raise ValueError(f"the media folder's path is longer than the record holds: {folder}")
@@ -149,6 +155,7 @@ def file_record(template: bytes, *, name: str, folder: str, info: WavInfo, ordin
     struct.pack_into("<H", body, m + BITS_AT, info.bits)
     struct.pack_into("<I", body, m + ORDINAL_AT, ordinal + 1)
     struct.pack_into("<I", body, m + LINK_AT, LAST_LINK)
+    struct.pack_into("<I", body, m + REGION_COUNT_AT, 1)
     return with_slot(rec(FILE_TAG, template, bytes(body)), 4 * ordinal)
 
 
@@ -157,11 +164,13 @@ def _uuid_time(uuid: bytes) -> int:
 
 
 def region_record(template: bytes, *, name: str, frames: int, ordinal: int) -> bytes:
-    """The ``ordinal``-th region record; the name is padded to an even length."""
+    """The ``ordinal``-th region record; the name is UTF-8, padded to an even length."""
     p = template[HEADER:]
     old_uuid = p[len(p) - REGION_UUID_FROM_END:len(p) - REGION_UUID_FROM_END + 16]
     old_n = struct.unpack_from("<H", p, REGION_NAME_AT)[0]
-    text = name.encode("latin-1")
+    text = name.encode("utf-8")
+    if len(text) > 0xFFFF:
+        raise ValueError("a region's name is at most 65535 bytes of UTF-8")
     body = bytearray(p[:REGION_NAME_AT] + struct.pack("<H", len(text)) + text + bytes(len(text) % 2)
                      + p[REGION_NAME_AT + 2 + old_n + old_n % 2:])
     struct.pack_into("<I", body, REGION_FRAMES_AT, frames)
@@ -211,16 +220,16 @@ def _register(payload: bytes, *, word: int) -> bytes:
 
 
 def measured_count(records) -> int:
-    """How many audio regions the project holds, when they are laid out as Logic's own imports
-    left them (the module docstring); ValueError otherwise."""
+    """How many audio files the project holds, when they are laid out as Logic's own imports
+    left them (the module docstring; a split's pieces share their file's slot); ValueError otherwise."""
     files = [r.raw for r in records if r.tag == FILE_TAG]
     g = next((r.raw[HEADER:] for r in records if r.tag == GNOS_TAG), b"")
     n = len(files)
     words = [4 * k for k in range(n)]
     chain = [(k + 1, 4 * (k + 1) if k + 1 < n else LAST_LINK) for k in range(n)]
-    laid_out = (sorted(audio_entry_words(records)) == words
+    laid_out = (sorted(set(audio_entry_words(records))) == words
                 and [slot_of(r) for r in files] == words
-                and [slot_of(r.raw) for r in records if r.tag == REGION_TAG] == words
+                and sorted({slot_of(r.raw) for r in records if r.tag == REGION_TAG}) == words
                 and [file_chain(r) for r in files] == chain
                 and all([w for _at, w in _registered(g, stride)[0]] == words for stride in (UUID_STRIDE, TIME_STRIDE)))
     if not laid_out:
@@ -248,7 +257,7 @@ def add_audio_region(data: bytes, *, track: str, start: int, wav: Path, media_fo
     ordinal = measured_count(records)
     t = import_templates()
     media_folder = Path(media_folder)
-    target = media_folder / Path(wav).name
+    target = media_folder / unicodedata.normalize("NFD", Path(wav).name)     # the form Logic's import keeps
     if target.exists() and target.read_bytes() != Path(wav).read_bytes():
         raise ValueError(f"{target} exists with other content")
     if any(f.name == target.name for f in read_audio_files(data)):

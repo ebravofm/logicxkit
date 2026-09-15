@@ -21,7 +21,10 @@ from dataclasses import dataclass
 from ...utils.data import data_file
 from .events import BAR_ONE, LINE, events
 from .insert import HEADER, project_records, reassemble
-from .midi import ENTRY_SLOT_AT, ENTRY_TICK_AT, MIDI_ENTRY, NAME_AT, REGION_BAR_ONE, _is_midi, _name
+from .midi import (
+    ENTRY_SLOT_AT, ENTRY_TICK_AT, LENGTH_AFTER_NAME, MIDI_ENTRY, NAME_AT, REGION_BAR_ONE, _is_midi, _name, region_length,
+    sequence_offset,
+)
 from .recbuild import rec, with_owner, with_slot
 from .regions import TAIL, TRACK_OBJECT_AT, TRACK_ROW_AT, _rows, entry_offsets, song_container
 from .registry import GNOS_TAG, register_slot
@@ -29,10 +32,11 @@ from .sequence import QESM_ID_AT, Triple, free_seq_id, free_table_slot, index_ta
 from .signature import meter
 from .stacks import read_tracks
 from .tracklist import arrange_run
+from .trackname import one_object, rows_named
 from .validate import require_full_walk, require_valid
 
 _DATA = "midi-region-12.3.1.json"
-LENGTH_AFTER_NAME, TRACK_AFTER_NAME = 60, 204
+TRACK_AFTER_NAME = 204
 FIRST_EVENT_STAMPS = {123: 84, 172: 44, 192: 1}      # after the name's end
 NOTE_ON, NOTE_EXT = 0x90, 0x89
 SELECTED_BIT = 0x80
@@ -54,6 +58,8 @@ def note_lines(*, tick: int, pitch: int, velocity: int, length: int, channel: in
         raise ValueError(f"channel {channel} is not 1-16")
     if length <= 0:
         raise ValueError("a note's length is at least one tick")
+    if length >= 1 << 32:
+        raise ValueError(f"a note's length of {length} ticks does not fit its 32-bit field")
     head = bytearray(LINE)
     head[0] = NOTE_ON | (channel - 1)
     struct.pack_into("<I", head, 4, tick)
@@ -76,20 +82,34 @@ def name_end(qesm_payload: bytes) -> int:
 
 
 def _with_name(qesm: bytes, name: str) -> bytes:
+    """``qesm`` named ``name`` — UTF-8, padded to even, as Logic's rename to `Pad — é` wrote."""
     p = qesm[HEADER:]
-    text = name.encode("latin-1")
+    text = name.encode("utf-8")
+    if len(text) > 0xFFFF:
+        raise ValueError("a region's name is at most 65535 bytes of UTF-8")
     new = p[:NAME_AT] + struct.pack("<H", len(text)) + text + (b"\0" if len(text) & 1 else b"") + p[name_end(p):]
     return rec(b"qeSM", qesm, new)
 
 
+KINDS = {"Audio ": "an audio track", "Aux ": "an aux track", "Output": "an output track", "Sub ": "a folder stack",
+         "Bus ": "a bus track"}
+
+
+def require_instrument(data: bytes, object_id: int, track: str, track_count: int | None) -> None:
+    """Refuse a track object not bound to an ``Inst N`` channel: a MIDI region moves only
+    between software instrument tracks (Logic Pro manual, Move regions)."""
+    label = next((r["label"] for r in read_tracks(data, track_count) if r["object_id"] == object_id), None) or ""
+    if not label.startswith("Inst "):
+        kind = next((k for prefix, k in KINDS.items() if label.startswith(prefix)), "not an instrument track")
+        raise ValueError(f"{track!r} is {kind} ({label or 'no mixer channel'}); "
+                         "a MIDI region goes only on a software instrument track")
+
+
 def _track(data: bytes, track: str, track_count: int | None) -> tuple[int, int]:
-    """(object id, 1-based arrange row) of the track named ``track``."""
-    rows = [r for r in read_tracks(data, track_count) if r["name"] == track]
-    if len(rows) != 1:
-        raise ValueError(f"{len(rows)} track(s) named {track!r}")
+    """(object id, 1-based arrange row) of the track ``track`` names (`trackname.one_object`)."""
+    object_id = one_object(read_tracks(data, track_count), track)
     records = project_records(data)
-    position = _rows(records, arrange_run(records, track_count))[rows[0]["object_id"]]
-    return rows[0]["object_id"], position
+    return object_id, _rows(records, arrange_run(records, track_count))[object_id]
 
 
 def add_region(data: bytes, *, track: str, start: int, length: int, name: str | None = None,
@@ -101,6 +121,8 @@ def add_region(data: bytes, *, track: str, start: int, length: int, name: str | 
     require_full_walk(data)
     records = project_records(data)
     object_id, row = _track(data, track, track_count)
+    require_instrument(data, object_id, track, track_count)
+    name = name or next(r["name"] for r in read_tracks(data, track_count) if r["object_id"] == object_id)
     run = arrange_run(records, track_count)
     song = song_container(records, run)
     if song is None:
@@ -109,7 +131,7 @@ def add_region(data: bytes, *, track: str, start: int, length: int, name: str | 
     slot = free_table_slot(records[index_table(records)].raw[HEADER:], seqs)
     seq_id = free_seq_id(seqs)
     t = _template()
-    qesm = bytearray(_with_name(with_slot(t["qesm"], slot), name or track))
+    qesm = bytearray(_with_name(with_slot(t["qesm"], slot), name))
     end = HEADER + name_end(qesm[HEADER:])
     struct.pack_into("<I", qesm, HEADER + QESM_ID_AT, seq_id)
     struct.pack_into("<I", qesm, end + LENGTH_AFTER_NAME, length)
@@ -134,7 +156,7 @@ def add_region(data: bytes, *, track: str, start: int, length: int, name: str | 
             out += [bytes(qesm), marker, qsve]
     result = reassemble(data, out)
     require_valid(result)
-    return result, {"track": track, "name": name or track, "object_id": object_id, "slot": slot, "seq_id": seq_id,
+    return result, {"track": track, "name": name, "object_id": object_id, "slot": slot, "seq_id": seq_id,
                     "start": start, "length": length}
 
 
@@ -156,12 +178,13 @@ class TrackRegion:
     start: int                 # absolute tick, bar 1 at 38400
     length: int                # ticks
     triple: Triple
+    offset: int = 0            # ticks into its sequence the region plays from (`midi.SEQ_OFFSET_AT`)
 
 
 def track_regions(data: bytes, track: str, track_count: int | None = None) -> list[TrackRegion]:
     """The MIDI regions `read_midi` reads on every track named ``track``, found by the entry's
     type and track object, in the song container's order."""
-    object_ids = {r["object_id"] for r in read_tracks(data, track_count) if r["name"] == track}
+    object_ids = {r["object_id"] for r in rows_named(read_tracks(data, track_count), track)}
     if not object_ids:
         raise ValueError(f"no track named {track!r}")
     records = project_records(data)
@@ -176,10 +199,9 @@ def track_regions(data: bytes, track: str, track_count: int | None = None) -> li
         t = triple_by_slot(seqs, struct.unpack_from("<I", payload, off + ENTRY_SLOT_AT)[0])
         if t is None or not all(_is_midi(e) for e in events(records[t.end].raw[HEADER:])):
             continue
-        q = records[t.start].raw[HEADER:]
-        length = struct.unpack_from("<I", q, name_end(q) + LENGTH_AFTER_NAME)[0]
+        length = region_length(records[t.start].raw)
         start = struct.unpack_from("<I", payload, off + ENTRY_TICK_AT)[0] - REGION_BAR_ONE + BAR_ONE
-        out.append(TrackRegion(_name(records[t.start].raw), start, length, t))
+        out.append(TrackRegion(_name(records[t.start].raw), start, length, t, sequence_offset(records[t.start].raw)))
     return out
 
 
@@ -207,6 +229,15 @@ def _pick_region(data: bytes, track: str, tick: int, region_start: int | None, t
     raise ValueError(f"bar {bar:g} is inside {len(hits)} MIDI regions on {track!r}: {_spans(data, hits)}")
 
 
+def first_event_stamped(qesm: bytes) -> bytes:
+    """A region's `qeSM` with the words Logic set when its sequence gained a first event."""
+    q = bytearray(qesm)
+    end = HEADER + name_end(q[HEADER:])
+    for off, value in FIRST_EVENT_STAMPS.items():
+        struct.pack_into("<I", q, end + off, value)
+    return bytes(q)
+
+
 def add_note(data: bytes, *, track: str, tick: int, pitch: int, velocity: int, length: int,
              channel: int = 1, region_start: int | None = None, track_count: int | None = None) -> bytes:
     """A note at absolute ``tick`` in the MIDI region on ``track`` whose span holds it, or in
@@ -216,23 +247,19 @@ def add_note(data: bytes, *, track: str, tick: int, pitch: int, velocity: int, l
     records, t = project_records(data), region.triple
     if tick < region.start:
         raise ValueError(f"tick {tick} is before the region's start {region.start}")
-    head, ext = note_lines(tick=tick - region.start + BAR_ONE, pitch=pitch, velocity=velocity, length=length, channel=channel)
+    rel = tick - region.start + BAR_ONE + region.offset
+    head, ext = note_lines(tick=rel, pitch=pitch, velocity=velocity, length=length, channel=channel)
     payload = records[t.end].raw[HEADER:]
     evs = events(payload)
     body = sum(LINE + LINE * len(e.lines) for e in evs)
     lines = [(e.head, e.lines) for e in evs]
-    rel = tick - region.start + BAR_ONE
     at = next((k for k, (h, _l) in enumerate(lines) if struct.unpack_from("<I", h, 4)[0] > rel), len(lines))
     lines.insert(at, (head, (ext,)))
     new = b"".join(h + b"".join(ls) for h, ls in lines) + payload[body:]
     out = [r.raw for r in records]
     out[t.end] = rec(b"qSvE", records[t.end].raw, new)
     if not evs:
-        q = bytearray(out[t.start])
-        end = HEADER + name_end(q[HEADER:])
-        for off, value in FIRST_EVENT_STAMPS.items():
-            struct.pack_into("<I", q, end + off, value)
-        out[t.start] = bytes(q)
+        out[t.start] = first_event_stamped(out[t.start])
     result = reassemble(data, out)
     require_valid(result)
     return result

@@ -7,23 +7,29 @@ session and nothing noticed.
 
 Logic's own files carry a few pre-existing link errors, so nothing here demands zero. The unit
 is the **regression**: a writer's output is held against the input it was given.
+
+The region checks, over the song container, are `integrity_regions.py`.
 """
 
 from __future__ import annotations
 
 import struct
+from collections.abc import Iterable
 
 from .binding import bound_channels
 from .channel_alloc import is_mixer_record
 from .environment import channel_objects, name_end, object_record
-from .insert import HEADER, project_records
-from .sends import SEND_FLAG_AT, SEND_TAG
-from .sequence import link_errors
-from .validate import validate_project
 from .groups import group_errors
+from .insert import HEADER, project_records
+from .integrity_regions import (
+    RegionKey, dangling_files, marker_block_errors, placed, region_regressions, unregistered_slots,
+)
 from .keyflags import flag_errors
 from .regions import region_errors, row_count_errors
 from .registry import slot_errors
+from .sends import SEND_FLAG_AT, SEND_TAG
+from .sequence import link_errors
+from .validate import validate_project
 
 
 def _bad_object_index(records, data: bytes) -> list[int]:
@@ -57,9 +63,17 @@ def _bad_send_flags(records, data: bytes) -> list[int]:
     return out
 
 
+def _empty() -> dict:
+    return {"validate": [], "link_errors": 0, "bad_object_index": [], "bad_send_flags": [],
+            "bad_key_flags": [], "bad_region_tracks": [], "bad_row_count": [], "bad_slot_entries": [],
+            "bad_groups": [], "regions": [], "dangling_files": {"entries": [], "records": [], "unfiled": [], "files": [], "doubled": [], "rba": []},
+            "unregistered_slots": [], "marker_blocks": [], "unreadable": None}
+
+
 def structural_report(data: bytes) -> dict:
     """Every invariant this module knows, as counts and id lists. Never raises on a project it
-    can walk; a project it cannot walk reports the failure under ``unreadable``."""
+    can walk; a project it cannot walk reports the failure under ``unreadable``.
+    ``regions`` is an inventory, not a problem list: `regressions` names what it loses."""
     try:
         records = project_records(data)
         return {
@@ -72,16 +86,19 @@ def structural_report(data: bytes) -> dict:
             "bad_row_count": row_count_errors(data),
             "bad_slot_entries": slot_errors(data),
             "bad_groups": group_errors(data),
+            "regions": placed(records),
+            "dangling_files": dangling_files(records),
+            "unregistered_slots": unregistered_slots(records),
+            "marker_blocks": marker_block_errors(records),
             "unreadable": None,
         }
     except Exception as e:                      # a writer can leave bytes nothing can parse
-        return {"validate": [], "link_errors": 0, "bad_object_index": [], "bad_send_flags": [],
-                "bad_key_flags": [], "bad_region_tracks": [], "bad_row_count": [], "bad_slot_entries": [],
-                "bad_groups": [], "unreadable": f"{type(e).__name__}: {e}"}
+        return {**_empty(), "unreadable": f"{type(e).__name__}: {e}"}
 
 
-def regressions(before: bytes, after: bytes) -> list[str]:
-    """What ``after`` broke that ``before`` had right. Empty means the write is safe to keep."""
+def regressions(before: bytes, after: bytes, *, removed: Iterable[RegionKey] = ()) -> list[str]:
+    """What ``after`` broke that ``before`` had right. Empty means the write is safe to keep.
+    ``removed``: the region keys (`integrity_regions.region_keys`) a writer deletes on purpose."""
     was, now = structural_report(before), structural_report(after)
     if now["unreadable"]:
         return [f"the result cannot be read back — {now['unreadable']}"]
@@ -106,12 +123,12 @@ def regressions(before: bytes, after: bytes) -> list[str]:
         fresh = sorted(set(now[field]) - set(was[field]))
         if fresh:
             out.append(f"{len(fresh)} {label}: {fresh}")
-    return out
+    return out + region_regressions(was, now, removed)
 
 
-def require_no_regression(before: bytes, after: bytes) -> None:
+def require_no_regression(before: bytes, after: bytes, *, removed: Iterable[RegionKey] = ()) -> None:
     """Raise rather than let a writer's output reach disk in a worse state than its input."""
-    found = regressions(before, after)
+    found = regressions(before, after, removed=removed)
     if found:
         raise ValueError("refusing to write — the edit broke structure the input had right:\n  "
                          + "\n  ".join(found))

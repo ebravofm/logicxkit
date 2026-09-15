@@ -71,5 +71,24 @@ class ShiftedChannelIsSixteenBitTest(unittest.TestCase):
         self.assertEqual((number_of(out), label_of(out)), (256, "Inst 257"))
 
 
+def sub_channel(number: int, *, size: int = 257) -> bytes:
+    """`Sub N` stores N at +6 — 1-based, unlike the other classes (every Sub strip Logic wrote)."""
+    p = bytearray(size)
+    p[24] = p[25] = 1
+    struct.pack_into("<H", p, NUMBER_AT, number)
+    p[LABEL_AT:LABEL_AT + LABEL_LEN] = f" Sub {number}".encode().ljust(LABEL_LEN, b"\x00")
+    return rec(b"OCuA", 381, 0xFFFF, bytes(p), 7)
+
+
+class ShiftedSubKeepsItsBaseTest(unittest.TestCase):
+    def test_a_sub_strip_moves_up_one_in_both_fields(self):
+        from logicxkit.logic.services.channel_alloc import shifted_channel
+        from logicxkit.logic.services.insert import project_records
+        from _records import proj
+        record = project_records(proj(sub_channel(4)))[0]
+        out = shifted_channel(record.raw, record, relabel_prefix="Sub ")
+        self.assertEqual((number_of(out), label_of(out)), (5, "Sub 5"))
+
+
 if __name__ == "__main__":
     unittest.main()

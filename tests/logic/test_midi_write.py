@@ -25,10 +25,22 @@ class TickTest(unittest.TestCase):
             note_lines(tick=BAR_ONE, pitch=60, velocity=80, length=240, channel=17)
         with self.assertRaisesRegex(ValueError, "length"):
             note_lines(tick=BAR_ONE, pitch=60, velocity=80, length=0, channel=1)
+        with self.assertRaisesRegex(ValueError, "does not fit its 32-bit field"):
+            note_lines(tick=BAR_ONE, pitch=60, velocity=80, length=1 << 32, channel=1)
 
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class NameTest(unittest.TestCase):
+    def test_a_region_name_outside_ascii_is_utf8_with_its_byte_length(self):
+        import struct
+        from logicxkit.logic.services.insert import HEADER
+        from logicxkit.logic.services.midi import NAME_AT, _name
+        from logicxkit.logic.services.midi_write import _template, _with_name
+        raw = _with_name(_template()["qesm"], "Pad — é")
+        self.assertEqual((_name(raw), struct.unpack_from("<H", raw, HEADER + NAME_AT)[0]), ("Pad — é", 10))
 
 
 class PlaceEntryTest(unittest.TestCase):

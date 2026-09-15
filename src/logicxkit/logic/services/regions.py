@@ -33,18 +33,34 @@ def song_container(records: list[ProjRecord], run: list[int]) -> Triple | None:
 
 
 MARKER_KIND_AT, MARKER_KIND = 7, 0xAA        # a flex marker block after a flexed entry
+MARKER_BYTES_AT, MARKER_BYTE = (23, 39, 55, 71), 0x88   # on every block Logic writes, on no entry
+
+
+def song_events(records: list[ProjRecord], track_count: int | None = None) -> bytes | None:
+    """The song container's `qSvE` payload, or None without an arrange list or container."""
+    try:
+        run = arrange_run(records, track_count)
+    except ValueError:
+        return None
+    song = song_container(records, run)
+    return None if song is None else records[song.end].raw[HEADER:]
+
+
+def entry_blocks(events: bytes) -> list[tuple[int, int]]:
+    """``(offset, marker blocks after it)`` for every entry `entry_offsets` finds."""
+    out, off, end = [], 0, len(events) - TAIL
+    while off + ENTRY <= end:
+        start, off = off, off + ENTRY
+        while off + ENTRY <= end and events[off + MARKER_KIND_AT] == MARKER_KIND:
+            off += ENTRY
+        out.append((start, (off - start) // ENTRY - 1))
+    return out
 
 
 def entry_offsets(events: bytes) -> list[int]:
     """Offsets of the 80-byte region entries in a song container's events: a flexed entry is
     followed by 80-byte flex marker blocks (byte 7 = 0xAA), which are not entries."""
-    out, off = [], 0
-    while off + ENTRY <= len(events) - TAIL:
-        out.append(off)
-        off += ENTRY
-        while off + ENTRY <= len(events) - TAIL and events[off + MARKER_KIND_AT] == MARKER_KIND:
-            off += ENTRY
-    return out
+    return [off for off, _blocks in entry_blocks(events)]
 
 
 def _rows(records: list[ProjRecord], run: list[int]) -> dict[int, int]:

@@ -15,7 +15,6 @@ from pathlib import Path
 import _paths  # noqa: F401
 
 
-
 def sessions() -> list[Path]:
     """Every session in the reference store: the legacy projects and the finished mixes."""
     return sorted(p for d in ("legacy", "mixes") for p in (_paths.RESOURCES / d).rglob("*.logicx"))
@@ -82,10 +81,6 @@ class RegressionDetectionTest(unittest.TestCase):
         self.assertEqual(regressions(self.data, self.data), [])
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class DiscardOnRefusalTest(unittest.TestCase):
     """A refused write must leave nothing — a step may already have moved NumberOfTracks, and a
     bundle that opens but disagrees with its own metadata is worse than no bundle."""
@@ -120,3 +115,7 @@ class DiscardOnRefusalTest(unittest.TestCase):
             landed = sorted(dest.glob("Alternatives/*/ProjectData"))[0].read_bytes()
             original = sorted(self.src.glob("Alternatives/*/ProjectData"))[0].read_bytes()
             self.assertEqual(landed, original)
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -15,6 +15,7 @@ from ._binary import find_blocks, identify_plugin, read_block_floats
 from ._apply import register as register_apply
 from ._apply_template import register as register_template
 from ._apply_tracks import register as register_tracks
+from ._beats_cmd import register as register_beats
 from ._capabilities import emit_notice
 from ._capabilities import register as register_capabilities
 from ._controlbar import register as register_controlbar
@@ -28,12 +29,15 @@ from ._header import register as register_header
 from ._prefs import register as register_prefs
 from ._chains_cmd import register as register_chains
 from ._midi_cmd import register as register_midi
+from ._migrate_cmd import register as register_migrate
 from ._plugins_cmd import register as register_plugins
 from ._patch_cmd import register as register_patch
 from ._regions_cmd import register as register_regions
+from ._markers_cmd import register as register_markers
 from ._sessionplayer_cmd import register as register_sessionplayer
 from ._quantize_cmd import register as register_quantize
 from ._diagnose import register as register_diagnose
+from ._drums_to_midi_cmd import register as register_drums_to_midi
 from ._inspect import (
     cmd_diff,
     cmd_image,
@@ -359,7 +363,8 @@ def cmd_decode(args) -> int:
 # Every path argument, so a quoted "~/Music/…" is a path and not a directory named "~".
 _PATH_ARGS = ("project", "logicx", "out", "to", "spec", "library", "file", "image", "map",
               "propose_map", "export", "from_", "config", "template", "src", "dst", "a", "b",
-              "baseline", "apply", "backup_dir", "controlbar_from", "build", "audio")
+              "baseline", "apply", "backup_dir", "controlbar_from", "build", "audio",
+              "save_map", "db")
 
 
 def _expand(value):
@@ -406,11 +411,14 @@ def main(argv: list[str] | None = None) -> int:
     dn.set_defaults(func=cmd_donors)
     register_chains(sub)
     register_midi(sub)
+    register_beats(sub)
     register_plugins(sub)
     register_patch(sub)
     register_regions(sub)
+    register_markers(sub)
     register_sessionplayer(sub)
     register_quantize(sub)
+    register_drums_to_midi(sub)
     register_capabilities(sub)
     register_header(sub)
     register_controlbar(sub)
@@ -470,6 +478,7 @@ def main(argv: list[str] | None = None) -> int:
     register_apply(sub)
     register_tracks(sub)
     register_template(sub)
+    register_migrate(sub)
     args = ap.parse_args(argv)
     _expand_paths(args)
     emit_notice(args)

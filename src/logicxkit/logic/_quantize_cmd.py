@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import argparse
+import re
 from pathlib import Path
 
 from ._edit import CommandError, edit_copy
+from .services.flexmarkers import GRIDS
 
 
 def _members(data: bytes, args, count: int | None) -> list[str]:
@@ -47,6 +50,15 @@ def _wav_finder(project_file: Path, audio_dir: str | None):
     return find
 
 
+def bar_range(text: str) -> tuple[int, int]:
+    """``17-24`` or ``17``: song bars, both ends included."""
+    m = re.fullmatch(r"\s*(\d+)\s*(?:-\s*(\d+)\s*)?", text)
+    if not m:
+        raise argparse.ArgumentTypeError(f"{text!r}: bars as FIRST-LAST, e.g. 17-24")
+    first = int(m.group(1))
+    return first, int(m.group(2) or first)
+
+
 def cmd_quantize(args) -> int:
     from .services.quantize_drums import quantize_drums
 
@@ -58,7 +70,8 @@ def cmd_quantize(args) -> int:
         members = _members(data, args, count)
         refs = list(args.ref)
         data, report = quantize_drums(data, members=members, references=refs, wav_of=_wav_finder(Path(project_file), args.audio),
-                                      grid=args.grid, group=args.group, groups_off=tuple(args.off), track_count=count)
+                                      grid=args.grid, group=args.group, groups_off=tuple(args.off), track_count=count,
+                                      bars=args.bars)
         for line in report.lines():
             print(f"  {line}")
         return data
@@ -80,7 +93,10 @@ def register(sub) -> None:
     qp.add_argument("--track", action="append", metavar="TRACK", help="a member track instead of --stack (repeatable)")
     qp.add_argument("--ref", nargs="+", default=["Kick In", "Snare Up"], metavar="TRACK",
                     help="the tracks whose hits set the moves (default Kick In, Snare Up)")
-    qp.add_argument("--grid", type=int, default=16, help="1/N note grid: 4, 8, 16 (default) or 32")
+    qp.add_argument("--grid", type=int, help=f"1/N note grid: {', '.join(map(str, GRIDS[:-1]))} or {GRIDS[-1]} "
+                    "(default 16; with --bars, each region's own Quantize value)")
+    qp.add_argument("--bars", type=bar_range, metavar="FIRST-LAST", help="re-quantize only the hits in these song "
+                    "bars; every other marker keeps its bytes")
     qp.add_argument("--group", default="Drums", help="the drum group's name (reused when every member is in it)")
     qp.add_argument("--off", nargs="*", default=["OH", "Room"], metavar="GROUP", help="groups to switch off first")
     qp.add_argument("--audio", metavar="DIR", help="a folder holding the regions' audio files, when they are not "

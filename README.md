@@ -49,9 +49,10 @@ the same table.** Read it before you point a writer at a session you care about.
   scripts run JIT at call time. Without it, `au` falls back to static parameter tables and
   `logic ocr` is unavailable.
 
-The only runtime dependency is [pf-core][pf-core], installed automatically, which supplies the
-atomic-write helpers and the logging and exception types used at the CLI boundary. The library
-itself stays pure-stdlib.
+Two runtime dependencies, installed automatically: [pf-core][pf-core], which supplies the
+atomic-write helpers and the logging and exception types used at the CLI boundary, and
+[groovebin][groovebin], the general-MIDI library — Standard MIDI Files, note maps, transforms
+and the pattern library — that the MIDI editors and `logic beats` build on.
 
 ## Getting it
 
@@ -84,11 +85,17 @@ bin/run logic stacks "<song.logicx>" [--tracks]          # track stacks / arrang
 bin/run logic ocr "<song.logicx>"                        # OCR the auto-saved WindowImage
 bin/run logic neural "<strip.cst | song.logicx>"         # Neural DSP knob values
 bin/run logic midi "<song.logicx>" [--export out.mid]      # MIDI regions, or a .mid of them
+bin/run logic beats place "<song.logicx>" ID --out DIR --track NAME --bar N  # a groovebin pattern as a region
+bin/run logic beats compose "<song.logicx>" --out DIR --track NAME --group TEXT  # a region per section
+bin/run logic beats generate "<song.logicx>" --out DIR --track NAME --bar N --meter 4/4 --bars 8  # a phrase from library bars
+bin/run logic migrate "<song.logicx>" --template "<t.logicx>" --out DIR  # a song onto a template
 bin/run logic plugins "<song.logicx | folder>"            # plug-ins referenced, and which are missing
 bin/run logic patch "<name.patch | folder>"               # a Library patch: channels, strips, plug-ins
 bin/run logic regions "<song.logicx>"                     # every MIDI and audio region, with files
+bin/run logic markers "<song.logicx>"                     # the marker track
 bin/run logic sessionplayer "<song.logicx>"               # Session Player drummer, preset, settings
 bin/run logic quantize-drums "<song.logicx>" --out DIR    # quantize a drum take to the grid, no Logic
+bin/run logic drums-to-midi "<song.logicx>" --out DIR --hit "Kick In=kick" --track NAME  # hits to notes
 bin/run au strip "<strip.cst | song.logicx>"             # every embedded 3rd-party state
 bin/run au preset "<preset.aupreset | .ffp>"             # a preset file, named, in real units
 bin/run logic capabilities -v                            # what each writer is trusted for
@@ -104,13 +111,16 @@ bin/run logic capabilities -v                            # what each writer is t
   **`logic stacks`** (folder stacks and the arrange track list, and `--move` to put a track into
   a stack); **`logic midi`** (MIDI regions and their export as a `.mid`); **`logic plugins`**
   (every referenced plug-in, and which this Mac lacks); **`logic patch`** (a Library patch
-  bundle's channels, strips and plug-ins, and `--build` to make one); **`logic regions`** (MIDI
-  and audio regions with their files, and `--audio` to import a WAV); **`logic sessionplayer`**
-  (a Session Player region's settings and generated notes); **Neural DSP state decode** (`logic
-  neural`); and the project editors — MIDI regions and notes, track
+  bundle's channels, strips and plug-ins, and `--build` to make one); **`logic regions`** (MIDI and audio regions with their files, mutes, loops and fades; `--audio` imports a WAV and `--move`, `--trim`, `--split`, `--loop`, `--mute`, `--rename`, `--fade-in`, `--fade-out` edit one by its number); **`logic markers`** (the marker track, with add, rename, move and delete); **`logic sessionplayer`**
+  (a Session Player region's settings and generated notes); **`logic beats`** (patterns from a
+  [groovebin][groovebin] library placed, composed or generated as regions); **`logic
+  drums-to-midi`** (drum hits in audio tracks as MIDI notes); **Neural DSP state decode** (`logic
+  neural`); and the project editors — MIDI regions, notes and edits by region number, drum-map
+  remaps, track
   header, control bar, toolbar, transport modes, metronome, channel width, mixer groups,
   arrangement sections, tempo, time signature and key, track add/rename/colour/hide/reorder,
-  sends, routing, and `apply-template` to move a session onto another project's layout. See
+  sends, routing, `apply-template` to move a session onto another project's layout, and
+  `migrate` to do that in one run with an optional Logic re-save check. See
   [`src/logicxkit/logic/README.md`][logic-fmt].
 - **`logicxkit.au`** — Audio Unit preset/state decoder (read-only): FabFilter `.ffp` +
   `.aupreset` parsing, Waves XPst, **TR5 chain XML** (module chain + per-module params from the
@@ -246,12 +256,12 @@ files. [`CONTRIBUTING.md`][contributing] has the full loop; the house rules are:
   pf-core's `pf_core.guards` gate inside `bin/run lint`; there is no baseline file and none
   should be added — split an oversize file instead.
 - src-layout, no `sys.path` hacks. `X | None` types.
-- The library stays pure-stdlib and portable; [pf-core][pf-core] is
+- The library imports the standard library and [groovebin][groovebin]; [pf-core][pf-core] is
   used for foundation helpers (atomic writes) and adopted for logging and exceptions at the CLI
   boundary only.
 - **Decoding claims need evidence from a real file.** `None` beats a guess, and a command
   appearing in `--help` is not evidence of anything. If you add or change a writer, declare its
-  level in `src/logicxkit/logic/_capabilities.py`; `tests/logic/test_capabilities.py` fails when
+  level in `src/logicxkit/logic/_capabilities_table.py`; `tests/logic/test_capabilities.py` fails when
   a subcommand is undeclared or the doc drifts from the code.
 
 ## License
@@ -267,5 +277,6 @@ Apache License 2.0. See [`LICENSE`][license] and [`NOTICE`][notice].
 [ci]: https://github.com/phierceweb/logicxkit/blob/main/.github/workflows/ci.yml
 [contributing]: https://github.com/phierceweb/logicxkit/blob/main/CONTRIBUTING.md
 [pf-core]: https://pypi.org/project/pf-core/
+[groovebin]: https://pypi.org/project/groovebin/
 [license]: https://github.com/phierceweb/logicxkit/blob/main/LICENSE
 [notice]: https://github.com/phierceweb/logicxkit/blob/main/NOTICE

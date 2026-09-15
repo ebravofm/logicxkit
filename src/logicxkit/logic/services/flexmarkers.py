@@ -4,12 +4,13 @@ quantize (measured on a drum take, 2026-09-13; the logic README, "Flex and audio
 A flexed region's 80-byte song-container entry is followed by 80-byte **marker blocks**
 (byte 7 = 0xAA): `+0` i32 the source in samples from the region start, `+6` the kind (`07`
 start anchor one beat before the region, `03` end anchor at its length plus 1024, `01` a
-hit), `+10` u16 the target's fraction, `+12` i32 the target in ticks (`PPQ` per quarter),
-`0x88` at `+23`, `+39`, `+55`, `+71`. A quantized entry has `+13` = 1, `+15` bit 4 (flex on),
+hit, `05` a hit with Quantize Off), `+10` u16 the target's fraction, `+12` i32 the target in
+ticks (`PPQ` per quarter), `0x88` at `+23`, `+39`, `+55`, `+71`. A quantized entry has `+13` = 1, `+15` bit 4 (flex on),
 `+48` bit 7 and `+32` = the slot of its **RBA Sequence** triple (packaged
 `rba-sequence-12.3.1.json`): `+8` id, `+88` u16 fraction and `+90` u32 length in ticks,
-`+102` i16 the Quantize value (0 Off; 1/d is -2·(7 - log2 d)), `+234` the track object,
-`+242` the arrange row negated.
+`+102` i16 the Quantize value (0 Off; 1/d is -2·(7 - log2 d), measured for 1/4 to 1/32),
+`+234` the track object, `+242` the arrange row negated. Across Logic's saves only `+32` marks
+a quantized entry reliably.
 """
 
 from __future__ import annotations
@@ -23,17 +24,19 @@ from .events import PPQ
 from .insert import HEADER
 from .recbuild import with_owner, with_slot
 from .regions import ENTRY
+from .sequence import Triple, sequences
 
 _DATA = "rba-sequence-12.3.1.json"
 MARKER = 80
-START, END, HIT = 0x07, 0x03, 0x01
+START, END, HIT, OFF = 0x07, 0x03, 0x01, 0x05
 KIND_AT, KIND_MARK = 6, 0xAA
 SOURCE_AT, FRACTION_AT, TARGET_AT = 0, 10, 12
 END_TAIL = 1024                                   # samples past the region's last frame
 ENTRY_QUANTIZED_AT, ENTRY_FLAGS_AT, ENTRY_SLOT_AT, ENTRY_RBA_AT = 13, 15, 32, 48
 FLEX_BIT, RBA_BIT = 0x10, 0x80
 RBA_ID_AT, RBA_LENGTH_AT, RBA_CODE_AT, RBA_OBJECT_AT, RBA_ROW_AT = 8, 88, 102, 234, 242
-_GRIDS = (1, 2, 4, 8, 16, 32, 64)
+RBA_NAME_AT, RBA_NAME = 18, b"RBA Sequence"
+GRIDS = (4, 8, 16, 32)
 
 
 def _template() -> dict[str, bytes]:
@@ -63,6 +66,12 @@ def marker_block(source: int, target: int, kind: int, fraction: int = 0) -> byte
     return bytes(b)
 
 
+def block_fields(block: bytes) -> tuple[int, int, int, int]:
+    """(source samples, kind, target ticks, target fraction) of a marker block."""
+    return (struct.unpack_from("<i", block, SOURCE_AT)[0], block[KIND_AT],
+            struct.unpack_from("<i", block, TARGET_AT)[0], struct.unpack_from("<H", block, FRACTION_AT)[0])
+
+
 def anchors(*, frames: int, samples_per_beat: float) -> tuple[bytes, bytes]:
     """The start anchor one beat before the region and the end anchor at its last frame;
     only an unquantized flexed region keeps its end anchor ``END_TAIL`` samples later."""
@@ -80,9 +89,23 @@ def snap(source: int, spt: float, grid: int) -> int:
 def quantize_code(grid: int) -> int:
     if grid == 0:
         return 0
-    if grid not in _GRIDS:
-        raise ValueError(f"a straight grid: 1/{', 1/'.join(map(str, _GRIDS))}, or 0 for Off")
+    if grid not in GRIDS:
+        raise ValueError(f"a measured grid: 1/{', 1/'.join(map(str, GRIDS[:-1]))} or 1/{GRIDS[-1]}, or 0 for Off")
     return -2 * (7 - int(math.log2(grid)))
+
+
+def grid_of(code: int) -> int | None:
+    """The 1/d grid ``quantize_code`` gives ``code``; 0 for Off, None for a value it never writes."""
+    if code == 0:
+        return 0
+    grid = 2 ** (7 + code // 2) if code % 2 == 0 and -14 <= code < 0 else None
+    return grid if grid in GRIDS else None
+
+
+def rba_sequences(records) -> dict[int, Triple]:
+    """Slot -> the RBA Sequence triple in it."""
+    return {t.slot: t for t in sequences(records)
+            if records[t.start].raw[HEADER + RBA_NAME_AT:HEADER + RBA_NAME_AT + len(RBA_NAME)] == RBA_NAME}
 
 
 def flexed_entry(entry: bytes, *, slot: int) -> bytes:

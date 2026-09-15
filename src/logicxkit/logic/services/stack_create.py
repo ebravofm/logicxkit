@@ -5,7 +5,7 @@ track add (`addtrack.py`), a drag into a stack (`stacks.move_to_stack`) and the 
 the existing stacks bind to. A folder stack is a kind-0 Environment object bound to a `Sub N`
 strip, its arrange row followed by its members' rows with `+14` set. What this writes:
 
-* the object: the highest-numbered stack's, cloned — new id, name, colour, Sub number,
+* the object: the highest-numbered folder stack's, cloned — new id, name, colour, Sub number,
   fresh UUID; the icon stays the pattern's (which icon Logic gives a new stack is unmeasured)
 * the strip: `Sub N` cloned as `Sub N+1` right after it, every later channel's owner moved up
   by one (and the objects bound to them re-indexed), the channel count's Master+Sub class
@@ -135,8 +135,9 @@ def create_stack(data: bytes, *, name: str, members: list[int], track_count: int
                                 {s.object_id for s in stacks})
     run = arrange_run(records, track_count)
     run_rows = [records[i].raw for i in run]
-    if stacks:
-        pattern = max(stacks, key=lambda s: s.index)
+    folders = [s for s in stacks if s.kind == "folder"]   # a summing stack's Aux number would outrank the Subs
+    if folders:
+        pattern = max(folders, key=lambda s: s.index)
         number, like, like_owner = pattern.index + 1, pattern.object_id, pattern.owner
         pattern_obj = object_record(records, like)
         strip_template = mixer_record(records, like_owner)

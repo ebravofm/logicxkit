@@ -101,6 +101,22 @@ class StepRaisesTest(unittest.TestCase):
                     edit_copy(src, root / "out", step)
                 self.assertFalse((root / "out" / "Song.logicx").exists())
 
+    def test_each_alternative_gets_its_own_track_count(self):
+        seen = {}
+
+        def step(data, count, data_file):
+            seen[data_file.parent.name] = count
+            bump_track_count(data_file)
+            return data
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            src = self._two_alternatives(root)
+            (src / "Alternatives" / "001" / "MetaData.plist").write_bytes(plistlib.dumps({"NumberOfTracks": TRACKS + 3}))
+            with mock.patch("builtins.print"):
+                edit_copy(src, root / "out", step)
+        self.assertEqual(seen, {"000": TRACKS, "001": TRACKS + 3})
+
 
 if __name__ == "__main__":
     unittest.main()

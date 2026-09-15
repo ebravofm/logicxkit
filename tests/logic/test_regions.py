@@ -125,19 +125,20 @@ class FlexEntryTest(unittest.TestCase):
         self.assertEqual(region_errors(data, None), [])
 
 
-class RegionRankTest(unittest.TestCase):
-    def test_counters_rank_across_every_sequence_take_folders_included(self):
+class RegionPairTest(unittest.TestCase):
+    def test_entry_pairs_come_from_every_sequence_take_folders_included(self):
         from _records import seq_triple
-        from logicxkit.logic.services.audio_regions import region_ranks
+        from logicxkit.logic.services.audio_regions import audio_entry_pairs
 
-        def audio_entry(counter: int) -> bytes:
+        def audio_entry(slot: int, piece: int = 0) -> bytes:
             e = bytearray(ENTRY)
             struct.pack_into("<I", e, 0, 0x24)
-            struct.pack_into("<I", e, 44, 4 * counter)
+            struct.pack_into("<I", e, 44, 4 * slot)
+            e[40] = piece
             return bytes(e)
 
         rows = [track(0, 10), track(1, 20)]
-        take_folder = seq_triple(9, slot=48, big=audio_entry(43) + audio_entry(44) + TAIL_BYTES)
+        take_folder = seq_triple(9, slot=48, big=audio_entry(43) + audio_entry(44, 2) + TAIL_BYTES)
         data = proj(env_obj(10, "a"), env_obj(20, "b"), env_obj(30, "c"),
-                    *song(rows, [audio_entry(47), audio_entry(63)]), take_folder, *flat(10, 20, 30))
-        self.assertEqual(region_ranks(project_records(data)), {43: 0, 44: 1, 47: 2, 63: 3})
+                    *song(rows, [audio_entry(47), audio_entry(63, 1)]), take_folder, *flat(10, 20, 30))
+        self.assertEqual(sorted(audio_entry_pairs(project_records(data))), [(172, 0), (176, 2), (188, 0), (252, 1)])

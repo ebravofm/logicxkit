@@ -186,17 +186,33 @@ def slot_errors(data: bytes) -> list[str]:
     return out
 
 
-def register_slot(payload: bytes, *, slot: int) -> bytes:
+def register_slot(payload: bytes, *, slot: int, blank: bool = False) -> bytes:
     """The pair of slot entries for a sequence that is no object's — a region's — and the list
-    stamps; what Logic added to the registry for a new MIDI region (2026-09-13)."""
+    stamps; what Logic added to the registry for a new MIDI region (2026-09-13). ``blank``
+    writes zeroed pairs, as Logic's audio split registered the slot it consumed (2026-09-15)."""
     g = bytearray(payload)
-    slot_uuid = fresh_uuid()
+    slot_uuid = bytes(16) if blank else fresh_uuid()
     for stride in (UUID_STRIDE, TIME_STRIDE):
         if any(s == slot for _at, s in run_entries(g, SLOT_TYPE, stride)):
             _stamp(g, SLOT_TYPE, slot, _slot_value(slot, slot_uuid, stride)[8:], stride)
         else:
             _insert_slot(g, slot, slot_uuid, stride)
     return bytes(touch_lists(g))
+
+
+def register_after_run(payload: bytes, *, kind: int, entry_id: int) -> bytes:
+    """A zeroed ``<kind><entry_id>`` pair appended to the end of ``kind``'s run in both strides;
+    Logic's audio split added one of kind 0x1e keyed by the parent record's slot (2026-09-15)."""
+    g = bytearray(payload)
+    for stride in (UUID_STRIDE, TIME_STRIDE):
+        run = run_entries(g, kind, stride)
+        if not run:
+            raise ValueError(f"gnoS: no {stride}-byte run of kind {kind:#x} to extend")
+        if any(i == entry_id for _at, i in run):
+            continue
+        at = run[-1][0] + stride
+        g[at:at] = struct.pack("<II", kind, entry_id) + bytes(stride - 8)
+    return bytes(g)
 
 
 def touch_lists(payload: bytes) -> bytes:

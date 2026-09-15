@@ -20,7 +20,7 @@ from ..services.groups import read_groups
 from ..services.instout import read_instrument_outputs
 from ..services.insert import HEADER, channel_formats
 from ..services.levels import FIXED_ONE, read_levels
-from ..services.pairing import extra_rows, match_quality, pair_rows, pair_tracks
+from ..services.pairing import extra_rows, forced_by_object, match_quality, pair_rows, pair_tracks
 from ..services.retrack import cst_references
 from ..services.sends import read_sends
 from ..services.stacks import read_stacks, read_tracks
@@ -66,7 +66,7 @@ def _by_label(chans) -> dict[str, int]:
 
 def plan(template: bytes, session: bytes, *, template_count: int | None, session_count: int | None,
          skip: tuple[str, ...] = (), only: set[int] | None = None,
-         forced: dict[str, str] | None = None, known: dict[int, int] | None = None,
+         forced: dict | None = None, known: dict[int, int] | None = None,
          excluded: set[str] | None = None) -> list[Op]:
     """The ops that take ``session`` to ``template``'s layout, in the order they must run.
 
@@ -86,7 +86,7 @@ def plan(template: bytes, session: bytes, *, template_count: int | None, session
 
 
 def _plan(template: bytes, session: bytes, *, template_count: int | None,
-          session_count: int | None, forced: dict[str, str] | None = None,
+          session_count: int | None, forced: dict | None = None,
           known: dict[int, int] | None = None, excluded: set[str] | None = None) -> list[Op]:
     t_rows, s_rows = read_tracks(template, template_count), read_tracks(session, session_count)
     pairs = pair_rows(t_rows, s_rows, forced=forced, known=known, excluded=excluded)
@@ -365,6 +365,8 @@ def apply_template(template: bytes, session: bytes, *, template_count: int | Non
     """Plan and apply in one go -> ``(project, ops, rows added)``. Structural ops are run
     first and the field ops planned again on the result, so they see the rows that were
     just made."""
+    if forced:
+        forced = forced_by_object(forced, read_tracks(session, session_count))
     data, made_inputs = with_template_inputs(template, session)
     count, added, done_structural = session_count, 0, list(made_inputs)
     known: dict[int, int] = {}                  # rows made so far -> the template row they stand for

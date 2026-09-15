@@ -97,14 +97,14 @@ class MeterMapTest(unittest.TestCase):
 @_goldens.needs(EMPTY)
 class BeforeBarOneTest(_Tmp):
     def test_write_smf_refuses_an_event_before_bar_1(self):
-        data, _ = add_region(project_data(_goldens.path(EMPTY)), track="Audio 2", start=BAR_ONE - 3840, length=3840, name="pickup")
-        data = add_note(data, track="Audio 2", tick=BAR_ONE - 960, pitch=60, velocity=100, length=240)
-        with self.assertRaisesRegex(ValueError, "'pickup' on 'Audio 2'.*before bar 1"):
+        data, _ = add_region(project_data(_goldens.path(EMPTY)), track="Inst 1", start=BAR_ONE - 3840, length=3840, name="pickup")
+        data = add_note(data, track="Inst 1", tick=BAR_ONE - 960, pitch=60, velocity=100, length=240)
+        with self.assertRaisesRegex(ValueError, "'pickup' on 'Inst 1'.*before bar 1"):
             write_smf(read_midi(data), tempos=tempo_map(data), meters=meter_map(data))
 
     def test_the_cli_prints_the_refusal_and_exits_1(self):
-        rc, text = run(_goldens.path(EMPTY), "--out", self.out / "copy", "--region", "Audio 2:0:1:pickup",
-                       "--note", "Audio 2:0.75:60:100:240")
+        rc, text = run(_goldens.path(EMPTY), "--out", self.out / "copy", "--region", "Inst 1:0:1:pickup",
+                       "--note", "Inst 1:0.75:60:100:240")
         self.assertEqual(rc, 0, text)
         (project,) = (self.out / "copy").rglob("*.logicx")
         mid = self.out / "pickup.mid"
@@ -114,8 +114,8 @@ class BeforeBarOneTest(_Tmp):
         self.assertFalse(mid.exists())
 
     def test_with_json_the_refusal_keeps_stdout_clean(self):
-        rc, text = run(_goldens.path(EMPTY), "--out", self.out / "copy", "--region", "Audio 2:0:1:pickup",
-                       "--note", "Audio 2:0.75:60:100:240")
+        rc, text = run(_goldens.path(EMPTY), "--out", self.out / "copy", "--region", "Inst 1:0:1:pickup",
+                       "--note", "Inst 1:0.75:60:100:240")
         self.assertEqual(rc, 0, text)
         (project,) = (self.out / "copy").rglob("*.logicx")
         out, err = io.StringIO(), io.StringIO()
@@ -123,6 +123,18 @@ class BeforeBarOneTest(_Tmp):
             rc = main(["logic", "midi", str(project), "--json", "--export", str(self.out / "pickup.mid")])
         self.assertEqual((rc, out.getvalue()), (1, ""))
         self.assertIn("before bar 1", err.getvalue())
+
+
+@_goldens.needs("regions-a10-midi-split-logic")
+class SplitExportTest(unittest.TestCase):
+    def test_each_piece_exports_only_the_notes_it_plays(self):
+        from groovebin.midi import read
+        data = project_data(_goldens.path("regions-a10-midi-split-logic"))
+        regions = read_midi(data)
+        self.assertEqual([len(r.events) for r in regions], [2, 2])
+        self.assertEqual([[e.tick for e in r.played] for r in regions], [[], [51840]])
+        song = read(write_smf(regions, tempos=tempo_map(data), meters=meter_map(data)))
+        self.assertEqual([len(part.notes) for part in song.tracks[1:]], [0, 1])
 
 
 if __name__ == "__main__":

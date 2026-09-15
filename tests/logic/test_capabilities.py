@@ -80,8 +80,16 @@ def test_notice_only_for_unconfirmed_levels():
                 assert line is None, name
 
 
+def test_derived_dests_raise_a_write_to_derived():
+    from argparse import Namespace
+
+    from logicxkit.logic._capabilities import notice
+    assert notice("beats", Namespace(beats_command="place", out="copy")) is None
+    assert notice("quantize-drums", Namespace(out="copy", bars=(2, 2))) is None
+
+
 def test_emit_notice_writes_only_on_a_write(capsys, monkeypatch):
-    """Every command is CONFIRMED today, so a DERIVED one is stood up for the test."""
+    """A DERIVED command is stood up for the test, so it holds whatever the table rates."""
     from argparse import Namespace
 
     from logicxkit.logic import _capabilities as caps

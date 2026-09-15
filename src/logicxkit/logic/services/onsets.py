@@ -1,8 +1,9 @@
 """Onsets in a drum close-mic recording — where the hits start, in samples.
 
 Peak envelope over 32-sample hops; a hit is a hop that stands `rise_db` above the quietest
-hop of the previous `look_ms`, at least `floor_db` below the track's own peak (bleed from
-the other drums sits far under a close mic's real hits), and `gap_ms` after the last one.
+hop of the previous `look_ms` (for the file's first hop, the track's quietest hop), at most
+`floor_db` below the track's own peak (bleed from the other drums sits far under a close mic's
+real hits), and `gap_ms` after the last one.
 The position is then the first sample within 6 ms before that hop to reach `refine_ratio`
 of the local peak. The defaults were tuned against the transients Logic marked on one take across four
 grids (the logic README, "Flex and audio quantize", has the agreement).
@@ -106,13 +107,13 @@ def onsets(x: list[float], rate: int, detector: Detector = Detector()) -> list[i
     look = max(1, int(detector.look_ms * rate / 1000 / HOP))
     gap = max(1, int(detector.gap_ms * rate / 1000 / HOP))
     back, forward = int(detector.refine_back_ms * rate / 1000), int(detector.refine_forward_ms * rate / 1000)
-    out, last = [], -gap
-    for h in range(1, len(env)):
+    out, last, before = [], -gap, min(env)
+    for h in range(len(env)):
         v = env[h]
         if v < floor or h - last < gap:
             continue
-        quiet = min(env[max(0, h - look):h])         # silence before the first hit counts as quiet
-        if v >= ratio * max(quiet, 1e-9) and v >= max(env[max(0, h - 3):h]):
+        quiet = min(env[max(0, h - look):h], default=before)
+        if v >= ratio * max(quiet, 1e-9) and v >= max(env[max(0, h - 3):h], default=0.0):
             a, b = max(0, h * HOP - back), min(len(x), h * HOP + forward)
             threshold = detector.refine_ratio * max(abs(s) for s in x[a:b])
             out.append(next((i for i in range(a, b) if abs(x[i]) >= threshold), h * HOP))

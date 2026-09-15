@@ -11,7 +11,7 @@ from pathlib import Path
 
 import _goldens
 from logicxkit.logic.services.audio_regions import (
-    AUDIO_ENTRY, ENTRY_ORDINAL_AT, FILE_TAG, NAME_LEN_AT, OFFSET_AT, PATH_AT, REGION_TAG, SIZE_AT, read_audio_files,
+    AUDIO_ENTRY, ENTRY_ORDINAL_AT, FILE_TAG, OFFSET_AT, PATH_AT, REGION_TAG, SIZE_AT, magic_at, read_audio_files,
     read_audio_regions)
 from logicxkit.logic.services.audio_write import LINK_AT, ORDINAL_AT, _register, add_audio_region, wav_info
 from logicxkit.logic.services.insert import HEADER, project_records, reassemble
@@ -24,7 +24,7 @@ from logicxkit.logicx import project_data
 
 UNSIZED = (b"gnoS", b"qeSM", b"MroC", b"OCuA", b"UCuA")     # grow, shrink or carry the name on any load
 # From the LFUA magic: the folder, and the facts of the copy Logic wrote of the WAV (it adds chunks).
-COPY_FIELDS = ((PATH_AT, 256), (SIZE_AT, 4), (OFFSET_AT, 4), (531, 2))
+COPY_FIELDS = ((PATH_AT, 256), (SIZE_AT, 4), (OFFSET_AT, 4), (530, 2))
 
 
 def tone(path: Path, seconds: float = 1.0, rate: int = 44100, channels: int = 1) -> Path:
@@ -47,7 +47,7 @@ def payloads(data: bytes, tag: bytes) -> list[bytes]:
 def file_bodies(data: bytes) -> list[bytes]:
     out = []
     for p in payloads(data, FILE_TAG):
-        body, m = bytearray(p), NAME_LEN_AT + 1 + 2 * p[NAME_LEN_AT]
+        body, m = bytearray(p), magic_at(p)
         for at, size in COPY_FIELDS:
             body[m + at:m + at + size] = bytes(size)
         out.append(bytes(body))
@@ -182,7 +182,7 @@ class SecondAndThirdImportTest(LikeLogic, unittest.TestCase):
     def file_field(self, k: int, at: int, value: int) -> bytes:
         def edit(raw):
             body = bytearray(raw)
-            struct.pack_into("<I", body, HEADER + NAME_LEN_AT + 1 + 2 * raw[HEADER + NAME_LEN_AT] + at, value)
+            struct.pack_into("<I", body, HEADER + magic_at(raw[HEADER:]) + at, value)
             return bytes(body)
         return self.replaced(self.nth(FILE_TAG, k), edit)
 

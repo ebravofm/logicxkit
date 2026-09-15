@@ -24,6 +24,12 @@ def _rebased(data: bytes) -> bytes:
     return data
 
 
+def _left_alone(e: ValueError, forced, data_file: Path) -> bool:
+    """A map is drafted from the first alternative; only another may lack a track it names."""
+    first = min(p.parent.name for p in data_file.parents[1].glob("*/ProjectData"))
+    return bool(forced) and "map names a session track" in str(e) and data_file.parent.name != first
+
+
 def _copy_display(template_project: Path, alternative: Path) -> list[str]:
     """The template's track header components and control bar onto one alternative of the
     output — DisplayState, not ProjectData, so it sits beside the record ops."""
@@ -143,7 +149,7 @@ def cmd_apply_template(args) -> int:
     outcome = {"failed": 0}
 
     def step(data, count, data_file):
-        data = _rebased(data)
+        original, data = data, _rebased(data)
         only = _only(args, data, count)
         if only:
             print(f"  only {len(only)} row(s)")
@@ -152,11 +158,10 @@ def cmd_apply_template(args) -> int:
                                              session_count=count, skip=skip, only=only, forced=forced,
                                              excluded=excluded)
         except ValueError as e:
-            others = [p for p in data_file.parent.parent.glob("*/ProjectData") if p != data_file]
-            if not forced or "map names a session track" not in str(e) or not others:
+            if not _left_alone(e, forced, data_file):
                 raise
-            print(f"  {data_file.parent.name}: left as it was — {e}")   # another alternative's layout
-            return data
+            print(f"  {data_file.parent.name}: left as it was — {e}")
+            return original
         for op in ops:
             print("  " + op.line())
         if not only and "display" not in skip:

@@ -2418,5 +2418,6955 @@
     ]
    ]
   }
+ },
+ "midi-edits-ours": {
+  "path": "public/midi-b11-edits-ours.logicx",
+  "note": "logic midi --transpose 1=2 --velocity 1=0.8 --quantize 2=1/8 --move 2=120 --delete 3:40 --remap 3=gm:addictive-drums-2 --copy-region '1=Inst 1:12' --copy-notes '2=Inst 1:3' on a copy of midi-names-resave-logic that had first gained notes in both regions and a GM drum region ('Drums GM', bar 9)",
+  "facts": {
+   "regions": [
+    [
+     "Keys",
+     42240,
+     [
+      [
+       42240,
+       1,
+       62,
+       80,
+       480
+      ],
+      [
+       43200,
+       1,
+       64,
+       72,
+       240
+      ],
+      [
+       44160,
+       1,
+       66,
+       56,
+       240
+      ],
+      [
+       47640,
+       1,
+       67,
+       100,
+       120
+      ],
+      [
+       48120,
+       1,
+       64,
+       90,
+       240
+      ],
+      [
+       49080,
+       1,
+       72,
+       60,
+       120
+      ]
+     ]
+    ],
+    [
+     "Pad Layer",
+     53760,
+     [
+      [
+       55320,
+       1,
+       67,
+       100,
+       120
+      ],
+      [
+       55800,
+       1,
+       64,
+       90,
+       240
+      ],
+      [
+       56760,
+       1,
+       72,
+       60,
+       120
+      ]
+     ]
+    ],
+    [
+     "Drums GM",
+     69120,
+     [
+      [
+       69120,
+       1,
+       36,
+       120,
+       120
+      ],
+      [
+       69120,
+       1,
+       49,
+       80,
+       120
+      ],
+      [
+       70080,
+       1,
+       49,
+       60,
+       120
+      ],
+      [
+       71040,
+       1,
+       38,
+       110,
+       120
+      ],
+      [
+       71040,
+       1,
+       49,
+       80,
+       120
+      ],
+      [
+       72000,
+       1,
+       55,
+       90,
+       240
+      ],
+      [
+       72960,
+       1,
+       36,
+       120,
+       120
+      ],
+      [
+       72960,
+       1,
+       77,
+       127,
+       480
+      ]
+     ]
+    ],
+    [
+     "Keys",
+     80640,
+     [
+      [
+       80640,
+       1,
+       62,
+       80,
+       480
+      ],
+      [
+       81600,
+       1,
+       64,
+       72,
+       240
+      ],
+      [
+       82560,
+       1,
+       66,
+       56,
+       240
+      ]
+     ]
+    ]
+   ]
+  }
+ },
+ "midi-edits-resave-logic": {
+  "path": "public/midi-b11-edits-resave.logicx",
+  "note": "Logic's re-save of midi-edits-ours: every region and event as written, the sequence ids renumbered",
+  "facts": {
+   "regions": [
+    [
+     "Keys",
+     42240,
+     [
+      [
+       42240,
+       1,
+       62,
+       80,
+       480
+      ],
+      [
+       43200,
+       1,
+       64,
+       72,
+       240
+      ],
+      [
+       44160,
+       1,
+       66,
+       56,
+       240
+      ],
+      [
+       47640,
+       1,
+       67,
+       100,
+       120
+      ],
+      [
+       48120,
+       1,
+       64,
+       90,
+       240
+      ],
+      [
+       49080,
+       1,
+       72,
+       60,
+       120
+      ]
+     ]
+    ],
+    [
+     "Pad Layer",
+     53760,
+     [
+      [
+       55320,
+       1,
+       67,
+       100,
+       120
+      ],
+      [
+       55800,
+       1,
+       64,
+       90,
+       240
+      ],
+      [
+       56760,
+       1,
+       72,
+       60,
+       120
+      ]
+     ]
+    ],
+    [
+     "Drums GM",
+     69120,
+     [
+      [
+       69120,
+       1,
+       36,
+       120,
+       120
+      ],
+      [
+       69120,
+       1,
+       49,
+       80,
+       120
+      ],
+      [
+       70080,
+       1,
+       49,
+       60,
+       120
+      ],
+      [
+       71040,
+       1,
+       38,
+       110,
+       120
+      ],
+      [
+       71040,
+       1,
+       49,
+       80,
+       120
+      ],
+      [
+       72000,
+       1,
+       55,
+       90,
+       240
+      ],
+      [
+       72960,
+       1,
+       36,
+       120,
+       120
+      ],
+      [
+       72960,
+       1,
+       77,
+       127,
+       480
+      ]
+     ]
+    ],
+    [
+     "Keys",
+     80640,
+     [
+      [
+       80640,
+       1,
+       62,
+       80,
+       480
+      ],
+      [
+       81600,
+       1,
+       64,
+       72,
+       240
+      ],
+      [
+       82560,
+       1,
+       66,
+       56,
+       240
+      ]
+     ]
+    ]
+   ]
+  }
+ },
+ "regions-a00-base-logic": {
+  "path": "public/regions-a00-base.logicx",
+  "note": "the v0.3.0 three-audio-regions save with its MIDI region: session A's base",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 46080,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       46080,
+       60,
+       80,
+       240
+      ],
+      [
+       48000,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 88200,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone_1",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a01-audio-moved-logic": {
+  "path": "public/regions-a01-audio-moved.logicx",
+  "note": "audio region 'v030-tone' nudged one bar right",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 46080,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       46080,
+       60,
+       80,
+       240
+      ],
+      [
+       48000,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 42240,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 88200,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone_1",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a02-audio-start-trimmed-logic": {
+  "path": "public/regions-a02-audio-start-trimmed.logicx",
+  "note": "its start nudged one beat right: first frame 22050, 22050 frames",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 46080,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       46080,
+       60,
+       80,
+       240
+      ],
+      [
+       48000,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 88200,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone_1",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a03-audio-end-trimmed-logic": {
+  "path": "public/regions-a03-audio-end-trimmed.logicx",
+  "note": "'v030-tone2' lengthened to 66150 frames (nudge length)",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 46080,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       46080,
+       60,
+       80,
+       240
+      ],
+      [
+       48000,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 66150,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone_1",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a04-audio-split-logic": {
+  "path": "public/regions-a04-audio-split.logicx",
+  "note": "'v030-tone2' split at bar 1.5: piece 'v030-tone2.1' from frame 44100, 22050 frames",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 46080,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       46080,
+       60,
+       80,
+       240
+      ],
+      [
+       48000,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone_1",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a05-audio-muted-logic": {
+  "path": "public/regions-a05-audio-muted.logicx",
+  "note": "'v030-tone_1' muted",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 46080,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       46080,
+       60,
+       80,
+       240
+      ],
+      [
+       48000,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone_1",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a06-audio-renamed-logic": {
+  "path": "public/regions-a06-audio-renamed.logicx",
+  "note": "'v030-tone_1' renamed 'tone renamed'",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 46080,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       46080,
+       60,
+       80,
+       240
+      ],
+      [
+       48000,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a07-midi-moved-logic": {
+  "path": "public/regions-a07-midi-moved.logicx",
+  "note": "MIDI region 'Inst 1' nudged to bar 4",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 49920,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a08-midi-end-trimmed-logic": {
+  "path": "public/regions-a08-midi-end-trimmed.logicx",
+  "note": "its length nudged to three beats",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 49920,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a09-midi-start-trimmed-logic": {
+  "path": "public/regions-a09-midi-start-trimmed.logicx",
+  "note": "its start nudged one beat right; the notes keep their time",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a10-midi-split-logic": {
+  "path": "public/regions-a10-midi-split.logicx",
+  "note": "split at bar 4.5: a second 'Inst 1' with its own sequence",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a11-midi-loop-on-logic": {
+  "path": "public/regions-a11-midi-loop-on.logicx",
+  "note": "the first 'Inst 1' looped",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": true,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a12-midi-loop-off-logic": {
+  "path": "public/regions-a12-midi-loop-off.logicx",
+  "note": "its loop off again",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a13-audio-loop-on-logic": {
+  "path": "public/regions-a13-audio-loop-on.logicx",
+  "note": "'v030-tone' looped",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": true,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a14-audio-loop-off-logic": {
+  "path": "public/regions-a14-audio-loop-off.logicx",
+  "note": "its loop off again",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a15-fade-in-500-logic": {
+  "path": "public/regions-a15-fade-in-500.logicx",
+  "note": "'tone renamed' Fade In 500 ms",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      500,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a16-fade-in-curve-50-logic": {
+  "path": "public/regions-a16-fade-in-curve-50.logicx",
+  "note": "its Fade In curve 50",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      500,
+      50,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a17-fade-out-500-logic": {
+  "path": "public/regions-a17-fade-out-500.logicx",
+  "note": "its Fade Out 500 ms",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      500,
+      50,
+      0,
+      500,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a18-fade-in-speed-up-logic": {
+  "path": "public/regions-a18-fade-in-speed-up.logicx",
+  "note": "its Fade In type Speed Up (saved after A19)",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      500,
+      50,
+      1,
+      500,
+      30
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a19-fade-out-curve-30-logic": {
+  "path": "public/regions-a19-fade-out-curve-30.logicx",
+  "note": "its Fade Out curve 30",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      500,
+      50,
+      0,
+      500,
+      30
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "regions-a20-crossfade-logic": {
+  "path": "public/regions-a20-crossfade.logicx",
+  "note": "'v030-tone2.1' nudged a beat left under Drag: X-Fade, overlapping 'tone renamed'",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      500,
+      50,
+      1,
+      500,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 39360,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": []
+  }
+ },
+ "markers-a21-created-logic": {
+  "path": "public/markers-a21-created.logicx",
+  "note": "a marker created at bar 5 (Option-')",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      500,
+      50,
+      1,
+      500,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 39360,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": [
+    [
+     "Marker ##",
+     53760,
+     1
+    ]
+   ]
+  }
+ },
+ "markers-a22-renamed-logic": {
+  "path": "public/markers-a22-renamed.logicx",
+  "note": "renamed 'Chorus'",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      500,
+      50,
+      1,
+      500,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 39360,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": [
+    [
+     "Chorus",
+     53760,
+     1
+    ]
+   ]
+  }
+ },
+ "markers-a23-second-logic": {
+  "path": "public/markers-a23-second.logicx",
+  "note": "a second marker at bar 7",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      500,
+      50,
+      1,
+      500,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 39360,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": [
+    [
+     "Chorus",
+     53760,
+     1
+    ],
+    [
+     "Marker ##",
+     61440,
+     1
+    ]
+   ]
+  }
+ },
+ "markers-a24-moved-logic": {
+  "path": "public/markers-a24-moved.logicx",
+  "note": "the first moved to bar 6 in the Marker List",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      500,
+      50,
+      1,
+      500,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 39360,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": [
+    [
+     "Chorus",
+     57600,
+     1
+    ],
+    [
+     "Marker ##",
+     61440,
+     1
+    ]
+   ]
+  }
+ },
+ "markers-a25-deleted-logic": {
+  "path": "public/markers-a25-deleted.logicx",
+  "note": "the second deleted",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      500,
+      50,
+      1,
+      500,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 39360,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ]
+   ],
+   "markers": [
+    [
+     "Chorus",
+     57600,
+     1
+    ]
+   ]
+  }
+ },
+ "regions-a26-import-e-acute-logic": {
+  "path": "public/regions-a26-import-e-acute.logicx",
+  "note": "File > Import > Audio File of v040-\u00e9.wav (NFD on disk) at bar 9",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v040-e\u0301",
+     "start": 69120,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v040-e\u0301.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      500,
+      50,
+      1,
+      500,
+      0
+     ]
+    },
+    {
+     "n": 7,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 39360,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ],
+    [
+     "v040-e\u0301.wav",
+     44100,
+     1
+    ]
+   ],
+   "markers": [
+    [
+     "Chorus",
+     57600,
+     1
+    ]
+   ]
+  }
+ },
+ "regions-a27-import-emoji-logic": {
+  "path": "public/regions-a27-import-emoji.logicx",
+  "note": "import of v040-\ud83e\udd41.wav at bar 11",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v040-e\u0301",
+     "start": 69120,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v040-e\u0301.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v040-\ud83e\udd41",
+     "start": 76800,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v040-\ud83e\udd41.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 7,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      500,
+      50,
+      1,
+      500,
+      0
+     ]
+    },
+    {
+     "n": 8,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 39360,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ],
+    [
+     "v040-e\u0301.wav",
+     44100,
+     1
+    ],
+    [
+     "v040-\ud83e\udd41.wav",
+     44100,
+     1
+    ]
+   ],
+   "markers": [
+    [
+     "Chorus",
+     57600,
+     1
+    ]
+   ]
+  }
+ },
+ "regions-a28-import-kanji-logic": {
+  "path": "public/regions-a28-import-kanji.logicx",
+  "note": "import of v040-\u65e5\u672c.wav at bar 13",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v040-e\u0301",
+     "start": 69120,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v040-e\u0301.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v040-\ud83e\udd41",
+     "start": 76800,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v040-\ud83e\udd41.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v040-\u65e5\u672c",
+     "start": 84480,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v040-\u65e5\u672c.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 7,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 8,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      500,
+      50,
+      1,
+      500,
+      0
+     ]
+    },
+    {
+     "n": 9,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 39360,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ],
+    [
+     "v040-e\u0301.wav",
+     44100,
+     1
+    ],
+    [
+     "v040-\ud83e\udd41.wav",
+     44100,
+     1
+    ],
+    [
+     "v040-\u65e5\u672c.wav",
+     44100,
+     1
+    ]
+   ],
+   "markers": [
+    [
+     "Chorus",
+     57600,
+     1
+    ]
+   ]
+  }
+ },
+ "regions-a29-rename-emoji-logic": {
+  "path": "public/regions-a29-rename-emoji.logicx",
+  "note": "the \u00e9 region renamed 'Snare \ud83e\udd41'",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "Snare \ud83e\udd41",
+     "start": 69120,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v040-e\u0301.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v040-\ud83e\udd41",
+     "start": 76800,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v040-\ud83e\udd41.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v040-\u65e5\u672c",
+     "start": 84480,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v040-\u65e5\u672c.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 7,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 8,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      500,
+      50,
+      1,
+      500,
+      0
+     ]
+    },
+    {
+     "n": 9,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 39360,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ],
+    [
+     "v040-e\u0301.wav",
+     44100,
+     1
+    ],
+    [
+     "v040-\ud83e\udd41.wav",
+     44100,
+     1
+    ],
+    [
+     "v040-\u65e5\u672c.wav",
+     44100,
+     1
+    ]
+   ],
+   "markers": [
+    [
+     "Chorus",
+     57600,
+     1
+    ]
+   ]
+  }
+ },
+ "regions-a30-midi-rename-logic": {
+  "path": "public/regions-a30-midi-rename.logicx",
+  "note": "the first MIDI region renamed 'Pad \u2014 \u00e9'",
+  "facts": {
+   "regions": [
+    {
+     "n": 1,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Pad \u2014 \u00e9",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 2,
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "events": [
+      [
+       50880,
+       60,
+       80,
+       240
+      ],
+      [
+       52800,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "n": 3,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "file": "v030-tone.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 4,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "Snare \ud83e\udd41",
+     "start": 69120,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v040-e\u0301.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 5,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v040-\ud83e\udd41",
+     "start": 76800,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v040-\ud83e\udd41.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 6,
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v040-\u65e5\u672c",
+     "start": 84480,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v040-\u65e5\u672c.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 7,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 8,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "file": "v030-tone_1.wav",
+     "fade": [
+      500,
+      50,
+      1,
+      500,
+      0
+     ]
+    },
+    {
+     "n": 9,
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 39360,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "file": "v030-tone2.wav",
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "files": [
+    [
+     "v030-tone.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone_1.wav",
+     44100,
+     1
+    ],
+    [
+     "v030-tone2.wav",
+     88200,
+     2
+    ],
+    [
+     "v040-e\u0301.wav",
+     44100,
+     1
+    ],
+    [
+     "v040-\ud83e\udd41.wav",
+     44100,
+     1
+    ],
+    [
+     "v040-\u65e5\u672c.wav",
+     44100,
+     1
+    ]
+   ],
+   "markers": [
+    [
+     "Chorus",
+     57600,
+     1
+    ]
+   ]
+  }
+ },
+ "beats-place-generate-ours": {
+  "path": "public/beats-place-generate-ours.logicx",
+  "note": "logic beats place (a library pattern, --repeat) and beats generate (a seeded phrase) onto a copy of midi-two-notes-logic over a synthetic groovebin library",
+  "facts": {
+   "regions": [
+    [
+     "Inst 1",
+     46080,
+     [
+      [
+       46080,
+       2,
+       60,
+       79,
+       960
+      ],
+      [
+       47040,
+       2,
+       62,
+       79,
+       960
+      ]
+     ]
+    ],
+    [
+     "Verse 02",
+     53760,
+     [
+      [
+       53760,
+       10,
+       36,
+       120,
+       240
+      ],
+      [
+       55680,
+       10,
+       38,
+       100,
+       240
+      ],
+      [
+       56640,
+       10,
+       75,
+       50,
+       60
+      ],
+      [
+       57600,
+       10,
+       36,
+       120,
+       240
+      ],
+      [
+       59520,
+       10,
+       38,
+       100,
+       240
+      ],
+      [
+       60480,
+       10,
+       75,
+       50,
+       60
+      ]
+     ]
+    ],
+    [
+     "Generated 3",
+     69120,
+     [
+      [
+       69124,
+       10,
+       36,
+       101,
+       480
+      ],
+      [
+       71045,
+       10,
+       38,
+       93,
+       240
+      ],
+      [
+       72955,
+       10,
+       49,
+       71,
+       240
+      ],
+      [
+       72956,
+       10,
+       36,
+       103,
+       480
+      ],
+      [
+       74879,
+       10,
+       38,
+       98,
+       240
+      ],
+      [
+       75838,
+       10,
+       49,
+       57,
+       240
+      ],
+      [
+       76802,
+       10,
+       36,
+       102,
+       480
+      ],
+      [
+       76803,
+       10,
+       49,
+       71,
+       240
+      ],
+      [
+       78721,
+       10,
+       38,
+       100,
+       240
+      ],
+      [
+       79677,
+       10,
+       49,
+       57,
+       240
+      ],
+      [
+       80645,
+       10,
+       71,
+       86,
+       240
+      ],
+      [
+       81603,
+       10,
+       71,
+       100,
+       240
+      ],
+      [
+       82555,
+       10,
+       38,
+       124,
+       240
+      ]
+     ]
+    ]
+   ]
+  }
+ },
+ "beats-place-generate-resave-logic": {
+  "path": "public/beats-place-generate-resave.logicx",
+  "note": "Logic's re-save of beats-place-generate-ours",
+  "facts": {
+   "regions": [
+    [
+     "Inst 1",
+     46080,
+     [
+      [
+       46080,
+       2,
+       60,
+       79,
+       960
+      ],
+      [
+       47040,
+       2,
+       62,
+       79,
+       960
+      ]
+     ]
+    ],
+    [
+     "Verse 02",
+     53760,
+     [
+      [
+       53760,
+       10,
+       36,
+       120,
+       240
+      ],
+      [
+       55680,
+       10,
+       38,
+       100,
+       240
+      ],
+      [
+       56640,
+       10,
+       75,
+       50,
+       60
+      ],
+      [
+       57600,
+       10,
+       36,
+       120,
+       240
+      ],
+      [
+       59520,
+       10,
+       38,
+       100,
+       240
+      ],
+      [
+       60480,
+       10,
+       75,
+       50,
+       60
+      ]
+     ]
+    ],
+    [
+     "Generated 3",
+     69120,
+     [
+      [
+       69124,
+       10,
+       36,
+       101,
+       480
+      ],
+      [
+       71045,
+       10,
+       38,
+       93,
+       240
+      ],
+      [
+       72955,
+       10,
+       49,
+       71,
+       240
+      ],
+      [
+       72956,
+       10,
+       36,
+       103,
+       480
+      ],
+      [
+       74879,
+       10,
+       38,
+       98,
+       240
+      ],
+      [
+       75838,
+       10,
+       49,
+       57,
+       240
+      ],
+      [
+       76802,
+       10,
+       36,
+       102,
+       480
+      ],
+      [
+       76803,
+       10,
+       49,
+       71,
+       240
+      ],
+      [
+       78721,
+       10,
+       38,
+       100,
+       240
+      ],
+      [
+       79677,
+       10,
+       49,
+       57,
+       240
+      ],
+      [
+       80645,
+       10,
+       71,
+       86,
+       240
+      ],
+      [
+       81603,
+       10,
+       71,
+       100,
+       240
+      ],
+      [
+       82555,
+       10,
+       38,
+       124,
+       240
+      ]
+     ]
+    ]
+   ]
+  }
+ },
+ "beats-compose-ours": {
+  "path": "public/beats-compose-ours.logicx",
+  "note": "logic beats compose --fills over the arrangement's sections onto a copy of midi-two-notes-logic",
+  "facts": {
+   "regions": [
+    [
+     "Intro",
+     38400,
+     [
+      [
+       38400,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       40320,
+       10,
+       38,
+       90,
+       240
+      ],
+      [
+       42240,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       44160,
+       10,
+       38,
+       110,
+       240
+      ],
+      [
+       46080,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       48000,
+       10,
+       38,
+       90,
+       240
+      ],
+      [
+       49920,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       51840,
+       10,
+       38,
+       110,
+       240
+      ],
+      [
+       53760,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       55680,
+       10,
+       38,
+       90,
+       240
+      ],
+      [
+       57600,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       59520,
+       10,
+       38,
+       110,
+       240
+      ],
+      [
+       61440,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       63360,
+       10,
+       38,
+       90,
+       240
+      ],
+      [
+       65280,
+       10,
+       71,
+       90,
+       240
+      ],
+      [
+       66240,
+       10,
+       71,
+       100,
+       240
+      ],
+      [
+       67200,
+       10,
+       38,
+       120,
+       240
+      ]
+     ]
+    ],
+    [
+     "Inst 1",
+     46080,
+     [
+      [
+       46080,
+       2,
+       60,
+       79,
+       960
+      ],
+      [
+       47040,
+       2,
+       62,
+       79,
+       960
+      ]
+     ]
+    ],
+    [
+     "Verse 01",
+     69120,
+     [
+      [
+       69120,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       69120,
+       10,
+       49,
+       70,
+       240
+      ],
+      [
+       71040,
+       10,
+       38,
+       96,
+       240
+      ],
+      [
+       72000,
+       10,
+       49,
+       60,
+       240
+      ],
+      [
+       72960,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       72960,
+       10,
+       49,
+       70,
+       240
+      ],
+      [
+       74880,
+       10,
+       38,
+       96,
+       240
+      ],
+      [
+       75840,
+       10,
+       49,
+       60,
+       240
+      ],
+      [
+       76800,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       76800,
+       10,
+       49,
+       70,
+       240
+      ],
+      [
+       78720,
+       10,
+       38,
+       96,
+       240
+      ],
+      [
+       79680,
+       10,
+       49,
+       60,
+       240
+      ],
+      [
+       80640,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       80640,
+       10,
+       49,
+       70,
+       240
+      ],
+      [
+       82560,
+       10,
+       38,
+       96,
+       240
+      ],
+      [
+       83520,
+       10,
+       49,
+       60,
+       240
+      ],
+      [
+       84480,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       84480,
+       10,
+       49,
+       70,
+       240
+      ],
+      [
+       86400,
+       10,
+       38,
+       96,
+       240
+      ],
+      [
+       87360,
+       10,
+       49,
+       60,
+       240
+      ],
+      [
+       88320,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       88320,
+       10,
+       49,
+       70,
+       240
+      ],
+      [
+       90240,
+       10,
+       38,
+       96,
+       240
+      ],
+      [
+       91200,
+       10,
+       49,
+       60,
+       240
+      ],
+      [
+       92160,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       92160,
+       10,
+       49,
+       70,
+       240
+      ],
+      [
+       94080,
+       10,
+       38,
+       96,
+       240
+      ],
+      [
+       95040,
+       10,
+       49,
+       60,
+       240
+      ],
+      [
+       96000,
+       10,
+       71,
+       90,
+       240
+      ],
+      [
+       96960,
+       10,
+       71,
+       100,
+       240
+      ],
+      [
+       97920,
+       10,
+       38,
+       120,
+       240
+      ]
+     ]
+    ]
+   ]
+  }
+ },
+ "beats-compose-resave-logic": {
+  "path": "public/beats-compose-resave.logicx",
+  "note": "Logic's re-save of beats-compose-ours",
+  "facts": {
+   "regions": [
+    [
+     "Intro",
+     38400,
+     [
+      [
+       38400,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       40320,
+       10,
+       38,
+       90,
+       240
+      ],
+      [
+       42240,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       44160,
+       10,
+       38,
+       110,
+       240
+      ],
+      [
+       46080,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       48000,
+       10,
+       38,
+       90,
+       240
+      ],
+      [
+       49920,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       51840,
+       10,
+       38,
+       110,
+       240
+      ],
+      [
+       53760,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       55680,
+       10,
+       38,
+       90,
+       240
+      ],
+      [
+       57600,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       59520,
+       10,
+       38,
+       110,
+       240
+      ],
+      [
+       61440,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       63360,
+       10,
+       38,
+       90,
+       240
+      ],
+      [
+       65280,
+       10,
+       71,
+       90,
+       240
+      ],
+      [
+       66240,
+       10,
+       71,
+       100,
+       240
+      ],
+      [
+       67200,
+       10,
+       38,
+       120,
+       240
+      ]
+     ]
+    ],
+    [
+     "Inst 1",
+     46080,
+     [
+      [
+       46080,
+       2,
+       60,
+       79,
+       960
+      ],
+      [
+       47040,
+       2,
+       62,
+       79,
+       960
+      ]
+     ]
+    ],
+    [
+     "Verse 01",
+     69120,
+     [
+      [
+       69120,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       69120,
+       10,
+       49,
+       70,
+       240
+      ],
+      [
+       71040,
+       10,
+       38,
+       96,
+       240
+      ],
+      [
+       72000,
+       10,
+       49,
+       60,
+       240
+      ],
+      [
+       72960,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       72960,
+       10,
+       49,
+       70,
+       240
+      ],
+      [
+       74880,
+       10,
+       38,
+       96,
+       240
+      ],
+      [
+       75840,
+       10,
+       49,
+       60,
+       240
+      ],
+      [
+       76800,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       76800,
+       10,
+       49,
+       70,
+       240
+      ],
+      [
+       78720,
+       10,
+       38,
+       96,
+       240
+      ],
+      [
+       79680,
+       10,
+       49,
+       60,
+       240
+      ],
+      [
+       80640,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       80640,
+       10,
+       49,
+       70,
+       240
+      ],
+      [
+       82560,
+       10,
+       38,
+       96,
+       240
+      ],
+      [
+       83520,
+       10,
+       49,
+       60,
+       240
+      ],
+      [
+       84480,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       84480,
+       10,
+       49,
+       70,
+       240
+      ],
+      [
+       86400,
+       10,
+       38,
+       96,
+       240
+      ],
+      [
+       87360,
+       10,
+       49,
+       60,
+       240
+      ],
+      [
+       88320,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       88320,
+       10,
+       49,
+       70,
+       240
+      ],
+      [
+       90240,
+       10,
+       38,
+       96,
+       240
+      ],
+      [
+       91200,
+       10,
+       49,
+       60,
+       240
+      ],
+      [
+       92160,
+       10,
+       36,
+       100,
+       480
+      ],
+      [
+       92160,
+       10,
+       49,
+       70,
+       240
+      ],
+      [
+       94080,
+       10,
+       38,
+       96,
+       240
+      ],
+      [
+       95040,
+       10,
+       49,
+       60,
+       240
+      ],
+      [
+       96000,
+       10,
+       71,
+       90,
+       240
+      ],
+      [
+       96960,
+       10,
+       71,
+       100,
+       240
+      ],
+      [
+       97920,
+       10,
+       38,
+       120,
+       240
+      ]
+     ]
+    ]
+   ]
+  }
+ },
+ "regions-midi-edits-ours": {
+  "path": "public/regions-midi-edits-ours.logicx",
+  "note": "logic regions --move 1=4 --trim 1=4.25:0.5 --split 1=4.5 --loop 1 --loop 4 on regions-a06-audio-renamed-logic",
+  "facts": {
+   "regions": [
+    {
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": true,
+     "muted": false,
+     "offset": 0,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "offset": 960,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": true,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "markers": []
+  }
+ },
+ "regions-midi-edits-resave-logic": {
+  "path": "public/regions-midi-edits-resave.logicx",
+  "note": "Logic's re-save of regions-midi-edits-ours: every region, entry, record and the split piece's sequence offset as written",
+  "facts": {
+   "regions": [
+    {
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": true,
+     "muted": false,
+     "offset": 0,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "offset": 960,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": true,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "markers": []
+  }
+ },
+ "markers-edits-ours": {
+  "path": "public/markers-edits-ours.logicx",
+  "note": "logic markers --add 8:Bridge --rename '1=Chorus A' --move 1=5 --add 10:2:Outro --delete 2 on markers-a25-deleted-logic",
+  "facts": {
+   "regions": [
+    {
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "offset": 0,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "offset": 960,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "fade": [
+      500,
+      50,
+      1,
+      500,
+      0
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 39360,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "markers": [
+    [
+     "Chorus A",
+     53760,
+     1
+    ],
+    [
+     "Outro",
+     72960,
+     7680
+    ]
+   ]
+  }
+ },
+ "markers-edits-resave-logic": {
+  "path": "public/markers-edits-resave.logicx",
+  "note": "Logic's re-save of markers-edits-ours: both markers as written",
+  "facts": {
+   "regions": [
+    {
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 50880,
+     "loop": false,
+     "muted": false,
+     "offset": 0,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 51840,
+     "loop": false,
+     "muted": false,
+     "offset": 960,
+     "events": [
+      [
+       49920,
+       60,
+       80,
+       240
+      ],
+      [
+       51840,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "fade": [
+      500,
+      50,
+      1,
+      500,
+      0
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 39360,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 44100,
+     "piece": 1,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "markers": [
+    [
+     "Chorus A",
+     53760,
+     1
+    ],
+    [
+     "Outro",
+     72960,
+     7680
+    ]
+   ]
+  }
+ },
+ "regions-audio-edits-ours": {
+  "path": "public/regions-audio-edits-ours.logicx",
+  "note": "logic regions --move 2=2 --trim 2=2.25: --split 3=1.5 --mute 4 --rename '4=tone renamed' --loop 1 --fade-in 4=500:50:speed-up --fade-out 4=500:30 on regions-a00-base-logic",
+  "facts": {
+   "regions": [
+    {
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 46080,
+     "loop": true,
+     "muted": false,
+     "offset": 0,
+     "events": [
+      [
+       46080,
+       60,
+       80,
+       240
+      ],
+      [
+       48000,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "fade": [
+      500,
+      50,
+      1,
+      500,
+      30
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 44100,
+     "piece": 1,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ]
+  }
+ },
+ "regions-audio-edits-resave-logic": {
+  "path": "public/regions-audio-edits-resave.logicx",
+  "note": "Logic's re-save of regions-audio-edits-ours: every region, the split's second piece and record, the mute, name, loop and fades as written",
+  "facts": {
+   "regions": [
+    {
+     "kind": "midi",
+     "track": "Untitled",
+     "name": "Inst 1",
+     "start": 46080,
+     "loop": true,
+     "muted": false,
+     "offset": 0,
+     "events": [
+      [
+       46080,
+       60,
+       80,
+       240
+      ],
+      [
+       48000,
+       64,
+       100,
+       480
+      ]
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 2",
+     "name": "v030-tone",
+     "start": 43200,
+     "loop": false,
+     "muted": false,
+     "frames": 22050,
+     "offset": 22050,
+     "piece": 0,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2",
+     "start": 38400,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "tone renamed",
+     "start": 38400,
+     "loop": false,
+     "muted": true,
+     "frames": 44100,
+     "offset": 0,
+     "piece": 0,
+     "fade": [
+      500,
+      50,
+      1,
+      500,
+      30
+     ]
+    },
+    {
+     "kind": "audio",
+     "track": "Audio 3",
+     "name": "v030-tone2.1",
+     "start": 40320,
+     "loop": false,
+     "muted": false,
+     "frames": 44100,
+     "offset": 44100,
+     "piece": 1,
+     "fade": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ]
+  }
  }
 }

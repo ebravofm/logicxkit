@@ -386,14 +386,22 @@ header click moves both to the clicked row. Logic clears the `+79` mark on any r
 from one of our files and keeps `+76`, so a written selection does not survive a load: what
 Logic reads it from is still open.
 
-### MIDI regions — the region entry and its events (`logic midi`, measured 2026-09-13)
+### MIDI regions — the region entry and its events (`logic midi`, measured 2026-09-13/15)
 
 A region is an 80-byte entry in the song container's `qSvE` (`regions.py` has the row and
 object fields): `+4` its start tick with bar 1 at 34560 (the automation root folders sit at
-34560; a one-bar region placed at 3 1 1 1 reads 42240), `+13` bit 0 its Loop flag, `+32` the
-slot of its own sequence triple, whose `qeSM` carries the region name at `+16` (u16 length,
-then the text). The region's `qSvE` is an event list (`events.py`), ticks region-relative with
-38400 at the region's start:
+34560; a one-bar region placed at 3 1 1 1 reads 42240), `+12` bit 0 Mute, `+13` bit 1 Loop
+(bit 0 marks the entry Logic last edited and clears when another is edited; bit 2 is set on
+every MIDI entry), `+15` bit 4 flex / bit 7 selected, `+28` the loop length — `0x3fffffff`
+unlooped, the region's length in ticks when looped (an audio entry read 960000 for a one-beat
+region: ticks times 1000, one measurement), `+32` the slot of its own sequence triple. The
+triple's `qeSM` carries the region name at `+16` (u16 byte length, UTF-8, padded to even —
+`Pad — é` as Logic wrote it), and past the padded name: `+60` the length in ticks, `+76` bit 1
+the loop flag again, `+224` the start in ticks from bar 1 (11520 at bar 4), and `+4` the offset
+in ticks the region plays its sequence from, with bit 7 of `+8` set: a split's second piece
+keeps every event of the parent and starts at the cut (A10: 960). A start trim rewrites every
+event's tick instead and keeps the notes' absolute time. The region's `qSvE` is an event list
+(`events.py`), ticks relative to the sequence with 38400 at the region's start less that offset:
 
 | line | layout |
 |---|---|
@@ -405,6 +413,8 @@ then the text). The region's `qSvE` is an event list (`events.py`), ticks region
 `c` is the channel less one. `+15` bit 7 marks the selected event on every sequence — sections,
 notes, region entries alike — set on the one just made and cleared by a click elsewhere.
 Logic files events by tick, and at one tick program change, controller, notes, pitch bend.
+A MIDI split (Logic's, A10) adds the piece's triple right after the parent's with the next free
+slot and id, the parent's length cut to the split and the piece's to the rest.
 
 ### `.patch` bundles (`logic patch`)
 
@@ -416,25 +426,60 @@ into `$objects` by `CF$UID`). The older shape is a plain `data.plist` with the s
 beside `#Root.cst`. Read on Logic's own default patches, 2026-09-13; `--build` writes the older
 shape from a `.cst`.
 
-### Audio files and regions (`logic regions`, measured 2026-09-13)
+### Audio files and regions (`logic regions`, measured 2026-09-13/15)
 
 An import adds an `lFuA` file record and a `gRuA` region record directly before the first
-`lytS`, and a type-0x24 entry in the song container whose `+44` word is four times the region's
-ordinal; both records carry the same word in their header slot (`+10`). The file record: `+8`
-the name's length in UTF-16 units and the name (big-endian), then `LFUA`; from that magic `+8`
-u8 1 on the newest import only, `+139` the Media folder's path in a 256-byte NUL-padded buffer,
-`+401` u8 channels, `+407` u32 file size, `+457` the format as a reversed four-CC (`EVAW`), `+465`
-u32 data offset, `+469` u32 frames, `+477` u32 sample rate, `+481` u16 channels, `+483` u16 bits,
-`+513` u32 ord (1-based), `+519` u32 link — the next file's word, `0xFFFFFFFF` on the last — the
-file as Logic stored it, converted to the project's rate on import. The region record: `+22` u32
-length in frames, `+38` u8 1 on the newest import only, `+42` u64 a time in 100 ns on the clock
-of the region's UUID, `+74` the name (u16 length, then the text, padded to an even length), a v1
-UUID 47 bytes before its end followed by `ffffffff`. An import clears the selected bit (`+15`
-bit 7) on every other song-container entry. Logic's first import writes one kind-0x0b entry
-directly before the 0x0c run in each `gnoS` stride (24- and 16-byte); each later import appends
-one after it, valued four times the ordinal. Measured on Logic's first, second and third imports
-onto one blank-born project; projects whose regions were deleted or recorded carry sparse words
-and link chains out of file order, and how Logic pairs those is unmeasured.
+`lytS`, both carrying the same slot word in their header (`+10`, four times the import's
+ordinal), and a type-0x24 entry in the song container whose `+44` word is that slot. A split
+(A04) adds a second `gRuA` right after the parent's with the same slot and the piece's number in
+the header owner (`+14`), and an entry with that number at `+40`: entry `(+44, +40)` pairs with
+record `(slot, owner)` and the file is the record with the entry's slot, on every project on hand
+(173 with audio, 1,045 entries, pieces up to 29; earlier the entries were ranked onto the records
+by counter order, which mispaired every region after a split). The file record: `+8` u16 the
+name's length in UTF-16 units, `+10` the name in UTF-16 LE (`v040-é.wav` in the NFD form the file
+system keeps, `🥁` as a surrogate pair), then `LFUA`; from that magic `+7` u8 1 on the newest
+import only, `+138` the Media folder's path in a 256-byte NUL-padded buffer, `+400` u8 channels,
+`+406` u32 file size, `+456` the format as a reversed four-CC (`EVAW`), `+464` u32 data offset,
+`+468` u32 frames, `+476` u32 sample rate, `+480` u16 channels, `+482` u16 bits, `+508` u32 the number
+of region records on the file (2857 of 2858 file records on hand agree; Logic loads that many, so a
+split's second piece with the count left at 1 was dropped), `+512` u32 ord
+(1-based), `+518` u32 link — the next file's word, `0xFFFFFFFF` on the last — the file as Logic
+stored it, converted to the project's rate on import. The region record: `+5` bit 1 Mute
+(mirrored by the entry's `+12` bit 0), `+6` u32 the region's first frame within the file (22050
+after a one-beat start trim at 120 bpm), `+22` u32 its length in frames, `+38` u8 1 on the record
+Logic last touched, `+42` u64 a time in 100 ns on the clock of the region's UUID, `+74` the name
+(u16 byte length, UTF-8 — `Snare 🥁` — padded to an even length), a v1 UUID 47 bytes before its
+end followed by `ffffffff`. An import clears the selected bit (`+15` bit 7) on every other
+song-container entry. Logic's first import writes one kind-0x0b entry directly before the 0x0c
+run in each `gnoS` stride (24- and 16-byte); each later import appends one after it, valued four
+times the ordinal. Measured on Logic's first, second and third imports onto one blank-born
+project (2026-09-13) and its move, trim, split, mute, rename, loop, fade and further imports on
+the `regions-a*` goldens (2026-09-15). Logic's own mixes and legacy saves hold more `gRuA` records
+than type-0x24 entries and more `gRuA` than `lFuA`: records no entry names are kept, never paired. A split also gave the registry a blank kind-0x17 pair for the next free sequence slot (the
+next MIDI region took the slot after it) and a blank kind-0x1e pair keyed by the parent's slot, which
+Logic dropped on its next load; the parent's `+208` word read `ffffffff` and the piece's `+210` byte 1
+for a few saves. `regions --split` writes all of that; Logic's re-save kept the piece once the file's
+region count was raised, and dropped it when the count alone was left at 1.
+
+**Fades** live in the entry's last sixteen bytes (`fades.py`): `+65` u8 Fade-In type (0 In, 1
+Speed Up), `+72` u16 Fade-Out ms, `+75` u8 its curve, `+76` u16 Fade-In ms, `+79` u8 its curve
+(-99..99 as the inspector shows). A drag under Drag: X-Fade that overlapped two regions wrote
+`20 05 f9` at `+66..+68` of the region underneath and 0x80 at `+66` of the one dragged over it,
+and reset the underneath region's Fade-Out curve; those bytes are read raw, never written. The
+Fade-Out type popup (Out, X, EqP, X S) is unmeasured.
+
+### Marker track (`logic markers`, measured 2026-09-15)
+
+The marker track is a sequence triple every blank-born project carries empty: the triple right
+after the one whose events are type 0x11, its `qeSM` a copy of the arrangement section
+sequence's named for the Marker Set (`Untitled`), slot 4. A marker is a 48-byte 0x12 event
+exactly like a section's (`markers.py`): head tick, data line with its `qSxT` text slot at +0
+(the lowest free multiple of 4 among the text records, 12 and 16 after two sections), 0 at +8,
+the length at +12 — 1 on every marker Logic made, shown as ∞ (to the next marker) — and a third
+`0x88` line. Names are RTF text records (`Marker ##` numbers itself). A rename rewrites the
+RTF, a move the head tick, a delete removes the event and its record; Logic's first marker also
+rewrote 4.6 KB of the registry and added an empty triple after the marker track, which ours does
+not. `arrangement --add` and `markers --add` share the pieces (`arrangement_write.py`).
 
 ### Session Player regions (`logic sessionplayer`, measured 2026-09-13)
 
@@ -528,12 +573,22 @@ project is private, so the facts are pinned here and in synthetic tests.
   value change wrote the full list on every member. **Logic does not rebuild the markers on
   load**: a save with the markers stripped and the parameter kept came back with two anchors
   per region. The markers are the quantize; a writer has to make them.
+- **Across every Logic-written `ProjectData` under `resources/` (2026-09-14)** neither bit marks
+  a region reliably: Logic writes marker blocks on entries without `+15` bit 4 and sets the bit
+  on entries with none, and `+48` bit 7 is on many entries that name no sequence. What holds on
+  every one: a chunk carries `0xAA` at byte 7 exactly when it carries `0x88` at `+23/+39/+55/+71`,
+  no block precedes the first entry, and blocks need not start `07` or end `03`. Every entry
+  whose `+32` is not `0xFFFFFFFF` names a sequence triple whose `<0x17><slot>` pair is in both
+  `gnoS` stride runs; an audio entry with no sequence carries `0xFFFFFFFF`. Hit targets rise
+  strictly within every marker list (787,931 adjacent pairs). 10,999 of 11,065 entries naming an
+  RBA Sequence have `+48` bit 7 clear; 44 saves carry 4,943 RBA Sequences no entry names; 2,701
+  audio entries in 233 saves name a 309-byte empty sequence called **MIDI Region**, not RBA Sequence.
 - **Per channel object** (`ivnE`): `+80` = 1 while the track is selected (many at once);
   `+154` bit 4 = **Q-Reference off** (`0x80` → `0x90`), bit 5 = flex mode other than Slicing;
   three bytes at the padded name's end + 402 − 18 hold the **flex mode**: `02 03 02` Slicing,
   `05 00 05` Monophonic (the Q-locked group takes one member's mode for all).
 - **Writing it** (`services/quantize_drums.py`, `logic quantize-drums`): `onsets.py` finds the
-  hits in the reference mics (peak envelope, a 24 dB rise over the quietest 30 ms before, at
+  hits in the reference mics (peak envelope, a 24 dB rise over the quietest 30 ms before — for a file's first hop, the track's quietest hop — at
   most 21 dB under the track's peak). Tuned against the union of the transients Logic marked
   on the take at 1/16, 1/8, 1/4 and 1/32 (310; the later lists' sources are mostly the raw
   positions, a minority re-detected a few ms early on the rendered audio): 78% of them found
@@ -657,7 +712,7 @@ allocated and unbound.
 
 Logic's own Create Track Stack has not been saved and diffed; `services/stack_create.py`
 composes the measured pieces instead. A folder stack is a kind-0 object bound to a `Sub N`
-strip, so a new one gets: the highest stack's object cloned (new id, name, colour, its Sub number after the name, the
+strip, so a new one gets: the highest folder stack's object cloned (a summing stack is never the pattern) (new id, name, colour, its Sub number after the name, the
 channel index of `Sub N+1`, a minted stamp, fresh UUID, the pattern's icon kept), a `Sub N+1` strip cloned from `Sub N` right after it (`+6 = N+1`
 — Subs count from 1 there, Audio and Inst from 0 — the label, the object's UUID at `len-48`,
 no destination or input), every later channel owner moved up by one and the count record's
@@ -835,8 +890,9 @@ template and still pairs 56/56 by object id (`orchestrators/apply_template.py`).
 (its Environment objects are not found); opening a copy in Logic and saving rewrites only the
 *active* alternative in the current layout — switch to each other alternative and save it too,
 or remove the stale ones in Edit Alternatives. Such a save has no `ArrangeCLgUserData`, so the
-header copy is skipped with a note. One map serves every alternative of a project; an
-alternative whose tracks the map does not name is left as it was, with a note. Converted
+header copy is skipped with a note. One map serves every alternative of a project: it is
+drafted from the first alternative, which must fit or nothing is written, and a later
+alternative whose tracks the map does not name is left as it was, byte for byte, with a note. Converted
 2026-09-08: a 10.4.4 project and a 12.3.1 one carrying a 10.4-era alternative.
 
 A project of another lineage is refused (across lineages the label rule pairs whatever shares
@@ -844,7 +900,8 @@ an `Audio N`) unless a **map file** says how its tracks pair: `--propose-map FIL
 from the names — same name, then a numbered prefix with the DI preferred (`Guitar 1` ->
 `Gtr 1 DI`), then shared words, kinds never crossing — with a confidence per line for a
 person to correct; `--map FILE` applies it, pairing only by the map, object id and exact
-name. Session tracks mapped to `(none)` are left alone — no rule may claim them, not even a
+name. The map's keys are resolved to object ids once, against the session as given, so a
+`Name (Sub N)` key still pairs after the run's own stacks renumber the Sub strips. Session tracks mapped to `(none)` are left alone — no rule may claim them, not even a
 matching object id; template tracks nobody maps to are added where a writer can, and the
 rows an earlier structural round made stay paired with the template row they stand for
 (object id, not name — a new `Drums` aux beside a legacy `Drums` aux would otherwise be

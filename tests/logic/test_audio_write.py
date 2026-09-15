@@ -5,7 +5,7 @@ import unittest
 import uuid
 
 import _paths  # noqa: F401
-from logicxkit.logic.services.audio_regions import FORMAT_AT, NAME_LEN_AT, PATH_AT, REGION_NAME_AT
+from logicxkit.logic.services.audio_regions import FORMAT_AT, NAME_AT, PATH_AT, REGION_NAME_AT, file_name, magic_at, region_name
 from logicxkit.logic.services.audio_write import WavInfo, file_record, import_templates, region_record, superseded
 from logicxkit.logic.services.insert import HEADER
 from logicxkit.logic.services.recbuild import slot_of
@@ -15,7 +15,7 @@ INFO = WavInfo(88244, "WAVE", 44, 44100, 44100, 1, 16)
 
 def chain_span(raw: bytes) -> bytes:
     p = raw[HEADER:]
-    return p[NAME_LEN_AT + 1 + 2 * p[NAME_LEN_AT] + FORMAT_AT:][48:72]
+    return p[magic_at(p) + FORMAT_AT:][48:72]
 
 
 class FileRecordTest(unittest.TestCase):
@@ -31,20 +31,32 @@ class FileRecordTest(unittest.TestCase):
         lfua = import_templates()["lfua"]
         stereo = WavInfo(88244, "WAVE", 44, 22050, 44100, 2, 16)
         raw = file_record(lfua, name="a.wav", folder="/" + "m" * 254, info=stereo, ordinal=0)
-        m, t = HEADER + NAME_LEN_AT + 1 + 2 * len("a.wav"), HEADER + NAME_LEN_AT + 1 + 2 * lfua[HEADER + NAME_LEN_AT]
+        m, t = HEADER + NAME_AT + 2 * len("a.wav"), HEADER + magic_at(lfua[HEADER:])
         self.assertEqual(raw[m + PATH_AT + 255], 0)
-        self.assertEqual(raw[m + PATH_AT + 256:m + 401] + raw[m + 402:m + 407], lfua[t + PATH_AT + 256:t + 401] + lfua[t + 402:t + 407])
-        self.assertEqual(raw[m + 401], 2)
+        self.assertEqual(raw[m + PATH_AT + 256:m + 400] + raw[m + 401:m + 406], lfua[t + PATH_AT + 256:t + 400] + lfua[t + 401:t + 406])
+        self.assertEqual(raw[m + 400], 2)
         with self.assertRaisesRegex(ValueError, "longer than the record holds"):
             file_record(lfua, name="a.wav", folder="/" + "m" * 255, info=stereo, ordinal=0)
 
     def test_a_superseded_file_moves_only_its_link_and_current_mark(self):
         raw = file_record(import_templates()["lfua"], name="a.wav", folder="/Media", info=INFO, ordinal=0)
-        m = HEADER + NAME_LEN_AT + 1 + 2 * len("a.wav")
+        m = HEADER + NAME_AT + 2 * len("a.wav")
         moved = superseded(raw, link=4)
-        self.assertEqual((raw[m + 8], moved[m + 8], struct.unpack_from("<I", moved, m + FORMAT_AT + 62)[0]), (1, 0, 4))
-        self.assertEqual({k for k in range(len(raw)) if raw[k] != moved[k]}, {m + 8} | set(range(m + FORMAT_AT + 62, m + FORMAT_AT + 66)))
-        self.assertEqual({k for k in range(len(raw)) if raw[k] != superseded(raw)[k]}, {m + 8})
+        self.assertEqual((raw[m + 7], moved[m + 7], struct.unpack_from("<I", moved, m + FORMAT_AT + 62)[0]), (1, 0, 4))
+        self.assertEqual({k for k in range(len(raw)) if raw[k] != moved[k]}, {m + 7} | set(range(m + FORMAT_AT + 62, m + FORMAT_AT + 66)))
+        self.assertEqual({k for k in range(len(raw)) if raw[k] != superseded(raw)[k]}, {m + 7})
+
+
+class NameTest(unittest.TestCase):
+    def test_names_outside_ascii_read_back_as_written(self):
+        t = import_templates()
+        for name in ("v040-e\u0301.wav", "v040-\U0001f941.wav", "v040-日本.wav"):
+            raw = file_record(t["lfua"], name=name, folder="/Media", info=INFO, ordinal=0)
+            self.assertEqual((file_name(raw[HEADER:]), struct.unpack_from("<H", raw, HEADER + 8)[0]), (name, 11))
+            self.assertEqual(raw[HEADER + magic_at(raw[HEADER:]):][:4], b"LFUA")
+        for name in ("Snare \U0001f941", "Pad — é", "v040-日本"):
+            raw = region_record(t["grua"], name=name, frames=10, ordinal=0)
+            self.assertEqual((region_name(raw[HEADER:]), len(raw) % 2), (name, len(t["grua"]) % 2))
 
 
 class RegionRecordTest(unittest.TestCase):

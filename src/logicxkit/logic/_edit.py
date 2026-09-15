@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import plistlib
 import shutil
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from pathlib import Path
 
 from pf_core.utils.io import atomic_write_bytes
@@ -20,22 +20,25 @@ class CommandError(Exception):
 
 
 Step = Callable[[bytes, "int | None", Path], bytes]
+Moved = Callable[[bytes, "int | None", Path], Iterable[tuple[int, int, int]]]
 
 
-def edit_copy(project: Path, out: Path, step: Step) -> Path:
+def edit_copy(project: Path, out: Path, step: Step, moved: Moved | None = None) -> Path:
     """Copy ``project`` into ``out`` and run ``step(data, track_count, data_file)`` over every
     ProjectData in the copy. Each result is held against its input before it is written and read
-    back after; any failure discards the whole copy."""
+    back after; any failure discards the whole copy. ``moved(data, track_count, data_file)`` names
+    the region keys the step moves or removes on purpose in that alternative
+    (`integrity_regions.region_keys`)."""
     copied = copy_project(project, out)
     dest, root = copied["dest"], copied["dest_root"]
     print(f"into : {dest}\n")
     try:
         for data_file in sorted(dest.rglob("Alternatives/*/ProjectData")):
-            count = project_metadata(data_file.parents[2]).get("tracks")
+            count = project_metadata(data_file.parents[2], data_file.parent.name).get("tracks")
             before = data_file.read_bytes()
             after = step(before, count, data_file)
             try:
-                require_no_regression(before, after)
+                require_no_regression(before, after, removed=moved(before, count, data_file) if moved else ())
             except ValueError as e:
                 raise CommandError(f"{data_file.parent.name}: {e}") from None
             atomic_write_bytes(data_file, after)
@@ -57,7 +60,10 @@ def _discard(root: Path) -> None:
 
 def first_project_data(project: Path) -> bytes:
     bundle = find_project(project)
-    return sorted(bundle.glob("Alternatives/*/ProjectData"))[0].read_bytes()
+    found = sorted(bundle.glob("Alternatives/*/ProjectData"))
+    if not found:
+        raise CommandError(f"no project at {bundle}")
+    return found[0].read_bytes()
 
 
 def bump_track_count(data_file: Path, by: int = 1) -> int:
@@ -74,18 +80,11 @@ def object_by_name(data: bytes, name: str, count: int | None) -> int:
     stack header shares with a channel — ``Drums``, ``Bass`` — is written ``Drums (Sub 1)``
     or ``Drums (Aux 2)``: the mixer label in parentheses picks the row."""
     from .services.stacks import read_tracks
-    rows = read_tracks(data, count)
-    wanted, label = name.strip(), None
-    if wanted.endswith(")") and " (" in wanted:
-        wanted, _, label = wanted[:-1].rpartition(" (")
-    hits = [r["object_id"] for r in rows
-            if r["name"] == wanted and (label is None or r["label"] == label)]
-    if len(hits) != 1:
-        if len(hits) > 1:
-            labels = ", ".join(f"{wanted} ({r['label']})" for r in rows if r["name"] == wanted)
-            raise CommandError(f"{name!r}: more than one track by that name; say which: {labels}")
-        raise CommandError(f"{name!r}: no track by that name")
-    return hits[0]
+    from .services.trackname import one_object
+    try:
+        return one_object(read_tracks(data, count), name)
+    except ValueError as e:
+        raise CommandError(str(e)) from None
 
 
 def owner_by_label(data: bytes, label: str) -> int:

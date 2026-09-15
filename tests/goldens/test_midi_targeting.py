@@ -70,10 +70,27 @@ class SharedNameTest(unittest.TestCase):
         out = _note(rename_track(self.base, self.audio, "Inst 1"), 3.5)
         self.assertEqual([(r.name, [e.tick for e in r.events]) for r in read_midi(out)], [("Inst 1", [BAR_ONE + 2 * BAR + 1920])])
 
+    @_goldens.needs("sessionplayer-track-logic")
     def test_regions_on_both_holding_the_tick_are_named(self):
-        data, _ = add_region(self.base, track="Audio 2", start=BAR_ONE + 2 * BAR, length=BAR, name="twin")
-        with self.assertRaisesRegex(ValueError, r"inside 2 MIDI regions on 'Inst 1': 'Inst 1' at bar 3.*'twin' at bar 3"):
-            _note(rename_track(data, self.audio, "Inst 1"), 3.5)
+        from logicxkit.logic.services.project import project_metadata
+        p = _goldens.path("sessionplayer-track-logic")                # two instrument tracks
+        base, count = project_data(p), project_metadata(p).get("tracks")
+        rows = [t for t in read_tracks(base, count) if (t["label"] or "").startswith("Inst ")]
+        other, named = rows[-1], next(t for t in rows if t["name"] != rows[-1]["name"])
+        data, _ = add_region(base, track=other["name"], start=BAR_ONE + 2 * BAR, length=BAR, name="twin", track_count=count)
+        with self.assertRaisesRegex(ValueError, rf"MIDI regions on '{named['name']}': .*'Inst 1' at bar 3.*'twin' at bar 3"):
+            add_note(rename_track(data, other["object_id"], named["name"]), track=named["name"], tick=BAR_ONE + 2 * BAR + 1920,
+                     pitch=60, velocity=100, length=240, track_count=count)
+
+    def test_a_label_picks_the_instrument_track_a_new_region_goes_on(self):
+        shared = rename_track(self.base, self.audio, "Inst 1")
+        with self.assertRaisesRegex(ValueError, r"2 tracks named 'Inst 1'; say which: .*Inst 1 \(Audio 2\)"):
+            add_region(shared, track="Inst 1", start=BAR_ONE + 8 * BAR, length=BAR)
+        out, report = add_region(shared, track="Inst 1 (Inst 1)", start=BAR_ONE + 8 * BAR, length=BAR, name="picked")
+        self.assertNotEqual(report["object_id"], self.audio)
+        self.assertIn("picked", [r.name for r in read_midi(out)])
+        out, report = add_region(shared, track="Inst 1 (Inst 1)", start=BAR_ONE + 8 * BAR, length=BAR)
+        self.assertEqual(report["name"], "Inst 1")
 
     def test_no_such_track(self):
         with self.assertRaisesRegex(ValueError, "no track named 'Nope'"):

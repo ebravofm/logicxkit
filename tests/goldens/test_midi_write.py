@@ -141,17 +141,25 @@ class NameLengthTest(unittest.TestCase):
         from logicxkit.logic.services.midi import NAME_AT
         from logicxkit.logic.services.sequence import sequences, triple_by_slot
         base = project_data(_goldens.path("midi-empty-region-logic"))
-        out, report = add_region(base, track="Audio 2", start=38400, length=3840 * 4, name="a longer name")
+        start = 38400 + 8 * 3840
+        out, report = add_region(base, track="Inst 1", start=start, length=3840 * 4, name="a longer name")
         records = project_records(out)
         q = records[triple_by_slot(sequences(records), report["slot"]).start].raw[HEADER:]
         n = struct.unpack_from("<H", q, NAME_AT)[0]
         end = NAME_AT + 2 + n + (n & 1)
         self.assertEqual(struct.unpack_from("<I", q, end + 60)[0], 3840 * 4)
         self.assertEqual(struct.unpack_from("<H", q, end + 204)[0], report["object_id"])
-        out = add_note(out, track="Audio 2", tick=38400 + 960, pitch=60, velocity=100, length=240)
+        out = add_note(out, track="Inst 1", tick=start + 960, pitch=60, velocity=100, length=240)
         q2 = project_records(out)[triple_by_slot(sequences(project_records(out)), report["slot"]).start].raw[HEADER:]
         self.assertEqual([struct.unpack_from("<I", q2, end + off)[0] for off in (123, 172, 192)], [84, 44, 1])
         self.assertEqual(q2[:end + 123], q[:end + 123])
+
+    def test_a_track_that_is_not_a_software_instrument_is_refused_by_kind(self):
+        base = project_data(_goldens.path("midi-empty-region-logic"))
+        for track, kind in [("Audio 2", "an audio track (Audio 2)"), ("Stereo Out", "an output track (Output 1-2)")]:
+            with self.subTest(track), self.assertRaisesRegex(ValueError, f"^'{track}' is {kind.replace('(', '[(]').replace(')', '[)]')}; "
+                                                                        "a MIDI region goes only on a software instrument track$"):
+                add_region(base, track=track, start=38400, length=3840)
 
 
 if __name__ == "__main__":
