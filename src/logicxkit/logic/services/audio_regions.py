@@ -26,6 +26,7 @@ from dataclasses import dataclass
 
 from .events import BAR_ONE, PPQ
 from .fades import Fade, read_fade
+from .region_params import REGION_COLOUR_AT, RegionParams, read_params
 from .insert import HEADER, OWNER_OFF, project_records
 from .midi import ENTRY_TICK_AT, LOOP_BIT, MUTE_BIT, REGION_BAR_ONE, entry_flags
 from .recbuild import slot_of
@@ -74,6 +75,8 @@ class AudioRegion:
     at: int = -1               # its entry's offset in the song container
     record: int = -1           # its region record's index
     file_slot: int = -1        # the slot word its record and file carry
+    params: RegionParams = RegionParams()
+    colour: int = 0            # a palette index; a region born on a track carries the track's
 
     @property
     def start_bar(self) -> float:
@@ -179,5 +182,6 @@ def read_audio_regions(data: bytes, track_count: int | None = None) -> list[Audi
                                struct.unpack_from("<I", e, ENTRY_TICK_AT)[0] - REGION_BAR_ONE + BAR_ONE,
                                struct.unpack_from("<I", rec, REGION_FRAMES_AT)[0], files.get(slot),
                                struct.unpack_from("<I", rec, REGION_OFFSET_AT)[0], oid,
-                               bool(flags & MUTE_BIT), bool(flags & LOOP_BIT), piece, read_fade(e), off, k, slot))
+                               bool(flags & MUTE_BIT), bool(flags & LOOP_BIT), piece, read_fade(e), off, k, slot,
+                               read_params(e), rec[REGION_COLOUR_AT]))
     return out

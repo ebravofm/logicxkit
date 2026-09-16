@@ -1,5 +1,5 @@
-"""Region edits held to Logic's own single-change saves of one blank-born project (session A,
-2026-09-15): each of ours is written onto the save before Logic's and read back the same, with
+"""Region edits held to Logic's own single-change saves of one blank-born project (2026-09-15,
+the `regions-a*` goldens): each of ours is written onto the save before Logic's and read back the same, with
 the same song-container entries (their edited and selected marks aside)."""
 
 import importlib.util

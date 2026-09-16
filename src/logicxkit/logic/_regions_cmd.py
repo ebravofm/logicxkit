@@ -1,23 +1,32 @@
 """`logic regions` — every region on every track, numbered: MIDI ones with their events, audio
-ones with their files, mutes, loops and fades; on a copy, `--audio` imports a WAV as a new
-region and the edits take a listing number (`region_edit.py`)."""
+ones with their files, mutes, loops, fades, inspector parameters and colours; on a copy, `--audio`
+imports a WAV as a new region and the edits take a listing number (`region_edit.py`,
+`region_params_write.py`)."""
 
 from __future__ import annotations
 
+import argparse
 import json
 from dataclasses import replace
 from pathlib import Path
 
 from ._edit import CommandError, edit_copy, first_project_data
+from ._midi_cmd import events_count
 from .services.audio_regions import read_audio_files
 from .services.audio_write import add_audio_region
 from .services.project import first_alternative, project_metadata
+from .services.fades import OUT_CODES
 from .services.region_edit import (
     listed, located, move_region, rename_region, renumbered, samples_per_tick_of, set_fade, set_loop, set_mute, split_region,
     trim_region,
 )
+from .services.region_params_write import set_colour, set_crossfade, set_params
 from .services.retrack import find_project
 from .services.signature import meter
+from .services.stacks import read_tracks
+
+PARAMS = {"gain": ("gain", "N=DB"), "delay": ("delay", "N=TICKS"), "transpose": ("transpose", "N=SEMITONES"),
+          "fine-tune": ("fine_tune", "N=CENTS")}
 
 
 def _number(text: str, what: str) -> float:
@@ -47,17 +56,41 @@ def _switch(spec: str, flag: str) -> tuple[int, bool]:
     return _index(n, flag), rest != "off"
 
 
-def _fade(spec: str, flag: str) -> tuple[int, int, int, int]:
-    n, rest = _split(spec, flag, "N=MS[:CURVE[:speed-up]]")
+def _fade(spec: str, flag: str) -> tuple[int, int | None, int, str]:
+    """``N=MS[:CURVE[:TYPE]]`` -> (N, ms, curve, type); a crossfade's MS may be empty (the overlap)."""
+    shape = {"fade-in": "N=MS[:CURVE[:speed-up]]", "fade-out": "N=MS[:CURVE[:out|x|eqp|xs]]", "crossfade": "N=[MS][:CURVE[:x|eqp|xs]]"}[flag]
+    n, rest = _split(spec, flag, shape)
     parts = rest.split(":")
     try:
-        ms, curve = int(parts[0]), int(parts[1]) if len(parts) > 1 else 0
+        ms = None if flag == "crossfade" and not parts[0] else int(parts[0])
+        curve = int(parts[1]) if len(parts) > 1 and parts[1] else 0
     except ValueError:
-        raise CommandError(f"bad --{flag} {spec!r}: N=MS[:CURVE[:speed-up]]") from None
+        raise CommandError(f"bad --{flag} {spec!r}: {shape}") from None
     kind = parts[2] if len(parts) > 2 else ""
-    if kind not in ("", "in", "speed-up") or (flag == "fade-out" and kind):
-        raise CommandError(f"bad --{flag} {spec!r}: the type is `speed-up` on a fade-in only")
-    return n, ms, curve, int(kind == "speed-up")
+    kinds = {"fade-in": ("", "in", "speed-up"), "fade-out": ("", *OUT_CODES), "crossfade": ("", "x", "eqp", "xs")}[flag]
+    if kind not in kinds or len(parts) > 3:
+        raise CommandError(f"bad --{flag} {spec!r}: {shape}")
+    return n, ms, curve, kind
+
+
+def _int(spec: str, flag: str, shape: str) -> tuple[int, int]:
+    n, rest = _split(spec, flag, shape)
+    try:
+        return n, int(rest)
+    except ValueError:
+        raise CommandError(f"bad --{flag} {spec!r}: {shape}") from None
+
+
+UNVERIFIED = ("transpose",)      # Logic flexed the track for it and the writer does not; the rest re-saved as written
+
+
+class _Marked(argparse.Action):
+    """An edit whose field Logic has not re-saved as written: appended to the edits and marked, so
+    the capability notice calls the run DERIVED."""
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        namespace.edits = [*(namespace.edits or []), values]
+        namespace.unverified = True
 
 
 class _Tempo:
@@ -130,13 +163,33 @@ def _edits(args, data, count, tempo: _Tempo, idents: dict) -> bytes:
         elif flag == "rename":
             _n, name = _split(spec, flag, "N=NAME")
             data = rename_region(data, n, name, count)
+        elif flag == "colour":
+            _n, index = _int(spec, flag, "N=INDEX")
+            data = set_colour(data, n, index, count)
+        elif flag in PARAMS or flag == "reverse":
+            if flag == "reverse":
+                _n, on = _switch(spec, flag)
+                change = {"reverse": on}
+            else:
+                _n, value = _int(spec, flag, PARAMS[flag][1])
+                change = {PARAMS[flag][0]: value}
+            have = located(data, n, count)
+            if have.audio is None:
+                raise CommandError(f"region {n} is a MIDI region; --{flag} is an audio region's")
+            data = set_params(data, n, replace(have.audio.params, **change), count)
+        elif flag == "crossfade":
+            _n, ms, curve, kind = _fade(spec, flag)
+            if tempo() is None:
+                raise CommandError("a crossfade's length needs the project's sample rate")
+            data = set_crossfade(data, n, ms=ms, curve=curve, kind=kind or "eqp", spt=tempo(), rate=tempo.rate, track_count=count)
         else:
             _n, ms, curve, kind = _fade(spec, flag)
             have = located(data, n, count)
             if have.audio is None:
                 raise CommandError(f"region {n} is a MIDI region; fades are an audio region's")
             fade = have.audio.fade
-            fade = replace(fade, in_ms=ms, in_curve=curve, in_type=kind) if flag == "fade-in" else replace(fade, out_ms=ms, out_curve=curve)
+            fade = replace(fade, in_ms=ms, in_curve=curve, in_type=int(kind == "speed-up")) if flag == "fade-in" \
+                else replace(fade, out_ms=ms, out_curve=curve, out_type=kind or "out")
             data = set_fade(data, n, fade, count)
     return data
 
@@ -187,26 +240,31 @@ def _listing(project: Path, args) -> int:
         regions = [r for r in regions if r.region.track == args.track]
     if args.json:
         midi = [{"number": r.number, "track": r.midi.track, "row": r.midi.row, "name": r.midi.name, "start": r.midi.start,
-                 "loop": r.midi.loop, "muted": r.midi.muted, "events": len(r.midi.events)} for r in regions if r.midi]
+                 "loop": r.midi.loop, "muted": r.midi.muted, "events": len(r.midi.events), "played": len(r.midi.played),
+                 "colour": r.midi.colour} for r in regions if r.midi]
         audio = [{"number": r.number, "track": r.audio.track, "row": r.audio.row, "name": r.audio.name, "start": r.audio.start,
                   "frames": r.audio.frames, "offset": r.audio.offset, "piece": r.audio.piece, "loop": r.audio.loop,
-                  "muted": r.audio.muted, "fade": vars(r.audio.fade), "file": vars(r.audio.file) if r.audio.file else None}
+                  "muted": r.audio.muted, "fade": vars(r.audio.fade), "params": vars(r.audio.params), "colour": r.audio.colour,
+                  "file": vars(r.audio.file) if r.audio.file else None}
                  for r in regions if r.audio]
         print(json.dumps({"midi": midi, "audio": audio, "files": [vars(f) for f in files]}, indent=1))
         return 0
     n_midi, n_audio = sum(1 for r in regions if r.midi), sum(1 for r in regions if r.audio)
+    track_colours = {t["name"]: t["colour"] for t in read_tracks(data, count)}
     print(f"{project.name}: {n_midi} MIDI region(s), {n_audio} audio region(s), {len(files)} audio file(s)")
     for loc in regions:
         r = loc.region
         marks = ("  (loop)" if r.loop else "") + ("  (muted)" if r.muted else "")
+        colour = f"  colour {r.colour}" if r.colour != track_colours.get(r.track) else ""
         if loc.midi:
-            print(f"  {loc.number:3d} {r.track or '-':16s} {r.name!r:22s} bar {r.start_bar:6.2f}  MIDI   {len(r.events)} event(s){marks}")
+            print(f"  {loc.number:3d} {r.track or '-':16s} {r.name!r:22s} bar {r.start_bar:6.2f}  MIDI   {events_count(r)}{marks}{colour}")
         else:
             f = r.file
             src = f"{f.name} {f.rate} Hz {f.channels} ch {f.bits} bit" if f else "(file record missing)"
             fade = f"  fade {r.fade}" if str(r.fade) else ""
+            params = f"  {r.params}" if str(r.params) else ""
             offset = f" from {r.offset}" if r.offset else ""
-            print(f"  {loc.number:3d} {r.track or '-':16s} {r.name!r:22s} bar {r.start_bar:6.2f}  audio  {r.frames} frames{offset}  {src}{marks}{fade}")
+            print(f"  {loc.number:3d} {r.track or '-':16s} {r.name!r:22s} bar {r.start_bar:6.2f}  audio  {r.frames} frames{offset}  {src}{marks}{fade}{params}{colour}")
     return 0
 
 
@@ -235,6 +293,15 @@ def register(sub) -> None:
                               ("mute", "N[=on|off]", "mute region N (on by default)"),
                               ("rename", "N=NAME", "rename region N"),
                               ("fade-in", "N=MS[:CURVE[:speed-up]]", "fade in over MS ms, curve -99..99"),
-                              ("fade-out", "N=MS[:CURVE]", "fade out over MS ms, curve -99..99")):
-        ap.add_argument(f"--{flag}", dest="edits", action="append", type=lambda s, f=flag: (f, s), metavar=shape, help=text)
-    ap.set_defaults(func=cmd_regions)
+                              ("fade-out", "N=MS[:CURVE[:TYPE]]", "fade out over MS ms, curve -99..99, type out, x, eqp or xs"),
+                              ("crossfade", "N=[MS][:CURVE[:TYPE]]", "a crossfade from region N into the region over it: MS (the overlap "
+                                                                     "when empty), curve, type x, eqp (default) or xs"),
+                              ("gain", "N=DB", "region N's Gain, -30..30 dB"),
+                              ("delay", "N=TICKS", "region N's Delay in ticks (negative is earlier)"),
+                              ("transpose", "N=SEMITONES", "region N's Transpose (Logic flexes the track on its own; the entry's field alone is written)"),
+                              ("fine-tune", "N=CENTS", "region N's Fine Tune, -50..50 cents"),
+                              ("reverse", "N[=on|off]", "region N's Reverse (on by default)"),
+                              ("colour", "N=INDEX", "region N's colour, a palette index 0-255 (the Color window's swatch k is 24 + k)")):
+        ap.add_argument(f"--{flag}", dest="edits", action=_Marked if flag in UNVERIFIED else "append", type=lambda s, f=flag: (f, s),
+                        metavar=shape, help=text)
+    ap.set_defaults(func=cmd_regions, unverified=False)

@@ -3,6 +3,33 @@
 Notable changes to logicxkit. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versions follow [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.5.0 — 2026-09-15
+
+### Added
+
+- `logic midi` transforms — Logic's Transform window: `--select` by position (song bars), pitch, velocity,
+  length and channel with `--set`, `--add`, `--mul`, `--min`, `--max`, `--random`, `--flip`, `--quantize
+  position=|length=`, `--crescendo`, `--exp` and `--reverse`, and the presets `--humanize`, `--fixed-velocity`,
+  `--velocity-limit`, `--random-velocity`, `--crescendo`, `--reverse-position`, `--reverse-pitch`,
+  `--exp-velocity`, `--fixed-length`, `--max-length`, `--min-length`, `--half-speed`, `--double-speed`,
+  `--legato`, `--staccato` and `--swing`, over the regions numbered after the project or every region on
+  `--track`; `--seed` repeats the random moves. Swing puts every second grid line late by grid × (2·swing − 1),
+  the tick Logic's Piano Roll wrote at 60% (`midi-qswing-60-logic`). A step that moves a note's position
+  is refused on a region holding controller, bend or program events, which would stay behind. The
+  arithmetic is groovebin 0.2.0's.
+- `logic regions` reads and writes an audio region's Gain, Delay, Transpose, Fine Tune and Reverse (`--gain`,
+  `--delay`, `--transpose`, `--fine-tune`, `--reverse`), the Fade-Out type (`--fade-out N=MS:CURVE:TYPE`), a
+  crossfade into the region over it (`--crossfade`) and a region's colour (`--colour`), as Logic's own edits
+  of one region wrote them (the `regions-b*` goldens).
+- `logic drums-to-midi --hit TRACK=TERM:THRESHOLD` gives one track its own detector floor and `--velocity
+  FLOOR..CEILING[:GAMMA]` maps the velocities onto a band.
+- The `midi` and `regions` listings say `2 event(s), 1 played` when a MIDI split leaves a region holding more
+  than it plays; `--json` carries `played`.
+
+### Changed
+
+- logicxkit depends on `groovebin~=0.2.0`.
+
 ## 0.4.0 — 2026-09-15
 
 ### Added

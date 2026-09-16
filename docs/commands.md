@@ -125,12 +125,14 @@ either a strip or a whole project. `logic plugins` stops at identity: every slot
 which third-party components `auval -a` does not list on this Mac. `logic midi` reads the MIDI
 regions and `--export` writes what each region plays as a Standard MIDI File with the song's tempo
 map and time signatures, bar 1 at tick 0 (a split leaves both pieces holding the parent's events;
-the piece plays its own span); a song with events before bar 1 is refused. `--region` and
+the piece plays its own span, and the `midi` and `regions` listings say `2 event(s), 1 played` when
+they differ, `--json` carrying `played` beside `events`); a song with events before bar 1 is refused. `--region` and
 `--note` write a region and notes on a copy through the integrity gate; a note goes into the
 region on its track that holds its bar, and is refused when none or several do. The listing
 numbers regions across the song (`--json` carries it as `number`), and edits take that number:
 `--transpose`, `--velocity`, `--move`, `--delete` and `--quantize` change a region in place,
-`--copy-region` copies one elsewhere and `--copy-notes` the notes it plays, and `--remap [N=]SRC:DST` translates drum
+`--copy-region` copies one elsewhere — the whole sequence, as Logic's own copy does, so a split piece's
+copy holds the parent's events too — and `--copy-notes` only the notes it plays, and `--remap [N=]SRC:DST` translates drum
 note numbers between groovebin's note maps (`gm`, `addictive-drums-2`, `drum-kit-designer`) in
 region N or every region on `--track`,
 counting the notes with no counterpart. In-place edits run in command-line order, then
@@ -139,7 +141,29 @@ means the same region (track, start and name) in every alternative, and is refus
 alternative lacks it. An edit that moves an event out of its region is refused, a MIDI region
 goes only onto a software instrument track, and notes at one tick are written low to high.
 `--remap` keeps the pitch of chokes and stick clicks, which GM has no stroke for, and refuses a
-region holding polyphonic aftertouch. `--map NAME` names each note's stroke in the listing. `logic regions`
+region holding polyphonic aftertouch. `--map NAME` names each note's stroke in the listing. The
+transforms are Logic's Transform window: `logic midi SONG N … --out DIR` (regions by listing number)
+or `--track NAME` (every region on it) with `--select COND[,COND…]` — `position` in song bars as the
+signature track numbers them, a meter change and all (a whole number is the whole bar), `pitch`, `velocity`, `length` (ticks or `1/16`), `channel`, each `=VALUE`,
+`=LO-HI` or `<`, `<=`, `>`, `>=`, `!=` a value — and the operations `--set`, `--add`, `--mul`, `--min`,
+`--max`, `--random`, `--flip`, `--quantize position=|length=`, `--crescendo`, `--exp` and `--reverse`
+(`FIELD=VALUE`), or the presets `--humanize`, `--fixed-velocity`, `--velocity-limit`, `--random-velocity`,
+`--crescendo LO..HI`, `--reverse-position`, `--reverse-pitch`, `--exp-velocity`, `--fixed-length`,
+`--max-length`, `--min-length`, `--half-speed`, `--double-speed`, `--legato`, `--staccato` and `--swing`.
+Consecutive operations apply in one pass reading each note as it was; each preset is its own pass,
+and `--select` picks the notes once for the whole run, so a later pass works on the ones the
+selection picked rather than re-picking against what an earlier pass changed. Notes outside the
+selection keep their bytes, and so do the region's controller, bend and program events — half and
+double speed alone move them, rescaled with the notes. A note pushed out of its region is refused as
+any edit is; so is any step that moves a note's position on a region holding those events, since
+they would stay behind: `position=` under `--set`, `--add`, `--mul`, `--min`, `--max`, `--random`,
+`--flip`, `--crescendo` and `--quantize`, `--reverse position`, `--reverse-position`, `--swing`, and
+`--humanize` unless its `pos` is 0. A region holding polyphonic aftertouch is refused as `--remap`
+refuses one, half and double speed and swing take the whole region, and
+`--seed N` repeats the random moves (`random` prints the seed it chose; each alternative gets the
+same draws). Region numbers go before the transform flags — `--staccato 3` hands the 3 to
+`--staccato`, which is refused when it leaves no region named. The arithmetic is groovebin's
+(`groovebin transform` does the same to a `.mid`). `logic regions`
 lists every region, numbered, with its mute, loop, fades and audio file (a split's pieces with
 their first frame), and `--audio` imports a PCM WAV at the project's sample rate — other rates
 are refused, since Logic converts on import and this does not. It writes onto a project with
@@ -148,9 +172,16 @@ layout and a WAV whose name the project already holds, before anything is copied
 ASCII are written as Logic writes them (UTF-8 region names, UTF-16 file names). The edits take
 the listing number, in command-line order on a copy: `--move N=BAR`, `--trim N=BAR:BARS` (the
 start with its content kept in place, the length, or both), `--split N=BAR`, `--loop N[=on|off]`,
-`--mute N[=on|off]`, `--rename N=NAME`, `--fade-in N=MS[:CURVE[:speed-up]]` and `--fade-out
-N=MS[:CURVE]`; a looping region is not split, a flexed (quantized) region is neither trimmed nor
-split, a trim past the file is refused, and a MIDI region has no fades. Each edit names a region by
+`--mute N[=on|off]`, `--rename N=NAME`, `--fade-in N=MS[:CURVE[:speed-up]]`, `--fade-out
+N=MS[:CURVE[:TYPE]]` (type `out`, `x`, `eqp` or `xs`), `--crossfade N=[MS][:CURVE[:TYPE]]` (from region
+N into the one that starts inside it on its track — exactly one must; MS is the overlap when empty,
+the type `eqp` by default), the inspector's `--gain N=DB`, `--delay N=TICKS`, `--transpose N=SEMITONES`,
+`--fine-tune N=CENTS` and `--reverse N[=on|off]`, and `--colour N=INDEX` (a palette index; the Color
+window's swatch k is 24 + k); the listing shows the parameters that are set and a colour that differs
+from the track's. A looping region is not split, a flexed (quantized) region is neither trimmed nor
+split, a trim past the file is refused, a MIDI region has no fades or parameters, and Transpose is
+written as the entry's field alone (Logic flexes the track itself when it transposes an unflexed
+region). Each edit names a region by
 its number in the input's listing, whatever the imports and edits before it moved; regions
 playing one sequence (aliases) take a mute each and no other edit. A number means the same region (track, name
 and start) in every alternative, and is refused where an alternative lacks it — as is a marker

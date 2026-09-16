@@ -44,11 +44,17 @@ class Edit:
 
 class _InOrder(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        namespace.edits = [*(namespace.edits or []), (option_string.lstrip("-"), values)]
+        flag = option_string.lstrip("-")
+        if flag == "quantize" and values.partition("=")[0] in ("position", "length"):
+            namespace.steps = [*(getattr(namespace, "steps", None) or []), (flag, values)]      # a transform op
+        else:
+            namespace.edits = [*(namespace.edits or []), (flag, values)]
 
 
 def add_arguments(ap) -> None:
     for flag, (shape, text) in SHAPES.items():
+        if flag == "quantize":
+            shape, text = "N=1/16|position=1/16|length=1/16", f"{text}; position= or length= quantizes the selected notes' field to the nearest multiple"
         ap.add_argument(f"--{flag}", dest="edits", action=_InOrder, metavar=shape, help=f"{text} (repeatable)")
 
 
@@ -126,7 +132,8 @@ def matched(data: bytes, count: int | None, resolved: list[tuple[Edit, MidiRegio
         hits = [x for x in regions if (x.track, x.start, x.name) == (r.track, r.start, r.name)]
         if len(hits) != 1:
             has = f"{len(hits)} regions" if hits else "no region"
-            raise CommandError(f"--{e.flag} {e.number}: alternative {alternative} has {has} {r.name!r} on {r.track!r} "
+            named = f"--{e.flag} {e.number}" if e.flag else f"region {e.number}"      # a transform names it by number alone
+            raise CommandError(f"{named}: alternative {alternative} has {has} {r.name!r} on {r.track!r} "
                                f"at bar {r.start_bar:g}")
         out.append((e, hits[0]))
     return out

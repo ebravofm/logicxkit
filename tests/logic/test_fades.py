@@ -1,6 +1,7 @@
 """An entry's fade fields, at the offsets Logic's inspector edits wrote."""
 
 import unittest
+from dataclasses import replace
 
 import _paths  # noqa: F401
 from logicxkit.logic.services.fades import Fade, check_fade, crossfade_bytes, read_fade, with_fade
@@ -20,8 +21,9 @@ class FadeTest(unittest.TestCase):
     def test_the_crossfade_bytes_are_kept_and_the_ranges_held(self):
         e = bytearray(ENTRY)
         e[66:69] = b"\x20\x05\xf9"
-        out = with_fade(bytes(e), Fade(out_ms=10))
+        out = with_fade(bytes(e), replace(read_fade(bytes(e)), out_ms=10))
         self.assertEqual(crossfade_bytes(out), b"\x20\x05\xf9")
+        self.assertEqual(crossfade_bytes(with_fade(bytes(e), Fade(out_ms=10))), b"\x20\x03\xf9")     # type out under a crossfade
         for bad in (Fade(in_ms=70000), Fade(in_curve=100), Fade(out_curve=-100), Fade(in_type=2)):
             with self.subTest(bad), self.assertRaises(ValueError):
                 check_fade(bad)

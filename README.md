@@ -85,6 +85,7 @@ bin/run logic stacks "<song.logicx>" [--tracks]          # track stacks / arrang
 bin/run logic ocr "<song.logicx>"                        # OCR the auto-saved WindowImage
 bin/run logic neural "<strip.cst | song.logicx>"         # Neural DSP knob values
 bin/run logic midi "<song.logicx>" [--export out.mid]      # MIDI regions, or a .mid of them
+bin/run logic midi "<song.logicx>" N --out DIR --humanize   # Logic's Transform window on region N
 bin/run logic beats place "<song.logicx>" ID --out DIR --track NAME --bar N  # a groovebin pattern as a region
 bin/run logic beats compose "<song.logicx>" --out DIR --track NAME --group TEXT  # a region per section
 bin/run logic beats generate "<song.logicx>" --out DIR --track NAME --bar N --meter 4/4 --bars 8  # a phrase from library bars
@@ -109,7 +110,7 @@ bin/run logic capabilities -v                            # what each writer is t
   (extract the auto-saved WindowImage) and **`logic ocr`** (Apple-Vision OCR of it — reads the
   mixer as Logic drew it); **`logic levels`** (fader + pan, read and copy between projects);
   **`logic stacks`** (folder stacks and the arrange track list, and `--move` to put a track into
-  a stack); **`logic midi`** (MIDI regions and their export as a `.mid`); **`logic plugins`**
+  a stack); **`logic midi`** (MIDI regions, their export as a `.mid`, edits and Logic's Transform window — a selection with operations, or a preset — by region number); **`logic plugins`**
   (every referenced plug-in, and which this Mac lacks); **`logic patch`** (a Library patch
   bundle's channels, strips and plug-ins, and `--build` to make one); **`logic regions`** (MIDI and audio regions with their files, mutes, loops and fades; `--audio` imports a WAV and `--move`, `--trim`, `--split`, `--loop`, `--mute`, `--rename`, `--fade-in`, `--fade-out` edit one by its number); **`logic markers`** (the marker track, with add, rename, move and delete); **`logic sessionplayer`**
   (a Session Player region's settings and generated notes); **`logic beats`** (patterns from a

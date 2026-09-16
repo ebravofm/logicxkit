@@ -8,16 +8,45 @@ from ._edit import CommandError, edit_copy
 from ._quantize_cmd import _wav_finder
 
 
-def parse_hits(specs: list[str] | None) -> list[tuple[str, str]]:
-    """``TRACK=TERM`` specs -> (track, term); a term is lower-cased with its spaces collapsed."""
+def parse_hits(specs: list[str] | None) -> list[tuple[str, str, float | None]]:
+    """``TRACK=TERM[:THRESHOLD]`` specs -> (track, term, the track's own floor in dB or None); a term is
+    lower-cased with its spaces collapsed."""
     out = []
     for spec in specs or []:
         track, sep, term = spec.rpartition("=")
+        term, colon, floor = term.rpartition(":")
+        if not colon or not _number(floor):
+            term, floor = term + colon + floor, None
         term = " ".join(term.split()).lower()
         if not sep or not track.strip() or not term:
-            raise CommandError(f"bad --hit {spec!r}: TRACK=TERM")
-        out.append((track.strip(), term))
+            raise CommandError(f"bad --hit {spec!r}: TRACK=TERM[:THRESHOLD]")
+        if floor is not None and float(floor) > 0:
+            raise CommandError(f"bad --hit {spec!r}: the threshold is dB under the track's loudest hit, 0 or below")
+        out.append((track.strip(), term, None if floor is None else float(floor)))
     return out
+
+
+def _number(text: str) -> bool:
+    try:
+        float(text)
+    except ValueError:
+        return False
+    return True
+
+
+def parse_velocity(spec: str | None) -> tuple[int, int, float]:
+    """``FLOOR..CEILING[:GAMMA]`` -> the band the hits' velocities map onto; (1, 127, 1.0) without it."""
+    if spec is None:
+        return 1, 127, 1.0
+    band, _, gamma = spec.partition(":")
+    lo, dots, hi = band.partition("..")
+    try:
+        floor, ceiling, curve = int(lo), int(hi), float(gamma) if gamma else 1.0
+    except ValueError:
+        dots = ""
+    if not dots or not 1 <= floor <= ceiling <= 127 or not curve > 0:
+        raise CommandError(f"bad --velocity {spec!r}: FLOOR..CEILING[:GAMMA], 1 <= FLOOR <= CEILING <= 127, GAMMA above 0")
+    return floor, ceiling, curve
 
 
 def detector_of(args):
@@ -41,7 +70,10 @@ def cmd_drums_to_midi(args) -> int:
         print("  --out is needed to write")
         return 2
     try:
-        hits = parse_hits(args.hit)
+        parsed = parse_hits(args.hit)
+        hits = [(track, term) for track, term, _floor in parsed]
+        floors = {track: floor for track, _term, floor in parsed if floor is not None}
+        velocity = parse_velocity(args.velocity)
         detector = detector_of(args)
         for _track, term in hits:
             note_for(args.map, term)
@@ -53,7 +85,8 @@ def cmd_drums_to_midi(args) -> int:
 
     def step(data, count, project_file):
         data, report = drums_to_midi(data, hits=hits, target=args.track, wav_of=_wav_finder(Path(project_file), args.audio),
-                                     map_name=args.map, grid=args.grid, detector=detector, track_count=count)
+                                     map_name=args.map, grid=args.grid, detector=detector, floors=floors, velocity=velocity,
+                                     track_count=count)
         for line in report.lines():
             print(f"  {line}")
         return data
@@ -75,8 +108,12 @@ def register(sub) -> None:
                         "instrument track, on a copy, without Logic")
     dp.add_argument("project")
     dp.add_argument("--out", help="output directory (needed to write)")
-    dp.add_argument("--hit", action="append", required=True, metavar="TRACK=TERM",
-                    help="an audio track and the drum map term its hits play: kick, snare, hihat closed ... (repeatable)")
+    dp.add_argument("--hit", action="append", required=True, metavar="TRACK=TERM[:THRESHOLD]",
+                    help="an audio track and the drum map term its hits play: kick, snare, hihat closed ...; THRESHOLD is that "
+                         "track's own floor in dB under its loudest hit, instead of --threshold (repeatable)")
+    dp.add_argument("--velocity", metavar="FLOOR..CEILING[:GAMMA]",
+                    help="the band the hits' velocities land in, quietest to loudest (default 1..127); GAMMA above 1 pushes "
+                         "the middle down, below 1 lifts it")
     dp.add_argument("--track", required=True, metavar="TARGET", help="the software instrument track the region goes on")
     dp.add_argument("--map", choices=NAMES, default="addictive-drums-2",
                     help="the drum map the terms resolve in (default addictive-drums-2)")

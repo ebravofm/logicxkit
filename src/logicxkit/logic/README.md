@@ -462,11 +462,22 @@ for a few saves. `regions --split` writes all of that; Logic's re-save kept the 
 region count was raised, and dropped it when the count alone was left at 1.
 
 **Fades** live in the entry's last sixteen bytes (`fades.py`): `+65` u8 Fade-In type (0 In, 1
-Speed Up), `+72` u16 Fade-Out ms, `+75` u8 its curve, `+76` u16 Fade-In ms, `+79` u8 its curve
-(-99..99 as the inspector shows). A drag under Drag: X-Fade that overlapped two regions wrote
-`20 05 f9` at `+66..+68` of the region underneath and 0x80 at `+66` of the one dragged over it,
-and reset the underneath region's Fade-Out curve; those bytes are read raw, never written. The
-Fade-Out type popup (Out, X, EqP, X S) is unmeasured.
+Speed Up), `+67` u8 Fade-Out type (0 or 3 Out, 4 X, 5 EqP, 6 X S — Logic wrote 3 for Out on a
+region that had a crossfade), `+72` u16 Fade-Out ms, `+75` u8 its curve, `+76` u16 Fade-In ms,
+`+79` u8 its curve (-99..99 as the inspector shows). A **crossfade** is the underneath region's
+fade-out: a drag under Drag: X-Fade that overlapped two regions wrote 0x20 at `+66` of the region
+underneath (the fade-out side) and 0x80 at `+66` of the one dragged over it, the overlap in ms at
+`+72`, the type at `+67` and the curve reset at `+75`; dragging the crossfade's edge changed `+72`
+(500 -> 563) and `+68` (f9 -> da -> c1 across edits, no formula found: kept as found), and the
+regions moved apart keep every byte. **The inspector's parameters** (`region_params.py`, 2026-09-15,
+the `regions-b*` goldens): Gain in dB as a tens byte `+52` i8 and a signed five-bit remainder in `+48` bits
+0-4 (-17 is -1 and -7), Reverse `+48` bit 5, Fine Tune `+50` i8 cents, Transpose `+53` i8
+semitones, Delay `+60` i32 ticks. Transpose on an unflexed region made Logic switch the track to
+Flex Pitch (two 0xAA blocks after the entry, `+48` bit 7, `+15` bit 5 on every audio entry, the
+channel's flex bytes); the Reverse row is disabled on a flexed region. **Colour** is a palette
+index, the `gRuA` payload `+3` for an audio region and the ninth byte past the padded name of a
+MIDI region's `qeSM`; a region born on a track carries the track's index, and the Color window's
+swatch k writes 24 + k (12 -> 36, 40 -> 64).
 
 ### Marker track (`logic markers`, measured 2026-09-15)
 

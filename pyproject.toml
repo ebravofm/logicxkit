@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "logicxkit"
-version = "0.4.0"
+version = "0.5.0"
 description = "Logic Pro project and channel-strip tooling, and Audio Unit preset and state decoding"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -28,7 +28,7 @@ dependencies = [
     # x32scene's pin, or pip cannot resolve the two together.
     "pf-core~=0.22.0",
     # General MIDI: files, note maps, transforms and the pattern library. The same pf-core pin.
-    "groovebin~=0.1.0",
+    "groovebin~=0.2.0",
 ]
 
 [project.urls]

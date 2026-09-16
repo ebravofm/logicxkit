@@ -47,8 +47,16 @@ CAPABILITIES = (
                "written (2026-09-15, `regions-audio-edits-*` and `regions-midi-edits-*`). A split's second "
                "piece needs the file record's region count raised — Logic loads that many — and a MIDI "
                "piece plays its sequence from an offset, which the MIDI edits then refuse; an audio region's "
-               "loop length is one measurement (its length in ticks times 1000); a crossfade is read as raw "
-               "bytes, never written"),
+               "loop length is one measurement (its length in ticks times 1000). The inspector's Gain, Delay, "
+               "Transpose, Fine Tune and Reverse, the Fade-Out type, the crossfade with the region over it and a "
+               "region's colour read what Logic's own edits of one region wrote (2026-09-15, the `regions-b*` "
+               "goldens; gain is a tens byte plus a signed five-bit remainder); `--gain`, `--delay`, `--transpose`, "
+               "`--fine-tune`, `--reverse`, `--fade-out N=MS:CURVE:TYPE`, `--crossfade` and `--colour` write those fields "
+               "the way Logic did, entry for entry on the save before its own, and Logic re-saved a copy carrying "
+               "all of them with every field as written (`regions-params-*`), setting one more bit beside the "
+               "crossfade's. Transpose on an unflexed region made Logic flex the track, which the writer does not; "
+               "Logic kept the value on load, but whether it plays transposed is unheard",
+               derived=("unverified",)),
     Capability(("markers",), "CONFIRMED", "yes, on a copy",
                "Reads the marker track — a marker's bar, name and length — matching Logic's Marker List on "
                "its own create, rename, move, second-marker and delete saves (2026-09-15, the `markers-a2*` "
@@ -85,10 +93,14 @@ CAPABILITIES = (
                "velocity from each hit's peak scaled from the track's quietest to its loudest, "
                "quantized to `--grid` when given, in one new region on a software instrument track "
                "spanning the bars that hold the quantized notes; `--threshold DB` sets the detector's "
-               "floor under the track's loudest hit. The region is "
-               "written as `midi --region` writes one and filled through the region edits; no output "
-               "has been opened in Logic, it has run only on synthetic clicks, never a recorded take, "
-               "and tempo changes are refused. Logic re-saved a copy carrying the region it wrote over a real drum take with all 350 notes as written (2026-09-15, `songb-drums-to-midi-*`). Listened to on that take: the kick and snare lanes are the playing; the hi-hat lane caught 70 notes over 31 bars, mostly the strokes under a snare hit, so the detector's floor is tuned for kick and snare and a hat track needs its own"),
+               "floor under the track's loudest hit, `--hit TRACK=TERM:THRESHOLD` one track's own, and "
+               "`--velocity FLOOR..CEILING[:GAMMA]` maps the velocities onto a band. The region is "
+               "written as `midi --region` writes one and filled through the region edits, and tempo changes "
+               "are refused. Logic re-saved a copy carrying the region it wrote over a real drum take with all "
+               "350 notes as written (2026-09-15, `songb-drums-to-midi-*`). Listened to on that take: the kick "
+               "and snare lanes are the playing. It is for drums with strong transients — kick, snare, toms; "
+               "hats and cymbals ring under bleed and are not what this converts (the detector's 24 dB rise, "
+               "not its floor, is what a hat never gives)"),
     Capability(("sessionplayer",), "—", "yes, read-only",
                "A Session Player region's settings from the JSON in its MneG record — Complexity "
                "(`rComp`), Fill Amount (`fillsAmount`) and Swing pinned by one editor move per save "
@@ -124,7 +136,11 @@ CAPABILITIES = (
                "maps (GM percussion, Addictive Drums 2's keymap, Drum Kit Designer); the pairings between "
                "them are the tables' own, chokes and stick clicks have no GM counterpart, a region with "
                "polyphonic aftertouch is refused, and no remapped pattern has been listened to. A region name "
-               "outside ASCII is refused: how Logic stores one is unmeasured"),
+               "outside ASCII is refused: how Logic stores one is unmeasured. The transforms (`--select` with "
+               "the operations, and the presets) rewrite the selected notes' fields through the same lines and "
+               "gate, and Logic re-saved a copy carrying one of every operation and preset on 27 regions with "
+               "every region and event as written (2026-09-15, `midi-transform-*`); swing's tick is the one "
+               "Logic's Piano Roll wrote at 60% (`midi-qswing-60-logic`)"),
     Capability(("beats",), "CONFIRMED", "yes, on a copy",
                "The patterns, their index and the picking are groovebin's (`groovebin index`, `search`, "
                "`show`, `generate`); this writes them into a project. `place` lays one pattern, "

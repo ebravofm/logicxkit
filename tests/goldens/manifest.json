@@ -2765,7 +2765,7 @@
  },
  "regions-a00-base-logic": {
   "path": "public/regions-a00-base.logicx",
-  "note": "the v0.3.0 three-audio-regions save with its MIDI region: session A's base",
+  "note": "the v0.3.0 three-audio-regions save with its MIDI region: the base the `regions-a*` saves start from",
   "facts": {
    "regions": [
     {
@@ -5191,7 +5191,7 @@
  },
  "regions-a18-fade-in-speed-up-logic": {
   "path": "public/regions-a18-fade-in-speed-up.logicx",
-  "note": "its Fade In type Speed Up (saved after A19)",
+  "note": "its Fade In type Speed Up (saved after regions-a19, the fade-out curve)",
   "facts": {
    "regions": [
     {
@@ -9368,5 +9368,1383 @@
     }
    ]
   }
+ },
+ "regions-b00-base-logic": {
+  "path": "public/regions-b00-base.logicx",
+  "note": "the base the `regions-b*` saves start from: the regions-a20 crossfade save with its Media folder",
+  "facts": {
+   "region": "tone renamed"
+  }
+ },
+ "regions-b01-gain-plus-3-logic": {
+  "path": "public/regions-b01-gain-plus-3.logicx",
+  "note": "'tone renamed' Gain +3 dB",
+  "facts": {
+   "gain": 3
+  }
+ },
+ "regions-b02-gain-minus-6-logic": {
+  "path": "public/regions-b02-gain-minus-6.logicx",
+  "note": "its Gain -6 dB",
+  "facts": {
+   "gain": -6
+  }
+ },
+ "regions-b03-delay-plus-120-logic": {
+  "path": "public/regions-b03-delay-plus-120.logicx",
+  "note": "its Delay +120 ticks",
+  "facts": {
+   "gain": -6,
+   "delay": 120
+  }
+ },
+ "regions-b04-transpose-plus-2-logic": {
+  "path": "public/regions-b04-transpose-plus-2.logicx",
+  "note": "its Transpose +2 (Logic switched the track to Flex Pitch: two marker blocks after the entry)",
+  "facts": {
+   "gain": -6,
+   "delay": 120,
+   "transpose": 2
+  }
+ },
+ "regions-b05-fine-tune-plus-25-logic": {
+  "path": "public/regions-b05-fine-tune-plus-25.logicx",
+  "note": "its Fine Tune +25 cents",
+  "facts": {
+   "gain": -6,
+   "delay": 120,
+   "transpose": 2,
+   "fine_tune": 25
+  }
+ },
+ "regions-b07-gain-0-logic": {
+  "path": "public/regions-b07-gain-0.logicx",
+  "note": "its Gain back to 0 (a Reverse press on this flexed region did nothing: the row is disabled)",
+  "facts": {
+   "gain": 0,
+   "delay": 120,
+   "transpose": 2,
+   "fine_tune": 25
+  }
+ },
+ "regions-b08-fade-out-type-x-logic": {
+  "path": "public/regions-b08-fade-out-type-x.logicx",
+  "note": "its Fade-Out Type X (Crossfade)",
+  "facts": {
+   "out_type": "x"
+  }
+ },
+ "regions-b09-fade-out-type-eqp-logic": {
+  "path": "public/regions-b09-fade-out-type-eqp.logicx",
+  "note": "its Fade-Out Type EqP",
+  "facts": {
+   "out_type": "eqp"
+  }
+ },
+ "regions-b10-fade-out-type-xs-logic": {
+  "path": "public/regions-b10-fade-out-type-xs.logicx",
+  "note": "its Fade-Out Type X S",
+  "facts": {
+   "out_type": "xs"
+  }
+ },
+ "regions-b11-fade-out-type-out-logic": {
+  "path": "public/regions-b11-fade-out-type-out.logicx",
+  "note": "its Fade-Out Type Out",
+  "facts": {
+   "out_type": "out"
+  }
+ },
+ "regions-b15-gain-plus-30-logic": {
+  "path": "public/regions-b15-gain-plus-30.logicx",
+  "note": "its Gain +30 dB",
+  "facts": {
+   "gain": 30
+  }
+ },
+ "regions-b16-gain-minus-30-logic": {
+  "path": "public/regions-b16-gain-minus-30.logicx",
+  "note": "its Gain -30 dB",
+  "facts": {
+   "gain": -30
+  }
+ },
+ "regions-b17-gain-minus-17-logic": {
+  "path": "public/regions-b17-gain-minus-17.logicx",
+  "note": "its Gain -17 dB",
+  "facts": {
+   "gain": -17
+  }
+ },
+ "regions-b20-transpose-minus-3-logic": {
+  "path": "public/regions-b20-transpose-minus-3.logicx",
+  "note": "its Transpose -3",
+  "facts": {
+   "gain": 0,
+   "delay": 120,
+   "transpose": -3,
+   "fine_tune": 25
+  }
+ },
+ "regions-b21-fine-tune-minus-25-logic": {
+  "path": "public/regions-b21-fine-tune-minus-25.logicx",
+  "note": "its Fine Tune -25 cents",
+  "facts": {
+   "gain": 0,
+   "delay": 120,
+   "transpose": -3,
+   "fine_tune": -25
+  }
+ },
+ "regions-b22-delay-minus-120-logic": {
+  "path": "public/regions-b22-delay-minus-120.logicx",
+  "note": "its Delay -120 ticks",
+  "facts": {
+   "gain": 0,
+   "delay": -120,
+   "transpose": -3,
+   "fine_tune": -25
+  }
+ },
+ "regions-b23-reverse-on-logic": {
+  "path": "public/regions-b23-reverse-on.logicx",
+  "note": "'v030-tone' (Audio 2, unflexed) Reverse on",
+  "facts": {
+   "region": "v030-tone",
+   "reverse": true
+  }
+ },
+ "regions-b24-reverse-off-logic": {
+  "path": "public/regions-b24-reverse-off.logicx",
+  "note": "its Reverse off",
+  "facts": {
+   "region": "v030-tone",
+   "reverse": false
+  }
+ },
+ "regions-b25-crossfade-curve-drag-logic": {
+  "path": "public/regions-b25-crossfade-curve-drag.logicx",
+  "note": "a drag on the crossfade of 'tone renamed' (the fade-out side) set its curve to -40",
+  "facts": {
+   "out_curve": -40,
+   "out_ms": 500
+  }
+ },
+ "regions-b26-crossfade-curve-40-logic": {
+  "path": "public/regions-b26-crossfade-curve-40.logicx",
+  "note": "its Fade-Out curve slider 40",
+  "facts": {
+   "out_curve": 40,
+   "out_ms": 500
+  }
+ },
+ "regions-b27-crossfade-length-563-logic": {
+  "path": "public/regions-b27-crossfade-length-563.logicx",
+  "note": "a second drag lengthened the crossfade to 563 ms",
+  "facts": {
+   "out_curve": 40,
+   "out_ms": 563
+  }
+ },
+ "regions-b28-crossfade-length-500-logic": {
+  "path": "public/regions-b28-crossfade-length-500.logicx",
+  "note": "its Fade-Out slider back to 500 ms",
+  "facts": {
+   "out_curve": 40,
+   "out_ms": 500
+  }
+ },
+ "regions-b29-underneath-moved-bar-2-logic": {
+  "path": "public/regions-b29-underneath-moved-bar-2.logicx",
+  "note": "'tone renamed' nudged to bar 2 under Drag: X-Fade: the crossfade bytes stay on both regions",
+  "facts": {
+   "out_ms": 500,
+   "start_bar": 2.0
+  }
+ },
+ "regions-b31-audio-colour-12-logic": {
+  "path": "public/regions-b31-audio-colour-12.logicx",
+  "note": "'v030-tone' coloured from the Color window's swatch 12",
+  "facts": {
+   "region": "v030-tone",
+   "colour": 36
+  }
+ },
+ "regions-b32-midi-colour-40-logic": {
+  "path": "public/regions-b32-midi-colour-40.logicx",
+  "note": "the first 'Inst 1' MIDI region coloured with swatch 40",
+  "facts": {
+   "region": "Inst 1",
+   "colour": 64
+  }
+ },
+ "midi-qswing-region-60-logic": {
+  "path": "public/midi-q01-region-quantize-qswing-60.logicx",
+  "note": "the two-notes region with its notes moved 240 ticks later (odd 1/16 lines), Region inspector Quantize 1/16 and Q-Swing 60: non-destructive, the notes keep their ticks",
+  "facts": {
+   "ticks": [
+    240,
+    1200
+   ]
+  }
+ },
+ "midi-qswing-60-logic": {
+  "path": "public/midi-q02-piano-roll-swing-60.logicx",
+  "note": "Piano Roll Time Quantize 1/16 with Swing 60 on both notes: the odd sixteenth lines land 48 ticks late",
+  "facts": {
+   "ticks": [
+    288,
+    1248
+   ]
+  }
+ },
+ "midi-qswing-region-70-logic": {
+  "path": "public/midi-q03-region-qswing-70.logicx",
+  "note": "its Region inspector Q-Swing 70",
+  "facts": {
+   "ticks": [
+    288,
+    1248
+   ]
+  }
+ },
+ "regions-params-ours": {
+  "path": "public/regions-params-ours.logicx",
+  "note": "logic regions --move 6=1.25 --crossfade 5=:0:eqp --fade-out 4=300:10:x --gain 3=5 --delay 3=60 --transpose 3=2 --fine-tune 3=-10 --reverse 3 --colour 3=40 --colour 1=50 on regions-a19-fade-out-curve-30-logic",
+  "facts": {
+   "regions": [
+    [
+     "v030-tone",
+     {
+      "gain": 5,
+      "delay": 60,
+      "transpose": 2,
+      "fine_tune": -10,
+      "reverse": true
+     },
+     40
+    ],
+    [
+     "v030-tone2",
+     {
+      "out_ms": 300,
+      "out_curve": 10,
+      "out_type": "x"
+     }
+    ],
+    [
+     "tone renamed",
+     {
+      "out_ms": 500,
+      "out_curve": 0,
+      "out_type": "eqp"
+     }
+    ],
+    [
+     "Inst 1",
+     50
+    ]
+   ]
+  }
+ },
+ "regions-params-resave-logic": {
+  "path": "public/regions-params-resave.logicx",
+  "note": "Logic's re-save of regions-params-ours: every parameter, the fade-out type, the crossfade and both colours as written; Logic set bit 7 beside bit 5 at +66 of the crossfade's underneath region",
+  "facts": {}
+ },
+ "midi-transform-ours": {
+  "path": "public/midi-transform-ours.logicx",
+  "note": "27 four-note regions added to midi-edits-resave-logic (--region/--note), then one transform per region: set, add, mul, min, max, random, flip, quantize length, crescendo, exp, reverse position, and the presets humanize, fixed-velocity, velocity-limit, random-velocity, crescendo, reverse-position, reverse-pitch, exp-velocity, fixed-length, max-length, min-length, double-speed, legato, staccato, swing 60%, half-speed (a two-bar region)",
+  "facts": {
+   "regions": [
+    [
+     "Keys",
+     42240,
+     [
+      [
+       42240,
+       1,
+       62,
+       80,
+       480
+      ],
+      [
+       43200,
+       1,
+       64,
+       72,
+       240
+      ],
+      [
+       44160,
+       1,
+       66,
+       56,
+       240
+      ],
+      [
+       47640,
+       1,
+       67,
+       100,
+       120
+      ],
+      [
+       48120,
+       1,
+       64,
+       90,
+       240
+      ],
+      [
+       49080,
+       1,
+       72,
+       60,
+       120
+      ]
+     ]
+    ],
+    [
+     "Pad Layer",
+     53760,
+     [
+      [
+       55320,
+       1,
+       67,
+       100,
+       120
+      ],
+      [
+       55800,
+       1,
+       64,
+       90,
+       240
+      ],
+      [
+       56760,
+       1,
+       72,
+       60,
+       120
+      ]
+     ]
+    ],
+    [
+     "Drums GM",
+     69120,
+     [
+      [
+       69120,
+       1,
+       36,
+       120,
+       120
+      ],
+      [
+       69120,
+       1,
+       49,
+       80,
+       120
+      ],
+      [
+       70080,
+       1,
+       49,
+       60,
+       120
+      ],
+      [
+       71040,
+       1,
+       38,
+       110,
+       120
+      ],
+      [
+       71040,
+       1,
+       49,
+       80,
+       120
+      ],
+      [
+       72000,
+       1,
+       55,
+       90,
+       240
+      ],
+      [
+       72960,
+       1,
+       36,
+       120,
+       120
+      ],
+      [
+       72960,
+       1,
+       77,
+       127,
+       480
+      ]
+     ]
+    ],
+    [
+     "Keys",
+     80640,
+     [
+      [
+       80640,
+       1,
+       62,
+       80,
+       480
+      ],
+      [
+       81600,
+       1,
+       64,
+       72,
+       240
+      ],
+      [
+       82560,
+       1,
+       66,
+       56,
+       240
+      ]
+     ]
+    ],
+    [
+     "T set",
+     92160,
+     [
+      [
+       92160,
+       1,
+       60,
+       64,
+       480
+      ],
+      [
+       92400,
+       1,
+       62,
+       64,
+       240
+      ],
+      [
+       93120,
+       1,
+       64,
+       64,
+       240
+      ],
+      [
+       94080,
+       1,
+       67,
+       64,
+       960
+      ]
+     ]
+    ],
+    [
+     "T add",
+     96000,
+     [
+      [
+       96000,
+       1,
+       60,
+       70,
+       480
+      ],
+      [
+       96240,
+       1,
+       62,
+       80,
+       240
+      ],
+      [
+       96960,
+       1,
+       64,
+       90,
+       240
+      ],
+      [
+       97920,
+       1,
+       67,
+       50,
+       960
+      ]
+     ]
+    ],
+    [
+     "T mul",
+     99840,
+     [
+      [
+       99840,
+       1,
+       60,
+       80,
+       240
+      ],
+      [
+       100080,
+       1,
+       62,
+       90,
+       120
+      ],
+      [
+       100800,
+       1,
+       64,
+       100,
+       120
+      ],
+      [
+       101760,
+       1,
+       67,
+       60,
+       480
+      ]
+     ]
+    ],
+    [
+     "T min",
+     103680,
+     [
+      [
+       103680,
+       1,
+       60,
+       80,
+       480
+      ],
+      [
+       103920,
+       1,
+       62,
+       90,
+       240
+      ],
+      [
+       104640,
+       1,
+       64,
+       100,
+       240
+      ],
+      [
+       105600,
+       1,
+       67,
+       70,
+       960
+      ]
+     ]
+    ],
+    [
+     "T max",
+     107520,
+     [
+      [
+       107520,
+       1,
+       60,
+       70,
+       480
+      ],
+      [
+       107760,
+       1,
+       62,
+       70,
+       240
+      ],
+      [
+       108480,
+       1,
+       64,
+       70,
+       240
+      ],
+      [
+       109440,
+       1,
+       67,
+       60,
+       960
+      ]
+     ]
+    ],
+    [
+     "T random",
+     111360,
+     [
+      [
+       111360,
+       1,
+       60,
+       72,
+       480
+      ],
+      [
+       111600,
+       1,
+       62,
+       96,
+       240
+      ],
+      [
+       112320,
+       1,
+       64,
+       112,
+       240
+      ],
+      [
+       113280,
+       1,
+       67,
+       50,
+       960
+      ]
+     ]
+    ],
+    [
+     "T flip",
+     115200,
+     [
+      [
+       115200,
+       1,
+       68,
+       80,
+       480
+      ],
+      [
+       115440,
+       1,
+       66,
+       90,
+       240
+      ],
+      [
+       116160,
+       1,
+       64,
+       100,
+       240
+      ],
+      [
+       117120,
+       1,
+       61,
+       60,
+       960
+      ]
+     ]
+    ],
+    [
+     "T quantize",
+     119040,
+     [
+      [
+       119040,
+       1,
+       60,
+       80,
+       480
+      ],
+      [
+       119280,
+       1,
+       62,
+       90,
+       480
+      ],
+      [
+       120000,
+       1,
+       64,
+       100,
+       480
+      ],
+      [
+       120960,
+       1,
+       67,
+       60,
+       960
+      ]
+     ]
+    ],
+    [
+     "T crescendo",
+     122880,
+     [
+      [
+       122880,
+       1,
+       60,
+       40,
+       480
+      ],
+      [
+       123120,
+       1,
+       62,
+       50,
+       240
+      ],
+      [
+       123840,
+       1,
+       64,
+       80,
+       240
+      ],
+      [
+       124800,
+       1,
+       67,
+       120,
+       960
+      ]
+     ]
+    ],
+    [
+     "T exp",
+     126720,
+     [
+      [
+       126720,
+       1,
+       60,
+       61,
+       480
+      ],
+      [
+       126960,
+       1,
+       62,
+       73,
+       240
+      ],
+      [
+       127680,
+       1,
+       64,
+       87,
+       240
+      ],
+      [
+       128640,
+       1,
+       67,
+       38,
+       960
+      ]
+     ]
+    ],
+    [
+     "T reverse",
+     130560,
+     [
+      [
+       130560,
+       1,
+       67,
+       60,
+       960
+      ],
+      [
+       131520,
+       1,
+       64,
+       100,
+       240
+      ],
+      [
+       132240,
+       1,
+       62,
+       90,
+       240
+      ],
+      [
+       132480,
+       1,
+       60,
+       80,
+       480
+      ]
+     ]
+    ],
+    [
+     "T humanize",
+     134400,
+     [
+      [
+       134400,
+       1,
+       60,
+       74,
+       476
+      ],
+      [
+       134641,
+       1,
+       62,
+       87,
+       245
+      ],
+      [
+       135359,
+       1,
+       64,
+       100,
+       244
+      ],
+      [
+       136316,
+       1,
+       67,
+       53,
+       964
+      ]
+     ]
+    ],
+    [
+     "T fixed-velocity",
+     138240,
+     [
+      [
+       138240,
+       1,
+       60,
+       90,
+       480
+      ],
+      [
+       138480,
+       1,
+       62,
+       90,
+       240
+      ],
+      [
+       139200,
+       1,
+       64,
+       90,
+       240
+      ],
+      [
+       140160,
+       1,
+       67,
+       90,
+       960
+      ]
+     ]
+    ],
+    [
+     "T velocity-limit",
+     142080,
+     [
+      [
+       142080,
+       1,
+       60,
+       80,
+       480
+      ],
+      [
+       142320,
+       1,
+       62,
+       90,
+       240
+      ],
+      [
+       143040,
+       1,
+       64,
+       90,
+       240
+      ],
+      [
+       144000,
+       1,
+       67,
+       70,
+       960
+      ]
+     ]
+    ],
+    [
+     "T random-velocity",
+     145920,
+     [
+      [
+       145920,
+       1,
+       60,
+       75,
+       480
+      ],
+      [
+       146160,
+       1,
+       62,
+       107,
+       240
+      ],
+      [
+       146880,
+       1,
+       64,
+       114,
+       240
+      ],
+      [
+       147840,
+       1,
+       67,
+       48,
+       960
+      ]
+     ]
+    ],
+    [
+     "T crescendo-p",
+     149760,
+     [
+      [
+       149760,
+       1,
+       60,
+       40,
+       480
+      ],
+      [
+       150000,
+       1,
+       62,
+       50,
+       240
+      ],
+      [
+       150720,
+       1,
+       64,
+       80,
+       240
+      ],
+      [
+       151680,
+       1,
+       67,
+       120,
+       960
+      ]
+     ]
+    ],
+    [
+     "T reverse-position",
+     153600,
+     [
+      [
+       153600,
+       1,
+       67,
+       60,
+       960
+      ],
+      [
+       154560,
+       1,
+       64,
+       100,
+       240
+      ],
+      [
+       155280,
+       1,
+       62,
+       90,
+       240
+      ],
+      [
+       155520,
+       1,
+       60,
+       80,
+       480
+      ]
+     ]
+    ],
+    [
+     "T reverse-pitch",
+     157440,
+     [
+      [
+       157440,
+       1,
+       68,
+       80,
+       480
+      ],
+      [
+       157680,
+       1,
+       66,
+       90,
+       240
+      ],
+      [
+       158400,
+       1,
+       64,
+       100,
+       240
+      ],
+      [
+       159360,
+       1,
+       61,
+       60,
+       960
+      ]
+     ]
+    ],
+    [
+     "T exp-velocity",
+     161280,
+     [
+      [
+       161280,
+       1,
+       60,
+       64,
+       480
+      ],
+      [
+       161520,
+       1,
+       62,
+       76,
+       240
+      ],
+      [
+       162240,
+       1,
+       64,
+       89,
+       240
+      ],
+      [
+       163200,
+       1,
+       67,
+       41,
+       960
+      ]
+     ]
+    ],
+    [
+     "T fixed-length",
+     165120,
+     [
+      [
+       165120,
+       1,
+       60,
+       80,
+       480
+      ],
+      [
+       165360,
+       1,
+       62,
+       90,
+       480
+      ],
+      [
+       166080,
+       1,
+       64,
+       100,
+       480
+      ],
+      [
+       167040,
+       1,
+       67,
+       60,
+       480
+      ]
+     ]
+    ],
+    [
+     "T max-length",
+     168960,
+     [
+      [
+       168960,
+       1,
+       60,
+       80,
+       480
+      ],
+      [
+       169200,
+       1,
+       62,
+       90,
+       240
+      ],
+      [
+       169920,
+       1,
+       64,
+       100,
+       240
+      ],
+      [
+       170880,
+       1,
+       67,
+       60,
+       480
+      ]
+     ]
+    ],
+    [
+     "T min-length",
+     172800,
+     [
+      [
+       172800,
+       1,
+       60,
+       80,
+       1920
+      ],
+      [
+       173040,
+       1,
+       62,
+       90,
+       1920
+      ],
+      [
+       173760,
+       1,
+       64,
+       100,
+       1920
+      ],
+      [
+       174720,
+       1,
+       67,
+       60,
+       1920
+      ]
+     ]
+    ],
+    [
+     "T double-speed",
+     176640,
+     [
+      [
+       176640,
+       1,
+       60,
+       80,
+       240
+      ],
+      [
+       176760,
+       1,
+       62,
+       90,
+       120
+      ],
+      [
+       177120,
+       1,
+       64,
+       100,
+       120
+      ],
+      [
+       177600,
+       1,
+       67,
+       60,
+       480
+      ]
+     ]
+    ],
+    [
+     "T legato",
+     180480,
+     [
+      [
+       180480,
+       1,
+       60,
+       80,
+       240
+      ],
+      [
+       180720,
+       1,
+       62,
+       90,
+       720
+      ],
+      [
+       181440,
+       1,
+       64,
+       100,
+       960
+      ],
+      [
+       182400,
+       1,
+       67,
+       60,
+       960
+      ]
+     ]
+    ],
+    [
+     "T staccato",
+     184320,
+     [
+      [
+       184320,
+       1,
+       60,
+       80,
+       240
+      ],
+      [
+       184560,
+       1,
+       62,
+       90,
+       120
+      ],
+      [
+       185280,
+       1,
+       64,
+       100,
+       120
+      ],
+      [
+       186240,
+       1,
+       67,
+       60,
+       480
+      ]
+     ]
+    ],
+    [
+     "T swing",
+     188160,
+     [
+      [
+       188160,
+       1,
+       60,
+       80,
+       480
+      ],
+      [
+       188448,
+       1,
+       62,
+       90,
+       240
+      ],
+      [
+       189120,
+       1,
+       64,
+       100,
+       240
+      ],
+      [
+       190080,
+       1,
+       67,
+       60,
+       960
+      ]
+     ]
+    ],
+    [
+     "T half-speed",
+     192000,
+     [
+      [
+       192000,
+       1,
+       60,
+       80,
+       960
+      ],
+      [
+       192480,
+       1,
+       62,
+       90,
+       480
+      ],
+      [
+       193920,
+       1,
+       64,
+       100,
+       480
+      ],
+      [
+       195840,
+       1,
+       67,
+       60,
+       1920
+      ]
+     ]
+    ]
+   ]
+  }
+ },
+ "midi-transform-resave-logic": {
+  "path": "public/midi-transform-resave.logicx",
+  "note": "Logic's re-save of midi-transform-ours: all 31 regions and every event as written",
+  "facts": {}
  }
 }

@@ -6,16 +6,17 @@ belongs to the region holding its onset, and hits that overlapping regions share
 WAV whose rate, or as the record's own file whose length, differs from the region's file record
 is refused. Each hit becomes a sixteenth on its term's key in the drum map (groovebin's), cut at
 the next note on that key, velocity its peak in dB mapped linearly onto 1-127 from the track's
-quietest hit to its loudest. The notes, quantized first when a grid is given, go through
-`midi_edit` into one new region on the target instrument track spanning the whole bars that
-hold them.
+quietest hit to its loudest and then, when a band is given, onto it through groovebin's velocity
+curve. A track may have its own detector floor. The notes, quantized first when a grid is given,
+go through `midi_edit` into one new region on the target instrument track spanning the whole bars
+that hold them.
 """
 
 from __future__ import annotations
 
 import bisect
 import math
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 
@@ -37,6 +38,7 @@ from .validate import require_full_walk
 
 SIXTEENTH = PPQ // 4
 CHANNEL = 1
+FULL_BAND = (1, 127, 1.0)
 PEAK_MS = 20
 SAME_HIT_MS = 50
 
@@ -51,11 +53,16 @@ class Report:
     merged: int = 0
     start_bar: int = 0
     bars: int = 0
+    floors: dict[str, float] = field(default_factory=dict)
+    velocity: tuple[int, int, float] = FULL_BAND
 
     def lines(self) -> list[str]:
         timing = f"quantized to 1/{self.grid}" if self.grid else "the take's timing kept"
-        return [*(f"{track}: {n} hit(s) -> {term} (note {note}, {self.map_name})" for track, term, note, n in self.hits),
-                f"{self.notes} note(s) in a {self.bars}-bar region on {self.target!r} from bar {self.start_bar}, {timing}",
+        band = "" if self.velocity == FULL_BAND else \
+            f", velocities {self.velocity[0]}..{self.velocity[1]}" + (f" gamma {self.velocity[2]:g}" if self.velocity[2] != 1 else "")
+        return [*(f"{track}: {n} hit(s) -> {term} (note {note}, {self.map_name})"
+                  + (f"; floor {self.floors[track]:g} dB" if track in self.floors else "") for track, term, note, n in self.hits),
+                f"{self.notes} note(s) in a {self.bars}-bar region on {self.target!r} from bar {self.start_bar}, {timing}{band}",
                 *([f"{self.merged} note(s) on a key already struck at that tick dropped, the loudest kept"]
                   if self.merged else [])]
 
@@ -146,11 +153,20 @@ def one_per_key(notes: Sequence[Note]) -> tuple[list[Note], int]:
 
 def drums_to_midi(data: bytes, *, hits: Sequence[tuple[str, str]], target: str, wav_of: WavFinder,
                   map_name: str = "addictive-drums-2", grid: int | None = None, detector: Detector = Detector(),
+                  floors: Mapping[str, float] | None = None, velocity: tuple[int, int, float] = FULL_BAND,
                   track_count: int | None = None) -> tuple[bytes, Report]:
     """``hits``: (audio track, drum map term) pairs; ``target``: the instrument track the region
-    goes on; ``wav_of`` finds a region's audio file. Returns (project, report)."""
+    goes on; ``wav_of`` finds a region's audio file; ``floors``: a track's own detector floor in dB;
+    ``velocity``: (floor, ceiling, gamma) for the velocities. Returns (project, report)."""
     if not hits:
         raise ValueError("name at least one hit track and its term")
+    floors = dict(floors or {})
+    unknown = sorted(set(floors) - {t for t, _term in hits})
+    if unknown:
+        raise ValueError(f"a floor for {', '.join(map(repr, unknown))}, which no --hit names")
+    lo, hi, gamma = velocity
+    if not (1 <= lo <= hi <= 127) or not gamma > 0:
+        raise ValueError(f"a velocity band of {lo}..{hi} gamma {gamma:g}: 1 <= floor <= ceiling <= 127, gamma above 0")
     tracks = [t for t, _term in hits]
     twice = sorted({t for t in tracks if tracks.count(t) > 1})
     if twice:
@@ -165,19 +181,21 @@ def drums_to_midi(data: bytes, *, hits: Sequence[tuple[str, str]], target: str, 
     (target_id,) = _object_ids(data, [target], track_count)
     require_instrument(data, target_id, target, track_count)
     regions = read_audio_regions(data, track_count)
-    report = Report(target, map_name, grid)
+    report = Report(target, map_name, grid, floors=floors, velocity=velocity)
     placed = []
     for (track, term), object_id, note in zip(hits, _object_ids(data, tracks, track_count), notes, strict=True):
         mine = [r for r in regions if r.object_id == object_id]
         if not mine:
             raise ValueError(f"no audio regions on {track!r}")
-        found = _track_hits(mine, wav_of, bpm, detector)
+        found = _track_hits(mine, wav_of, bpm, replace(detector, floor_db=floors[track]) if track in floors else detector)
         placed += [(t, note, v) for (t, _peak), v in zip(found, velocities([p for _t, p in found]), strict=True)]
         report.hits.append((track, term, note, len(found)))
     if not placed:
         raise ValueError(f"no hits found in the audio of {', '.join(map(repr, tracks))}")
     meters = meter_map(meter(data))                      # bar 1 at tick 0, as the song's ticks below
     part = Part(PPQ, tuple(Note(t - BAR_ONE, SIXTEENTH, CHANNEL, n, v) for t, n, v in placed))
+    if velocity != FULL_BAND:
+        part = gt.velocity_curve(part, floor=lo, ceiling=hi, gamma=gamma)
     if step:
         part = gt.quantize(part, step, meters)
     start = meters.bar_line(meters.bar_of(min(n.tick for n in part.notes)))

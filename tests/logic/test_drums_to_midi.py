@@ -10,7 +10,7 @@ from pathlib import Path
 import _paths  # noqa: F401
 from test_onsets import RATE, slow_track, write_wav
 
-from logicxkit.logic._drums_to_midi_cmd import detector_of, parse_hits, register
+from logicxkit.logic._drums_to_midi_cmd import detector_of, parse_hits, parse_velocity, register
 from logicxkit.logic._edit import CommandError
 from logicxkit.logic.services.audio_regions import AudioFile, AudioRegion
 from logicxkit.logic.services.drums_to_midi import SIXTEENTH, _track_hits, note_for, one_per_key, velocities
@@ -127,13 +127,25 @@ class ThresholdTest(unittest.TestCase):
 
 
 class SpecTest(unittest.TestCase):
-    def test_track_equals_term(self):
-        self.assertEqual(parse_hits(["Kick In=kick", "Hi=Hat = Hihat  Closed"]), [("Kick In", "kick"), ("Hi=Hat", "hihat closed")])
+    def test_track_equals_term_with_its_own_floor(self):
+        self.assertEqual(parse_hits(["Kick In=kick", "Hi=Hat = Hihat  Closed", "Hi Hat=hihat closed:-30", "Ride=ride:-27.5"]),
+                         [("Kick In", "kick", None), ("Hi=Hat", "hihat closed", None), ("Hi Hat", "hihat closed", -30.0), ("Ride", "ride", -27.5)])
+        self.assertEqual(parse_hits(["Kick=kick:loud"]), [("Kick", "kick:loud", None)])
 
     def test_a_bad_spec_names_the_shape(self):
         for spec in ("Kick In", "=kick", "Kick In=", ""):
-            with self.subTest(spec), self.assertRaisesRegex(CommandError, r"TRACK=TERM"):
+            with self.subTest(spec), self.assertRaisesRegex(CommandError, r"TRACK=TERM\[:THRESHOLD\]"):
                 parse_hits([spec])
+        with self.assertRaisesRegex(CommandError, "0 or below"):
+            parse_hits(["Kick=kick:3"])
+
+    def test_the_velocity_band(self):
+        self.assertEqual(parse_velocity(None), (1, 127, 1.0))
+        self.assertEqual(parse_velocity("40..110"), (40, 110, 1.0))
+        self.assertEqual(parse_velocity("40..110:1.5"), (40, 110, 1.5))
+        for spec in ("40", "110..40", "0..127", "40..128", "40..110:0", "a..b"):
+            with self.subTest(spec), self.assertRaisesRegex(CommandError, r"FLOOR\.\.CEILING\[:GAMMA\]"):
+                parse_velocity(spec)
 
 
 if __name__ == "__main__":

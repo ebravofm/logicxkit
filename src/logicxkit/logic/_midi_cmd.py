@@ -4,12 +4,14 @@ on a copy a new empty region, a note, or an edit to a region by its number (`_mi
 from __future__ import annotations
 
 import json
+import random
 import sys
 from pathlib import Path
 
 from groovebin.maps import NAMES, stroke
 
 from . import _midi_edit_cmd as edits
+from . import _midi_transform_cmd as transforms
 from ._edit import CommandError, edit_copy, first_project_data
 from .services.midi import MidiRegion, read_midi
 from .services.midi_write import add_note, add_region
@@ -39,9 +41,15 @@ def _event(e, drum_map: str | None) -> dict:
 def _print(numbered: list[tuple[int, MidiRegion]], drum_map: str | None) -> None:
     for n, r in numbered:
         loop = "  (loop)" if r.loop else ""
-        print(f"  {n:3d}  {r.track or '-':16s} {r.name!r:20s} bar {r.start_bar:6.2f}  {len(r.events)} event(s){loop}")
+        print(f"  {n:3d}  {r.track or '-':16s} {r.name!r:20s} bar {r.start_bar:6.2f}  {events_count(r)}{loop}")
         for e in r.events:
             print(f"      bar {e.bar:7.3f}  ch {e.channel:2d}  {_describe(e, drum_map)}")
+
+
+def events_count(r: MidiRegion) -> str:
+    """``2 event(s)``, or ``2 event(s), 1 played`` when a split leaves the region holding more than it plays."""
+    played = len(r.played)
+    return f"{len(r.events)} event(s)" + (f", {played} played" if played != len(r.events) else "")
 
 
 def _number(text: str, what: str) -> float:
@@ -69,15 +77,27 @@ def _write(args, project: Path) -> int:
         return 2
     listed = sorted(project.glob("Alternatives/*/ProjectData"))[0]
     try:
-        resolved = edits.resolve(listed.read_bytes(), project_metadata(project).get("tracks"), planned, track=args.track)
+        count = project_metadata(project).get("tracks")
+        resolved = edits.resolve(listed.read_bytes(), count, planned, track=args.track)
+        transform = transforms.parse(args.steps, args.select)
+        if args.regions and transform is None:
+            raise CommandError("region numbers name what a transform touches; give one of its flags")
+        found = transforms.targets(listed.read_bytes(), count, args.regions, args.track, args.steps) if transform else []
+        seed = transforms.seed_of(args.seed)
     except CommandError as e:
         print(f"  {e}")
         return 1
+    if args.seed == "random":
+        print(f"  seed {seed}")
 
     def step(data, count, data_file):
         mine = resolved if data_file.parent.name == listed.parent.name else \
             edits.matched(data, count, resolved, data_file.parent.name)
         data = edits.run(data, count, mine, copies=False)
+        if transform:
+            # a fresh Random per alternative, so --seed lands the same edit on the same region in each
+            data = transforms.run(data, count, found, transform, random.Random(seed), data_file.parent.name,
+                                  listed.parent.name, args.steps)
         m = meter(data)
         for spec in args.region or []:
             parts = spec.split(":")
@@ -112,7 +132,7 @@ def _write(args, project: Path) -> int:
 
 def cmd_midi(args) -> int:
     project = find_project(Path(args.project))
-    if args.region or args.note or args.edits:
+    if args.region or args.note or args.edits or args.steps or args.select or args.regions:
         if not args.out:
             print("  --out is needed to write")
             return 2
@@ -131,7 +151,8 @@ def cmd_midi(args) -> int:
             return 1
     if args.json:
         print(json.dumps([{"number": n, "track": r.track, "row": r.row, "name": r.name, "start": r.start, "loop": r.loop,
-                           "events": [_event(e, args.drum_map) for e in r.events]} for n, r in numbered], indent=1))
+                           "events": [_event(e, args.drum_map) for e in r.events],
+                           "played": [_event(e, args.drum_map) for e in r.played]} for n, r in numbered], indent=1))
     else:
         print(f"{project.name}: {len(regions)} MIDI region(s)")
         _print(numbered, args.drum_map)
@@ -144,9 +165,11 @@ def cmd_midi(args) -> int:
 
 
 def register(sub) -> None:
-    ap = sub.add_parser("midi", help="read a song's MIDI regions, or export them as a .mid file")
+    ap = sub.add_parser("midi", help="read a song's MIDI regions, or export them as a .mid file",
+                        description="Edits by region number and the transforms — --select with operations, or a preset — write "
+                                    "a copy; a transform touches the regions numbered after the project, or every region on --track.")
     ap.add_argument("project")
-    ap.add_argument("--track", metavar="NAME", help="only this track's regions")
+    ap.add_argument("--track", metavar="NAME", help="only this track's regions; with a transform, every region on it")
     ap.add_argument("--export", metavar="FILE.mid", help="write a format-1 Standard MIDI File with the song's tempo map and time signatures")
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--map", dest="drum_map", choices=NAMES, help="name each note's drum stroke from this map")
@@ -154,4 +177,5 @@ def register(sub) -> None:
     ap.add_argument("--region", action="append", metavar="TRACK:BAR:BARS[:NAME]", help="a new empty MIDI region")
     ap.add_argument("--note", action="append", metavar="TRACK:BAR:PITCH:VELOCITY:TICKS[:CHANNEL]", help="a note in the track's region that holds BAR")
     edits.add_arguments(ap)
-    ap.set_defaults(func=cmd_midi)
+    transforms.add_arguments(ap)
+    ap.set_defaults(func=cmd_midi, steps=None)

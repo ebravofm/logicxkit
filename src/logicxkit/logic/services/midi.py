@@ -41,6 +41,7 @@ NO_LOOP = 0x3FFFFFFF
 MIDI_ENTRY = 0x20                   # entry type; 0x24 is an audio region
 NAME_AT = 16
 SEQ_OFFSET_AFTER_NAME, SEQ_OFFSET_FLAG_AFTER_NAME, SEQ_OFFSET_FLAG = 4, 8, 0x80
+COLOUR_AFTER_NAME = 9
 LENGTH_AFTER_NAME = 60
 DATA1_AT, DATA2_AT = 12, 11
 LENGTH_LINE, LENGTH_AT = 0x89, 12
@@ -96,6 +97,7 @@ class MidiRegion:
     object_id: int = field(default=0, compare=False)           # the track object the entry names
     offset: int = field(default=0, compare=False)              # ticks into its sequence the region plays from
     length: int = field(default=0, compare=False)              # ticks; events outside [start, start + length) do not play
+    colour: int = field(default=0, compare=False)              # a palette index, the ninth byte past the sequence's padded name
 
     @property
     def played(self) -> list[MidiEvent]:
@@ -174,5 +176,6 @@ def read_midi(data: bytes, track_count: int | None = None) -> list[MidiRegion]:
         flags, offset = entry_flags(entry), sequence_offset(records[t.start].raw)
         out.append(MidiRegion(names.get(oid, f"object {oid}"), row, _name(records[t.start].raw), start,
                               bool(flags & LOOP_BIT), [_event(e, start - offset) for e in evs], t.slot, bool(flags & MUTE_BIT),
-                              off, oid, offset, region_length(records[t.start].raw)))
+                              off, oid, offset, region_length(records[t.start].raw),
+                              records[t.start].raw[name_end(records[t.start].raw) + COLOUR_AFTER_NAME]))
     return out

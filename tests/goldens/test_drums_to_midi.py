@@ -203,6 +203,30 @@ class DrumsToMidiTest(unittest.TestCase):
         _, low = self.run_it(base, hits=[(KICK, "kick")], detector=Detector(floor_db=-30))
         self.assertEqual((default.hits[0][3], low.hits[0][3]), (2, 3))
 
+    def test_a_tracks_own_floor_applies_to_it_alone(self):
+        base = self.session([0.02, 1.0, 2.0], [0.8, 0.8 * 10 ** (-25 / 20), 0.8], kick_name="ghost.wav")
+        _, kick_low = self.run_it(base, floors={KICK: -30})
+        _, snare_low = self.run_it(base, floors={SNARE: -30})
+        self.assertEqual([(t, n) for t, _term, _note, n in kick_low.hits], [(KICK, 3), (SNARE, 2)])
+        self.assertEqual([(t, n) for t, _term, _note, n in snare_low.hits], [(KICK, 2), (SNARE, 2)])
+        self.assertIn(f"{KICK}: 3 hit(s) -> kick (note 36, addictive-drums-2); floor -30 dB", kick_low.lines())
+        with self.assertRaisesRegex(ValueError, "no --hit names"):
+            self.run_it(base, floors={"Audio 3": -30})
+
+    def test_the_velocity_band_maps_the_quietest_and_loudest_hits_onto_it(self):
+        out, report = self.run_it(velocity=(40, 100, 1.0))
+        events = sorted(self.new_region(self.base, out).events, key=lambda e: e.tick)
+        kicks = [e.velocity for e in events if e.pitch == KICK_NOTE]
+        self.assertEqual((min(kicks), max(kicks)), (40, 100))
+        self.assertEqual([e.velocity for e in events if e.pitch == SNARE_NOTE], [40, 100])
+        self.assertIn("velocities 40..100", "\n".join(report.lines()))
+        curved, _ = self.run_it(velocity=(40, 100, 2.0))
+        bent = sorted(e.velocity for e in self.new_region(self.base, curved).events if e.pitch == KICK_NOTE)
+        self.assertEqual((bent[0], bent[-1]), (40, 100))
+        self.assertLess(sum(bent), sum(sorted(kicks)))
+        with self.assertRaisesRegex(ValueError, "gamma above 0"):
+            self.run_it(velocity=(40, 100, 0.0))
+
     def test_a_region_starting_inside_its_file_takes_only_the_hits_it_plays(self):
         spb = RATE * 60 / self.bpm
         data = reframed(self.base, 0, offset=round(2 * spb), frames=round(4 * spb))
@@ -243,10 +267,11 @@ class DrumsToMidiTest(unittest.TestCase):
         bundle = self.dir / "in" / "song.logicx"
         shutil.copytree(_goldens.path(GOLDEN), bundle)
         (bundle / "Alternatives" / "000" / "ProjectData").write_bytes(self.base)
-        rc, printed = command([str(bundle), "--out", str(self.dir / "out"), "--hit", f"{KICK}=kick",
-                               "--hit", f"{SNARE}=snare", "--track", TARGET, "--grid", "16", "--threshold", "-30"])
+        rc, printed = command([str(bundle), "--out", str(self.dir / "out"), "--hit", f"{KICK}=kick:-30",
+                               "--hit", f"{SNARE}=snare", "--track", TARGET, "--grid", "16", "--velocity", "40..100"])
         self.assertEqual(rc, 0, printed)
-        self.assertIn("Audio 1: 8 hit(s)", printed)
+        self.assertIn("Audio 1: 8 hit(s) -> kick (note 36, addictive-drums-2); floor -30 dB", printed)
+        self.assertIn("velocities 40..100", printed)
         (written,) = (self.dir / "out").rglob("Alternatives/000/ProjectData")
         out = written.read_bytes()
         self.assertEqual(len(self.new_region(self.base, out).events), 10)
