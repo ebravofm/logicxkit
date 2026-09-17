@@ -81,10 +81,6 @@ class ClampedWidthTest(unittest.TestCase):
         self.assertNotIn("estimated", self._header(WidthTest.blank_base(), ["On/Off"]))
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class WidthTest(unittest.TestCase):
     """The width at +38 is the file's own name-column width plus the shown components', never
     below 180."""
@@ -106,3 +102,7 @@ class WidthTest(unittest.TestCase):
         out = with_components(self.blank_base(), {"Volume": False, "Pan/Send": False, "Record Enable": False,
                                                   "Track Icons": False})      # 33 + 83 would be 116
         self.assertEqual(struct.unpack_from("<H", out, 38)[0], 180)
+
+
+if __name__ == "__main__":
+    unittest.main()

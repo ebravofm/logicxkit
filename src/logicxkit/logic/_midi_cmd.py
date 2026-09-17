@@ -17,7 +17,7 @@ from .services.midi import MidiRegion, read_midi
 from .services.midi_write import add_note, add_region
 from .services.project import project_metadata
 from .services.signature import meter
-from .services.smf import meter_map, tempo_map, write_smf
+from .services.smf import meter_map, tempo_map, unexportable, write_smf
 from .services.retrack import find_project
 
 
@@ -149,6 +149,9 @@ def cmd_midi(args) -> int:
         except ValueError as e:
             print(f"  {e}", file=note)
             return 1
+        left = unexportable(regions)
+        if left:
+            print("  not in the file: " + ", ".join(f"{n} {kind} event(s)" for kind, n in sorted(left.items())), file=note)
     if args.json:
         print(json.dumps([{"number": n, "track": r.track, "row": r.row, "name": r.name, "start": r.start, "loop": r.loop,
                            "events": [_event(e, args.drum_map) for e in r.events],

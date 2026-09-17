@@ -57,14 +57,28 @@ def by_command() -> dict[str, Capability]:
     return {name: cap for cap in CAPABILITIES for name in cap.commands}
 
 
+def _names(cap: Capability) -> str:
+    return " ".join(f"`{n}`" for n in cap.commands)
+
+
 def table() -> str:
-    """The markdown table `docs/CAPABILITIES.md` carries, generated."""
-    rows = ["| Command | Level | Safe on a real song? | The catch |", "|---|---|---|---|"]
+    """The markdown table `docs/CAPABILITIES.md` carries, generated: one line per command; the
+    catch, prose, goes in `catches()` below it."""
+    rows = ["| Command | Level | Safe on a real song? |", "|---|---|---|"]
     for cap in CAPABILITIES:
-        names = " ".join(f"`{n}`" for n in cap.commands)
         level = cap.level if cap.level == "—" else f"**{cap.level}**"
-        rows.append(f"| {names} | {level} | {cap.safe} | {cap.catch} |")
+        rows.append(f"| {_names(cap)} | {level} | {cap.safe} |")
     return "\n".join(rows)
+
+
+def catches() -> str:
+    """The catch per command, generated for `docs/CAPABILITIES.md`: what each level was measured
+    against, and where it stops."""
+    out = []
+    for cap in CAPABILITIES:
+        if cap.catch:
+            out.append(f"### {_names(cap)}\n\n{cap.catch}.")
+    return "\n\n".join(out)
 
 
 def cmd_capabilities(args) -> int:
@@ -76,7 +90,7 @@ def cmd_capabilities(args) -> int:
         print(f"  {names:{width}s}  {cap.level:9s}  {cap.safe}")
         if cap.catch and args.verbose:
             print(f"  {'':{width}s}             {cap.catch}")
-    print("\nFull detail, including the reproduced defects: docs/CAPABILITIES.md")
+    print("\nThe catch per command: -v; full detail, including the reproduced defects: docs/CAPABILITIES.md")
     return 0
 
 

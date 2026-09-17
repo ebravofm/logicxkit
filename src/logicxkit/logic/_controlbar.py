@@ -8,7 +8,8 @@ from pathlib import Path
 from .services.controlbar import (
     CONTROLS, LCD_MODES, alternative_dirs, controls_of, copy_layout, read_layout, write_controls,
 )
-from .services.retrack import copy_project, find_project
+from ._edit import edit_display
+from .services.retrack import find_project
 
 
 def _match(name: str) -> str:
@@ -51,16 +52,21 @@ def cmd_controlbar(args) -> int:
     except ValueError as e:
         print(f"  {e}")
         return 2
-    dest = copy_project(project, Path(args.out))["dest"]
     if src is not None:
         print(f"from : {src}")
-    print(f"into : {dest}\n")
-    for alt in alternative_dirs(dest):
+
+    def step(alt: Path) -> None:
         if src is not None:
             copy_layout(alternative_dirs(src)[0], alt)
         state = write_controls(alt, want) if want else controls_of(read_layout(alt)[0])
         print(f"  {alt.name}:")
         _print_state(state, read_layout(alt)[1])
+
+    try:
+        edit_display(project, Path(args.out), step)
+    except ValueError as e:
+        print(f"  {e}")
+        return 1
     print("\nUnverified until opened in Logic.")
     return 0
 

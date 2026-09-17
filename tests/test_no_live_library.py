@@ -79,17 +79,17 @@ class GuardCoverageTest(unittest.TestCase):
 
 
 class ManifestContainmentTest(unittest.TestCase):
-    """A manifest entry cannot point a golden outside resources/."""
+    """A manifest entry cannot point a golden outside its corpus root."""
 
     def test_an_absolute_or_dotdot_path_is_refused(self):
         import _goldens
         for bad in ("/somewhere/else/x.logicx", "../../elsewhere/x.logicx"):
             with self.subTest(bad), self.assertRaises(ValueError):
-                _goldens._under_resources("k", bad)
+                _goldens._relative("k", bad)
 
     def test_a_normal_relative_path_passes(self):
         import _goldens
-        self.assertEqual(_goldens._under_resources("k", "experiments/1.logicx"),
+        self.assertEqual(_goldens._relative("k", "experiments/1.logicx"),
                          "experiments/1.logicx")
 
 

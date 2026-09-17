@@ -58,6 +58,9 @@ def kind(head: bytes) -> int:
     return head[0] & 0xF0
 
 
+NOTE_OFF = 0x80
+
+
 def is_note(head: bytes) -> bool:
     return kind(head) == NOTE
 
@@ -81,6 +84,8 @@ def to_part(lines: EventLines) -> Part:
             ext = next((ln for ln in ls if ln[7] == LENGTH_LINE), None)
             length = struct.unpack_from("<I", ext, LENGTH_AT)[0] if ext else 0
             notes.append(Note(at, length, channel, h[DATA1_AT], h[DATA2_AT], tag=(h, ls)))
+        elif kind(h) == NOTE_OFF:
+            raise ValueError(f"a note-off line (0x80) at tick {tick(h)}: unmeasured, so the region is not edited")
         else:
             data = bytes([h[0], h[DATA1_AT]]) + (b"" if kind(h) in ONE_BYTE else bytes([h[DATA2_AT]]))
             others.append(Event(at, data, tag=(h, ls)))
@@ -99,6 +104,7 @@ def _line_of(item: Note | Event) -> tuple[bytes, tuple[bytes, ...]]:
             return head, (ext,)
         head, ls = item.tag
         head = _put(_put(_put(head, TICK_AT, at, "<I"), DATA1_AT, item.pitch), DATA2_AT, item.velocity)
+        head = _put(head, 0, (head[0] & 0xF0) | (item.channel - 1))     # the status byte's low nibble
         ls = tuple(_put(ln, LENGTH_AT, max(1, item.length), "<I") if ln[7] == LENGTH_LINE else ln for ln in ls)
         return head, ls
     if item.tag is None:

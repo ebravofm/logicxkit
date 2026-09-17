@@ -39,7 +39,7 @@ the same table.** Read it before you point a writer at a session you care about.
 ## Requirements
 
 - **macOS.** There is no Linux or Windows path. CI runs on a macOS runner with the public golden
-  corpus fetched, so the synthetic layer and every public golden run there; the owner's goldens
+  corpus tracked in the repo, so the synthetic layer and every public golden run there; the owner's goldens
   (real sessions) and `tests/rig` (a physical console's scene) skip.
 - **Logic Pro** — the tool reads and writes its file formats, and confirming any change means
   opening the result in Logic.
@@ -202,7 +202,8 @@ logicxkit/
                            `swift` at call time, shipped as package data
     utils/                 helpers ≥2 domains share (swiftrun, data root, env)
   tests/logic tests/au     synthetic records — green on any macOS checkout
-  tests/goldens            real-file goldens, reached by manifest key — skip without the corpus
+  tests/corpus             the public corpus: Logic's saves of a blank project, one change each
+  tests/goldens            real-file goldens, reached by manifest key — the owner's skip elsewhere
   tests/rig                a mixing-console preflight golden — skips without its scene
 ```
 
@@ -212,23 +213,22 @@ import `logic`. Both read Logic containers through `logicx`.
 ## What is not in the repo
 
 Two corpora stand behind the goldens. The **public corpus** is Logic's own saves of a blank
-project — one deliberate change per save, so a diff isolates the bytes — published as a
-release asset and fetched by `bin/run fetch-corpus` into `resources/public/`, pinned by
-checksum in `tests/goldens/corpus.json`. `tests/goldens/manifest.json` names each save by a
-neutral key with the facts a test may assert. The **owner's corpus** — controlled saves cut
+project — one deliberate change per save, so a diff isolates the bytes — and it is in the
+repo under `tests/corpus/`, so a golden ships in the commit that adds its test.
+`tests/goldens/manifest.json` names each save by a neutral key with the facts a test may
+assert. The **owner's corpus** — controlled saves cut
 from real sessions, project templates, finished mixes, a channel-strip library snapshot — is
 Logic-authored material containing real music and **is not here**. The record templates and
 native plug-in donors the writers need ship inside the package (`src/logicxkit/data`, Logic's
 own from the public corpus); a data root (`LOGICXKIT_DATA`) adds third-party donors and AU
 parameter tables, which are not ours to publish.
 
-The consequence for a fresh clone: **`bin/run pytest` runs green, but every golden skips until
-`bin/run fetch-corpus` has run**, and the keys only the owner's corpus has skip regardless. The
-run prints `goldens: N of M keys found` on its last line so you can see how much actually ran;
+The consequence for a fresh clone: **`bin/run pytest` runs every public golden**, and the keys
+only the owner's corpus has skip. The run prints `goldens: N of M keys found` on its last line so you can see how much actually ran;
 `LOGICXKIT_REQUIRE_GOLDENS=1` turns a missing golden into a failure, and
 `LOGICXKIT_GOLDENS=owner` prefers the owner's files where both corpora have a key.
 
-[`resources/README.md`][corpus] describes the shape of the corpus and how the
+[`resources/README.md`][corpus] describes the shape of the owner's corpus and how the
 controlled saves are made; [`resources/data/README.md`][data-root] describes the
 data root and how to regenerate each part of it (`logic donors`, `logic recdiff`, and
 `auprobe.swift list` for the AU tables).

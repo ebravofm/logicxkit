@@ -4,18 +4,19 @@ search` and `show` read it) written into a copy of a project as MIDI regions: `p
 
 from __future__ import annotations
 
+import os
 import secrets
 import sqlite3
 import struct
 from pathlib import Path
 
+from groovebin.library import default_db as library_default_db
 from groovebin.library.compose import SectionPlan, group_patterns
 from groovebin.library.generate import Phrase, load_pool, parse_meter, phrase
 from groovebin.library.pattern import Pattern, pattern
 from groovebin.library.search import find_group, get
 from groovebin.maps import NAMES
 
-from ..utils.env import env_path
 from ._edit import CommandError, edit_copy
 from .services.beats_compose import compose, plan
 from .services.beats_place import place, place_phrase
@@ -26,8 +27,9 @@ FAILURES = (OSError, ValueError, OverflowError, struct.error, sqlite3.Error, Com
 
 
 def default_db() -> Path:
-    """groovebin's own default, so `groovebin index` and `logic beats` meet at one file."""
-    return env_path("XDG_CACHE_HOME", "~/.cache") / "groovebin" / "library.sqlite"
+    """groovebin's own default, so `groovebin index` and `logic beats` meet at one file. The
+    library reads no environment itself; an empty `XDG_CACHE_HOME` reaches it as unset."""
+    return library_default_db(os.environ.get("XDG_CACHE_HOME"))
 
 
 def _db(args) -> Path:
@@ -77,8 +79,9 @@ def cmd_place(args) -> int:
         print(f"  {e}")
         return 1
 
-    def step(data, count, _data_file):
+    def step(data, count, data_file):
         data, report = place(data, p, track_count=count, **options)
+        print(f"  {data_file.parent.name}:")
         print(_placed({**report, "bar": args.bar}, translation))
         return data
     try:
@@ -120,9 +123,10 @@ def cmd_compose(args) -> int:
         return 1
     print(f"group {group!r}{f' ({library})' if library else ''}: {len(patterns)} pattern(s)")
 
-    def step(data, count, _data_file):
+    def step(data, count, data_file):
         plans = plan(data, patterns, fills=args.fills)
         data, _reports = compose(data, plans, track=args.track, track_count=count)
+        print(f"  {data_file.parent.name}:")
         print("\n".join(map(_section, plans)))
         return data
     try:
@@ -167,10 +171,10 @@ def cmd_generate(args) -> int:
     print(f"seed {seed}: {args.bars} bar(s) of {args.meter.strip()} in {ph.map}, {len(ph.notes)} note(s)")
     print("\n".join(_picks(ph)))
 
-    def step(data, count, _data_file):
+    def step(data, count, data_file):
         data, report = place_phrase(data, ph, track=args.track, bar=args.bar, track_count=count)
-        print(f"  {args.track!r} region {report['name']!r} at bar {args.bar} for {args.bars} bar(s): "
-              f"{report['notes']} note(s), slot {report['slot']}")
+        print(f"  {data_file.parent.name}: {args.track!r} region {report['name']!r} at bar {args.bar} "
+              f"for {args.bars} bar(s): {report['notes']} note(s), slot {report['slot']}")
         return data
     try:
         edit_copy(project, Path(args.out), step)

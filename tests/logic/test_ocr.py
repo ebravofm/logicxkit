@@ -5,7 +5,7 @@ import unittest
 from logicxkit.logic.services.ocr import OcrClient, OcrError, fader_row
 
 CANNED = json.dumps({
-    "image": "/tmp/x.jpg", "width": 2056, "height": 1263, "count": 5,
+    "image": "/nowhere/x.jpg", "width": 2056, "height": 1263, "count": 5,
     "items": [
         {"text": "1.8", "conf": 1.0, "x": 0.196, "y": 0.180, "w": 0.01, "h": 0.01},
         {"text": "-9.0", "conf": 1.0, "x": 0.228, "y": 0.181, "w": 0.01, "h": 0.01},
@@ -26,7 +26,7 @@ class FakeRunner:
 
 class TestOcrClient(unittest.TestCase):
     def test_parses_items(self):
-        d = OcrClient(runner=FakeRunner()).ocr_image("/tmp/x.jpg")
+        d = OcrClient(runner=FakeRunner()).ocr_image("/nowhere/x.jpg")
         self.assertEqual(d["width"], 2056)
         self.assertEqual(len(d["items"]), 5)
 

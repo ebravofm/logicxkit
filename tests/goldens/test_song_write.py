@@ -4,7 +4,6 @@ The real-file part of tests/logic/test_song_write.py; skips without the owner's 
 
 import unittest
 import _goldens
-import _paths
 from logicxkit.logic.services import arrangement_write as w
 from logicxkit.logic.services.arrangement import read_sections
 from logicxkit.logic.services.events import BAR_ONE, PPQ
@@ -14,7 +13,7 @@ from logicxkit.logic.services.tempo_write import set_tempo
 from logicxkit.logicx import project_data
 from _data import needs
 
-MIXES = sorted((_paths.RESOURCES / "mixes").glob("*/*.logicx"))
+MIXES = _goldens.sessions(*_goldens.MIX_KEYS)
 SONG = next((p for p in MIXES if read_sections(project_data(p))), None)
 RAMPED = next((p for p in MIXES if len(read_tempo_events(project_data(p))) > 1), None)
 ADD_BASE = _goldens.path("sections-base")
@@ -214,8 +213,50 @@ class ReSavedAddsTest(unittest.TestCase):
         self.assertEqual(eo.data[12:], el.data[12:])
 
 
-if __name__ == "__main__":
-    unittest.main()
+class TempoListWordTest(unittest.TestCase):
+    """The word at head +2 of a tempo event: 27511 (0x6b77) on the three points the Tempo List added
+    to the owner's song, whatever the bar, and 0 on the two it created on the blank, on ramp points
+    and on bar 1 — read and kept, meaning unknown."""
+
+    @_goldens.needs("add-tempo-logic", "tempo-add-bar-111-logic", "tempo-add-bar-103-logic", "tempo-ramp-logic")
+    def test_every_list_created_point_carries_the_same_word(self):
+        from logicxkit.logic.services.signature import meter
+        for key in ("add-tempo-logic", "tempo-add-bar-111-logic", "tempo-add-bar-103-logic"):
+            with self.subTest(key):
+                data = project_data(_goldens.path(key))
+                bars = meter(data)
+                events = read_tempo_events(data)
+                created = [e for e in events if round(bars.bar(e.position)) == _goldens.fact(key, "bar")]
+                self.assertEqual(len(created), 1, key)
+                self.assertEqual(created[0].extra, _goldens.fact(key, "extra"))
+                self.assertTrue(all(e.extra in (0, 27511) for e in events))
+        ramp = read_tempo_events(project_data(_goldens.path("tempo-ramp-logic")))
+        self.assertEqual({e.extra for e in ramp}, {0})
+
+    @_goldens.needs("tempo-point-140-logic", "tempo-bit-cleared-resave-logic")
+    def test_head_15_bit_0_is_list_edit_state_logic_does_not_restore(self):
+        """The list's edit of a point sets +15 bit 0 (129); cleared by hand, Logic's re-save keeps it
+        cleared, so a writer that leaves it 0 loses nothing Logic reads back."""
+        edited = read_tempo_events(project_data(_goldens.path("tempo-point-140-logic")))
+        resaved = read_tempo_events(project_data(_goldens.path("tempo-bit-cleared-resave-logic")))
+        self.assertEqual([e.flags for e in edited] if hasattr(edited[0], "flags") else None, None)
+        from logicxkit.logic.services.events import events
+        from logicxkit.logic.services.insert import HEADER, project_records
+        from logicxkit.logic.services.tempo import tempo_sequence
+        def head15(key):
+            records = project_records(project_data(_goldens.path(key)))
+            return [e.head[15] for e in events(records[tempo_sequence(records)].raw[HEADER:])]
+        self.assertEqual((head15("tempo-point-140-logic"), head15("tempo-bit-cleared-resave-logic")), ([0, 129], [0, 128]))
+        self.assertEqual(head15("tempo-bit-cleared-resave-logic"), _goldens.fact("tempo-bit-cleared-resave-logic", "head_15"))
+        self.assertEqual([(e.position, e.bpm) for e in resaved], [(e.position, e.bpm) for e in edited])
+
+    @_goldens.needs("tempo-point-created-logic", "tempo-point-140-logic")
+    def test_the_blanks_list_created_points_carry_zero(self):
+        """The public saves' created points carry 0, so the word is not the mark of a create."""
+        for key in ("tempo-point-created-logic", "tempo-point-140-logic"):
+            with self.subTest(key):
+                events = read_tempo_events(project_data(_goldens.path(key)))
+                self.assertEqual([(e.position, e.extra) for e in events], [(38400, 0), (55680, 0)])
 
 
 EDITS_MINE, EDITS_LOGIC = _goldens.path("section-edits-mine"), _goldens.path("section-edits-logic")
@@ -355,3 +396,7 @@ class LogicResavedArrangementTrackTest(unittest.TestCase):
         mine = [(s.name, s.start, s.length, s.kind) for s in read_sections(ours)]
         self.assertEqual([n for n, *_ in mine], _goldens.fact("arrangement-ours", "names"))
         self.assertEqual(mine, [(s.name, s.start, s.length, s.kind) for s in read_sections(logic)])
+
+
+if __name__ == "__main__":
+    unittest.main()

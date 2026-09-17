@@ -21,7 +21,7 @@ and Screen Recording permission; the first run asks.
 ## The loop
 
 1. Start from a project Logic made on this machine — `File > New > Empty Project`, one
-   audio track — or a public corpus save (`bin/run fetch-corpus`). Copy it under `out/scratch`;
+   audio track — or a public corpus save (`tests/corpus/`). Copy it under `out/scratch`;
    never Save (Cmd-S) the original, only Save As.
 2. `open -a "Logic Pro" <copy>`; wait ~25 s; press **Skip All** or **Continue** on any dialog.
 3. `LOGIC_SAVE_PREFIX=<family> python3 tools/driver/drive.py steps.json 1` — each step performs

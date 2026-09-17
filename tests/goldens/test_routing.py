@@ -24,10 +24,6 @@ class GoldenRoutingTest(unittest.TestCase):
         self.assertTrue(all(c.owner == kick for c in d.changed))
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 @_goldens.needs("route-ours", "route-resave-logic")
 class LogicResavedRouteTest(unittest.TestCase):
     def test_logic_kept_the_rerouted_output(self):
@@ -41,3 +37,7 @@ class LogicResavedRouteTest(unittest.TestCase):
             self.assertEqual(routed[want[0]], want[1])
         self.assertEqual({o: d for o, d in output_routing(ours).items() if o in labels},
                          {o: d for o, d in output_routing(logic).items() if o in labels})
+
+
+if __name__ == "__main__":
+    unittest.main()

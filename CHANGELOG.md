@@ -3,6 +3,109 @@
 Notable changes to logicxkit. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versions follow [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.6.0 — 2026-09-17
+
+### Added
+
+- `logic automation` reads track automation: each channel's lanes and points (fader points with the fader
+  byte, plug-in parameter points with the 0..1 float and parameter index), and a region's own automation,
+  from Logic's `*Automation` folders (the `automation-*` goldens); `--set`, `--copy` and `--clear` write a
+  lane's points the way the Automation Event List does, Pan and the relative Volume lane included; Logic
+  listed three lanes written onto the blank as written and re-saved them (`automation-ours-resave-logic`).
+  A parameter point whose type word carries bit 14 (two on a real song) reads as flagged rather than
+  being dropped. A point's sub-tick fraction (head +2; Logic's region-border points sit half a tick
+  off) is read, kept on a copy and written in Logic's own order, so the re-save is our write byte for
+  byte but for Logic's selection byte; two points at one position are refused; a tick past the
+  32-bit line is refused. The three write flags apply in the order typed.
+- `logic stacks` reads a stack inside a stack (the member byte is the depth; a nested header lists among its
+  parent's members, `--json` carries `depth` and `parent`), and `--move` puts a track or a whole stack into
+  a nested stack, or a member one level out, matching Logic's own drags by membership, depth and stack
+  index (the `nest-*` goldens); Logic re-saved a nested move as written (`nest-ours-resave-logic`).
+  `reorder` and apply-template's moves carry a header's nested stack along with its members; `add-track`
+  places a row inside a nested stack at its depth; a moved header keeps its expanded bit; `--stack` on
+  `quantize-drums` and `apply-template` takes a nested stack's rows too; apply-template leaves a nested
+  member one level per move.
+- The packaged donor library carries Linear Phase EQ, Multipressor, Adaptive Limiter and Limiter
+  (`bin/regen_data.py` harvests it from two corpus saves); `services/output_params.py` names the float
+  indices Logic's one-knob saves moved, and `chains` names the three new plug-ins.
+- `chains` takes a chain keyed by a channel name (`Stereo Out`): its plug-ins in slot order from declared
+  donors, parameters by the names `output_params.py` measured or by an index inside the donor's block;
+  `config/example-mastering.json`. Logic showed the example chain's values as written and re-saved it
+  intact (`master-ours-resave-logic`). The chain is checked before the write — a name two channels carry,
+  a channel keyed both by strip reference and by name, an index outside the block, a named parameter on a
+  donor with a shorter block — and read back after it; `--plan` names the channel; `stereo` widens it; a
+  `pre`/`post` parameter goes by name or index; a dialled parameter wins over a strip's float; any refusal
+  discards the copy, and the structure gate compares against the file's own bytes.
+- `plugins --validate` opens each listed third-party component with `auval -v` and reports one whose bundle
+  has gone bad as broken, a hang past the timeout included; each component is announced as it is checked
+  and the verdict read from auval's own failure markers.
+- `patch` reads the fader and pan bytes from a patch's `#Root.cst` channel record (`PatchChannel.fader`
+  and `.pan_byte`, after its other fields); five Library saves join the corpus (a fader step, an insert,
+  a send, a summing stack).
+- `add-track --stereo` binds the track's input to the `Input N-(N+1)` pair channel, as Logic's own New
+  Tracks does with an interface attached (`tracks-stereo-pair-logic`); an even input number is refused.
+- Logic's MIDI import pairs nested same-pitch notes first in, first out (`midi-nested-import-logic`),
+  as groovebin's reader does; a tempo point's head +15 bit 0 is list-edit state Logic does not restore
+  (`tempo-bit-cleared-resave-logic`).
+- `plugins` runs the `auval -a` registry scan only when a slot needs it, and a scan past its timeout
+  reads as unknown rather than ending the command.
+- `midi` edits write a note's channel (a channel edit on a note read from the file took no effect);
+  `--export` says which aftertouch and pressure events the file cannot carry; a note-off line is refused by
+  name; the report counts duplicate notes; `--seed` refuses a non-decimal digit.
+- Linear Phase EQ's cut bands name their third float `slope` (the order, dB/Oct ÷ 6), not a gain; the band
+  stride is pinned by the default frequency ladder.
+- 40 public goldens from session C (2026-09-16): the four output plug-ins on the Stereo Out and on a
+  track with sixteen parameter saves, stack nesting, automation, a Session Player player change.
+
+### Changed
+
+- The public golden corpus is tracked in the repo under `tests/corpus/`, so a golden ships in the commit
+  that adds its test. `bin/run fetch-corpus`, `tests/goldens/corpus.json` and CI's fetch step are gone;
+  `LOGICXKIT_RESOURCES` names the owner's corpus only.
+- `apply-template` repoints a strip reference per channel, so two session channels that share a reference
+  may part ways when the template names them differently. The current template applied onto a tracked
+  song re-saved in Logic with the identical row list and references (owner golden).
+- `bin/run` no longer lets `.env` override a variable given on the command line.
+- groovebin 0.3.0 is required; `logic beats` takes the pattern library's default path from it, so an
+  empty `XDG_CACHE_HOME` reads as unset on both sides.
+- `logic toolbar` discards its copy when a write fails, like the record editors; the DisplayState writers
+  read back what they wrote.
+- The sdist names its files: nothing gitignored under `config/` or `docs/`, no corpus, no golden tests;
+  `tests/test_sdist.py` builds it and checks. `tools/stage_public.py` refuses a save whose project title
+  lacks the neutral prefix or a name, key or note with a private word, and leaves autosaves out; the
+  autosaves that had reached the corpus are gone. The sdist test also refuses a file git does not track.
+- `header` and `controlbar` discard their copy when a write fails, as `toolbar` does.
+- `chains` reports a channel narrowed to mono as narrowed, not widened.
+- `plugins --validate` counts a component as passing only on auval's own success line.
+- `apply-template --plan` names a strip reference the session carries and the template lacks, as a
+  refused op; clearing one is not written.
+- `docs/CAPABILITIES.md`: a three-column table, the catch per command under its own heading.
+- `stacks` resolves a folder like every other command and reads each alternative with its own track count.
+- The tempo word 27511 is on the owner's Tempo List adds only; the blank's created points carry 0, so
+  it is read and kept as an unknown, not a create marker.
+- `LOG_FILE` and `LOG_LEVEL` are documented in `.env.example`.
+- `chains` reports a class v2 Channel EQ strip (51 floats) as an older layout written onto the current
+  52-float block, not as a chain that differs from its strip, so `--strict` passes it; class v3 appended
+  the one trailing float and indices 0–50 are the same layout.
+- The owner's sessions and the stack-move and group saves are reached by manifest key, so the goldens
+  line counts them and their facts come from the manifest.
+- Every write command names the alternative in each line it reports, so one edit on a project carrying
+  more than one no longer reads as several: `automation`, `beats`, `reorder`, `colour`, `rename`,
+  `hide`, `add-track`, `stack-create`, `group`, `stacks --move`, `quantize-drums` and `drums-to-midi`
+  join the ten that already did.
+
+### Fixed
+
+- The suite gates its own shape: `tests/test_test_layout.py` refuses a test defined below a file's
+  `unittest.main()` (26 files had drifted there, so a direct run of one reported OK having collected a
+  fraction of it), and `tests/test_declared_dependencies.py` refuses a `pyproject.toml` pin the venv does
+  not hold — `pip check` reads installed metadata and cannot see that drift. The stale-bytecode purge
+  covers `tests/` as well as `src/`.
+- `tests/logic/test_alternative_labels.py` refuses a per-alternative step that reports without naming
+  its alternative, whether it prints or appends to a list its caller prints.
+- The writer's tick ceiling is pinned to its literal; the test read it from the module it checks, so any
+  ceiling passed.
+
 ## 0.5.0 — 2026-09-15
 
 ### Added

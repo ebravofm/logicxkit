@@ -97,22 +97,24 @@ class TextTest(unittest.TestCase):
         if not shutil.which("defaults"):
             self.skipTest("no defaults(1)")
         from logicxkit.logic.services.prefs import CONTROLBAR_DEFAULT_KEY, write_controlbar_default, write_settings
-        domain = "com.logicxkit.test-prefs"
         layout = {"CLgTransportBtnsViewLeft": [100, 101], "CLgTransportBtnsViewRight": [110],
                   "CLgTransportBtnsTransport": [6, 11, 12, 13, 14, 16, 38], "CLgTransportBtnsDisplay": [18, 19],
                   "CLgTransportBtnsModus": [30, 42], "CLgTransportDisplayMode": 0}
-        try:
+        import plistlib
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as tmp:
+            # A domain with a slash is a plist path: nothing lands in ~/Library/Preferences.
+            domain = str(Path(tmp) / "com.logicxkit.test-prefs")
             write_controlbar_default(layout, domain)
             write_settings({"Marquee tool click zones": True, "Number of undo steps": 42,
                             "Select regions on track selection": True, "Right mouse button": "Opens Tool Menu"}, domain)
             plist = subprocess.run(["defaults", "export", domain, "-"], capture_output=True, check=True).stdout
-            import plistlib
-            got = plistlib.loads(plist)
-            self.assertEqual(got[CONTROLBAR_DEFAULT_KEY], layout)
-            self.assertEqual((got["MarqueeToolClickZones"], got["UndoSteps"]), (True, 42))
-            self.assertEqual((got["SelectRegionsOnTrackSelection_n"], got["RightButtonFunction"]), (False, 1))
-        finally:
-            subprocess.run(["defaults", "delete", domain], capture_output=True)
+            self.assertTrue((Path(tmp) / "com.logicxkit.test-prefs.plist").exists())
+        got = plistlib.loads(plist)
+        self.assertEqual(got[CONTROLBAR_DEFAULT_KEY], layout)
+        self.assertEqual((got["MarqueeToolClickZones"], got["UndoSteps"]), (True, 42))
+        self.assertEqual((got["SelectRegionsOnTrackSelection_n"], got["RightButtonFunction"]), (False, 1))
 
 
 if __name__ == "__main__":

@@ -131,8 +131,8 @@ class PrefsPlistTest(unittest.TestCase):
 
     def test_the_override_replaces_logics_file_but_not_a_scratch_domains(self):
         from logicxkit.logic.services.prefs import ENV_PLIST, PREFS_DIR, prefs_plist
-        with mock.patch.dict(os.environ, {ENV_PLIST: "/tmp/copy.plist"}):
-            self.assertEqual(prefs_plist(), Path("/tmp/copy.plist"))
+        with mock.patch.dict(os.environ, {ENV_PLIST: "/nowhere/copy.plist"}):
+            self.assertEqual(prefs_plist(), Path("/nowhere/copy.plist"))
             self.assertEqual(prefs_plist("com.x.scratch"), PREFS_DIR / "com.x.scratch.plist")
 
 
@@ -158,11 +158,11 @@ class PresetNameTest(unittest.TestCase):
         from logicxkit.logic.services.pst import plan_psts
         for name in self.BAD:
             with self.subTest(name=name), self.assertRaisesRegex(ValueError, "plain file name"):
-                plan_psts(self._spec(Path("/tmp/logicxkit-never-written"), name))
+                plan_psts(self._spec(Path("/nowhere/logicxkit-never-written"), name))
 
     def test_an_ordinary_name_still_plans(self):
         from logicxkit.logic.services.pst import plan_psts
-        ((name, dest, _values),) = plan_psts(self._spec(Path("/tmp/x"), "Kick - Tight 2"))
+        ((name, dest, _values),) = plan_psts(self._spec(Path("/nowhere/x"), "Kick - Tight 2"))
         self.assertEqual(dest.name, "Kick - Tight 2.pst")
 
 

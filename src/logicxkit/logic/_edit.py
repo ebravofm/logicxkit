@@ -51,6 +51,23 @@ def edit_copy(project: Path, out: Path, step: Step, moved: Moved | None = None) 
     return dest
 
 
+def edit_display(project: Path, out: Path, step: Callable[[Path], None]) -> Path:
+    """Copy ``project`` into ``out`` and run ``step(alternative)`` over every alternative of the
+    copy — the DisplayState writers, which have no byte gate. A failure discards the copy, so no
+    half-edited bundle is left under ``out``."""
+    from .services.controlbar import alternative_dirs
+    copied = copy_project(project, out)
+    dest, root = copied["dest"], copied["dest_root"]
+    print(f"into : {dest}\n")
+    try:
+        for alternative in alternative_dirs(dest):
+            step(alternative)
+    except BaseException:
+        _discard(root)
+        raise
+    return dest
+
+
 def _discard(root: Path) -> None:
     """Remove the copy: earlier alternatives or ``NumberOfTracks`` may already be written."""
     if root.exists():

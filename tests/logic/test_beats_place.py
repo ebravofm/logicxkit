@@ -143,5 +143,28 @@ class CommandTest(IndexedCase):
         self.assertFalse(out.exists())
 
 
+class DefaultDbTest(unittest.TestCase):
+    """`logic beats` and `groovebin index` must land on one file. groovebin owns the rule; this
+    pins that we hand it the variable rather than resolving it ourselves, empty reading as unset
+    (`bin/run` sources `.env`, where an optional key carries no value)."""
+
+    def db(self, value=None):
+        from logicxkit.logic._beats_cmd import default_db
+        env = {} if value is None else {"XDG_CACHE_HOME": value}
+        with mock.patch.dict("os.environ", env, clear=value is None):
+            return default_db()
+
+    def test_the_cache_root_is_groovebins_own_with_an_empty_value_read_as_unset(self):
+        home = Path.home() / ".cache" / "groovebin" / "library.sqlite"
+        for value, want in ((None, home), ("", home), ("/cache-root", Path("/cache-root/groovebin/library.sqlite")),
+                            ("~/elsewhere", Path.home() / "elsewhere" / "groovebin" / "library.sqlite")):
+            with self.subTest(value):
+                self.assertEqual(self.db(value), want)
+
+    def test_it_is_the_path_groovebin_itself_would_use(self):
+        from groovebin.library import default_db as groovebins
+        self.assertEqual(self.db("/cache-root"), groovebins("/cache-root"))
+
+
 if __name__ == "__main__":
     unittest.main()

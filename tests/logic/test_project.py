@@ -206,10 +206,6 @@ class NativeParamsTest(unittest.TestCase):
         self.assertEqual(natives[0][1]["threshold"], -20.0)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class NativeTypeIdTest(unittest.TestCase):
     """A native slot with no plug-in name string in its window is named from its GAMETSPP type
     id, as `plugins` names it (ChromaVerb, SilverVerb, EnVerb and Echo on a built patch)."""
@@ -234,3 +230,7 @@ class NativeTypeIdTest(unittest.TestCase):
 
     def test_a_native_instrument_is_not_an_insert(self):
         self.assertEqual(channel_chain(self._channel([158, 236])), [("Channel EQ", None)])
+
+
+if __name__ == "__main__":
+    unittest.main()

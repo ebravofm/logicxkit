@@ -30,46 +30,47 @@ how to stage your own.
 ## The table
 
 <!-- generated from src/logicxkit/logic/_capabilities.py — edit there, not here -->
-| Command | Level | Safe on a real song? | The catch |
-|---|---|---|---|
-| `project` `manifest` `diff` `decode` `neural` `recdiff` | — | yes, read-only | `project`'s "channels with inserts" counts `.cst` labels, not loaded plugins |
-| `plugins` | — | yes, read-only | Names every slot's plug-in — Apple's by type id, a third-party one by the AU component identity in its embedded preset — and checks the third-party ones against `auval -a`. A missing verdict has not yet been compared with Logic's own missing-plug-in dialog |
-| `regions` | **CONFIRMED** | read yes; `--audio` and the edits on a copy | Every MIDI and audio region, numbered, with its track, start, mute, loop and fades; an audio region's file record (name, format, frames, rate, channels, bits), its first frame and length in frames. Read from Logic's imports of two WAVs onto a blank-born project (2026-09-13) and Logic's own move, trim, split, mute, rename, loop, fade and import saves of one (2026-09-15, the `regions-a*` goldens): an entry pairs with its region record by slot word and piece number and with its file by slot on every project on hand (173 projects with audio, pieces up to 29), so a split's second piece reads its own record. Names are UTF-8 with a byte length (region), UTF-16 LE with a unit count (file): `Snare 🥁`, `Pad — é` and `v040-日本.wav` read back as Logic wrote them. `--audio` copies a PCM WAV at the project's rate into the bundle and writes the file, region and container records held field for field to Logic's own first, second and third imports; Logic re-saved two imports written onto a blank-born project with every region record, entry and registry id as written, rewriting only each file's folder path and size, and one word of the stereo file, on load (2026-09-14). It writes onto a project with no audio regions or one whose regions are laid out as Logic's imports and splits leave them (n file records numbered 0, 4, … 4(n-1) with their region records, an ordinal/link chain in file order, one registry entry each), and refuses any other layout, a WAV whose name the project already holds, and other rates and formats. The track selection is not moved. `--move`, `--trim`, `--split`, `--loop`, `--mute`, `--rename`, `--fade-in` and `--fade-out` write the fields Logic's own edits changed, and Logic re-saved a copy carrying all eight on audio and a move, both trims, a split and loops on MIDI with every region, record, entry and the split pieces' fields as written (2026-09-15, `regions-audio-edits-*` and `regions-midi-edits-*`). A split's second piece needs the file record's region count raised — Logic loads that many — and a MIDI piece plays its sequence from an offset, which the MIDI edits then refuse; an audio region's loop length is one measurement (its length in ticks times 1000). The inspector's Gain, Delay, Transpose, Fine Tune and Reverse, the Fade-Out type, the crossfade with the region over it and a region's colour read what Logic's own edits of one region wrote (2026-09-15, the `regions-b*` goldens; gain is a tens byte plus a signed five-bit remainder); `--gain`, `--delay`, `--transpose`, `--fine-tune`, `--reverse`, `--fade-out N=MS:CURVE:TYPE`, `--crossfade` and `--colour` write those fields the way Logic did, entry for entry on the save before its own, and Logic re-saved a copy carrying all of them with every field as written (`regions-params-*`), setting one more bit beside the crossfade's. Transpose on an unflexed region made Logic flex the track, which the writer does not; Logic kept the value on load, but whether it plays transposed is unheard |
-| `markers` | **CONFIRMED** | yes, on a copy | Reads the marker track — a marker's bar, name and length — matching Logic's Marker List on its own create, rename, move, second-marker and delete saves (2026-09-15, the `markers-a2*` goldens): 48-byte events like the arrangement's sections on the triple after the 0x11 one, names in `qSxT` records. `--add`, `--rename`, `--move` and `--delete` write those events and plain name records the way `arrangement --add` does, and Logic re-saved a copy carrying all four with both markers as written (`markers-edits-*`); Logic's own first marker also rewrote part of the registry, which ours leaves alone. ASCII names only |
-| `quantize-drums` | **CONFIRMED** | yes, on a copy | The drum-quantize procedure as file writes: groups off, the drum group with Editing (Selection) and Quantize-Locked (Audio), Q-Reference on the reference tracks, flex Slicing, and per region the two anchors plus one flex marker per hit found in the reference audio, targets on the grid, with the RBA Sequence carrying the Quantize value. Every layout is from Logic's own saves of one take (2026-09-13). Logic opened a written copy of that take reading Quantize 1/16 Note with Flex on, and its re-save kept every marker list, header, group and object field byte for byte. The hits are ours: the detector finds 78% of the transients Logic marked on that take across four grids and 88% of its own are among them, so the result is a quantize, not Logic's. The reference audio is 16/24/32-bit PCM or 32/64-bit float WAV; `--grid` takes the measured 4, 8, 16 or 32; a song whose tempo changes and reference audio with no hits are refused. `--bars FIRST-LAST` moves only the hits in those song bars onto the grid (each region's own Quantize value unless `--grid`) and keeps every other marker block's bytes, writing a kept Quantize-Off block as a hit block with its target unchanged; it refuses a region off the song's grid, a hit whose target would cross a kept one, and an entry naming a sequence other than an RBA Sequence, and a region already quantized keeps its one RBA Sequence. A member listing only anchors — Logic's first quantize writes the hits on the first Q-Reference region alone — takes that region's hits, and the group is reused when every member with audio regions is in it; on a take Logic itself quantized this wrote one list to every member, and Logic re-saved that `--bars 9-12` copy with every member's marker list and the drum group as written (2026-09-15, `songb-bars-9-12-*`), and those bars listen as tight as Logic's own |
-| `drums-to-midi` | **CONFIRMED** | yes, on a copy | Each `--hit TRACK=TERM` audio track's hits, found by `quantize-drums`' detector, become sixteenths on the term's key in the drum map, each cut at the next note on that key, velocity from each hit's peak scaled from the track's quietest to its loudest, quantized to `--grid` when given, in one new region on a software instrument track spanning the bars that hold the quantized notes; `--threshold DB` sets the detector's floor under the track's loudest hit, `--hit TRACK=TERM:THRESHOLD` one track's own, and `--velocity FLOOR..CEILING[:GAMMA]` maps the velocities onto a band. The region is written as `midi --region` writes one and filled through the region edits, and tempo changes are refused. Logic re-saved a copy carrying the region it wrote over a real drum take with all 350 notes as written (2026-09-15, `songb-drums-to-midi-*`). Listened to on that take: the kick and snare lanes are the playing. It is for drums with strong transients — kick, snare, toms; hats and cymbals ring under bleed and are not what this converts (the detector's 24 dB rise, not its floor, is what a hat never gives) |
-| `sessionplayer` | — | yes, read-only | A Session Player region's settings from the JSON in its MneG record — Complexity (`rComp`), Fill Amount (`fillsAmount`) and Swing pinned by one editor move per save (2026-09-13) — with the drummer, preset and the generated notes' count. One region measured; records pair with drummer sequences in file order |
-| `patch` | **CONFIRMED** | read yes; `--build` writes outside Logic's library unless `--install` | Reads a Library patch bundle in both shapes Logic writes: its nodes, each channel's settings and the plug-ins on its strip; one Logic saved from the Library reads back with all eight inserts (2026-09-13). `--build` writes the same shape from a `.cst`; a built patch installed in the user library loaded from Logic's Library with all eight inserts on the channel. A file that does not read as a channel strip, including Logic's older-format factory strips, is refused before anything is written, and `--overwrite` replaces a bundle only once the new one is complete |
-| `midi` | **CONFIRMED** | read, `--export` and `--map` yes; `--region`, `--note`, the edits by region number and `--remap` on a copy | Notes, controllers, program changes and pitch bends read from Logic's saves of a blank project, one field changed per save (2026-09-13); the .mid is a format-1 file at the song's PPQ with its tempo map and time signatures, one track per region, and Logic imported one and saved the same events; events before bar 1 are refused. `--region` and `--note` write what Logic's Pencil click and Event List Create wrote; a region with two notes came back from Logic's re-save note for note, and so did regions named four and nine bytes long, every word after the name as written. `--note` goes into the region on its track that holds its bar and is refused when none or several do. An un-named instrument track shows its patch's name after any load. `--transpose`, `--velocity`, `--move`, `--delete`, `--quantize`, `--copy-region`, `--copy-notes` and `--remap` rewrite a region's event lines by its listing number through the integrity gate, and Logic's re-save of one copy carrying every one of them (2026-09-14) kept every region and event as written; the number means the same region (track, start, name) in every alternative. An edit that moves an event out of its region is refused, and so is an edit, not a copy, to a sequence two regions play; a MIDI region goes only onto a software instrument track. `--map` and `--remap` use groovebin's note maps (GM percussion, Addictive Drums 2's keymap, Drum Kit Designer); the pairings between them are the tables' own, chokes and stick clicks have no GM counterpart, a region with polyphonic aftertouch is refused, and no remapped pattern has been listened to. A region name outside ASCII is refused: how Logic stores one is unmeasured. The transforms (`--select` with the operations, and the presets) rewrite the selected notes' fields through the same lines and gate, and Logic re-saved a copy carrying one of every operation and preset on 27 regions with every region and event as written (2026-09-15, `midi-transform-*`); swing's tick is the one Logic's Piano Roll wrote at 60% (`midi-qswing-60-logic`) |
-| `beats` | **CONFIRMED** | yes, on a copy | The patterns, their index and the picking are groovebin's (`groovebin index`, `search`, `show`, `generate`); this writes them into a project. `place` lays one pattern, `--repeat` times, as a region from a bar whose meter must be the pattern's, `--map` translating from the map it was indexed in; `compose` writes a region per Intro, Verse, Pre-Chorus, Chorus, Bridge or Outro section from one group's patterns, with `--fills` on each section's last bar, and reports every section it skips; `generate` places a seeded phrase picked bar by bar from real library bars by their kick and snare onsets. Each region is written as `midi --region` writes one and filled through the region edits, on a software instrument track only, never lengthened for a note; the loop flag is never written and no output has been opened in Logic or listened to. Logic re-saved a copy holding a placed pattern and a generated phrase, and one holding two composed sections with their fills, with every region and note as written (2026-09-15, `beats-place-generate-*`, `beats-compose-*`) |
-| `stacks` | **CONFIRMED** | read-only until `--move`, which needs `--out` | Reads folder stacks and the arrange list. `--move TRACK:STACK --out DIR` writes a copy whose rows match Logic's own drag saves (2026-09-04), through the same integrity gate as every other writer |
-| `levels` | **CONFIRMED** | read-only until `--to`, which needs `--out` | Reads fader and pan. `--to OTHER --out DIR` copies them onto another project through the integrity gate; a copy written onto a blank project came back from Logic's re-save with every fader and pan as written (2026-09-12) |
-| `build` `verify` `pst` `donors` `image` `ocr` | — | never touches a project; `build`/`pst` reach Logic's own library only with `--install` | A relative `output_dir` resolves under `~/Music/Audio Music Apps` — Logic's own library — and writing there is refused without `--install`. `--overwrite` is separately required to replace a file. Elsewhere: `output_root` (or `strip_root` / `LOGICXKIT_STRIP_ROOT`, which moves `build`'s sources too), or an absolute `output_dir` |
-| `chains` | **CONFIRMED** | yes, after reading `--plan` | Replaces a channel's whole chain. `--plan` names every chain it would take off; `--strict` refuses on shape drift. The real tracking chains written onto the tracking template came back from Logic's re-save with all 46 channels' chains identical (2026-09-12) |
-| `retrack` | **CONFIRMED** | yes | Changes a label, never a chain; basename-only library match. `--channel` repoints one channel at a time, so channels sharing a name can part ways: seven repointed on a tracking template showed on the Setting buttons and survived Logic's re-save byte for byte (2026-09-06) |
-| `strip-save` | **CONFIRMED** | yes |  |
-| `send` | **CONFIRMED** | yes | Writes to buses the caller declared missing; no cross-project bus remap. A project with no send to clone gets Logic's own from a blank project (packaged), and Logic re-saved one such add byte for byte (2026-09-13) |
-| `stack-create` | **CONFIRMED** | on a folder stack only | Summing stacks unimplemented. A session with no stack patterns on Logic's own first stack (packaged); Logic re-saved two such stacks with the header, strip and members as written (2026-09-13) |
-| `add-track` | **CONFIRMED** | yes | Audio, instrument and aux adds; 46 in one migration survived Logic's own re-save row for row (2026-09-04). With no audio stub free a fresh channel is made where Logic makes one, and Logic's re-save kept three such byte for byte (2026-09-06). Keeps the song container's row count, the region placements and the registry's slot entries in step |
-| `reorder` | **CONFIRMED** | yes | Moves a row among its siblings; a stack header moves with its members, and that move reproduces Logic's own drag of a header byte for byte (2026-09-12). A plain-row move came back from Logic's re-save in the written order, every row byte held but the moved row's selection mark, which Logic clears on load (2026-09-13) |
-| `route` | **CONFIRMED** | yes | Sets a channel's input or output by label; an output rerouted to a bus came back from Logic's re-save with the routing intact and the channel record byte for byte (2026-09-13) |
-| `arrangement` | **CONFIRMED** | yes, on a copy | Reads matched Logic's display on every project tested; a rename plus a resize survived Logic's re-save byte for byte (2026-09-06), `--add` reproduces Logic's own add record for record and survived its re-save, and a move plus a delete came back from Logic's re-save event for event. On a song with no arrangement track `--add` makes the track as Logic's first section does, and Logic re-saved one with the section intact (2026-09-13) |
-| `signature` | **CONFIRMED** | yes, on a copy | Reads the signature track and the LCD's division on every project tested. `--time` at bar 1, `--key` (major and minor) and `--division` reproduce Logic's own edits byte for byte (2026-09-06/07); `--key-at` and `--time-at` add changes after bar 1 and survived Logic's re-save byte for byte. `--time` at bar 1 refuses songs with later meter changes |
-| `toolbar` | **CONFIRMED** | yes, on a copy | Every button's id measured on seven saves (2026-09-07) and written in Logic's order; Logic re-saved one of ours unchanged. `--row` shows or hides the toolbar row |
-| `modes` | **CONFIRMED** | yes, on a copy | Cycle, Replace, Autopunch, Metronome Click, Use Musical Grid and the count-in length in the song record, pinned on Logic's saves of one press apiece (2026-09-08); a copy written with four of them came up in Logic so and was re-saved intact. Solo is read but not copied — Logic clears it on load. `apply-template` copies them |
-| `metronome` | **CONFIRMED** | yes, on a copy | The Metronome and Recording panes: nine boxes, the pre-roll time, the four Klopfgeist rows and the four MIDI click rows in the click object, pinned on Logic's saves of one change apiece (2026-09-08); a copy with six boxes and the pre-roll written, and one with changed rows copied in, each came up in Logic's pane as written and re-saved intact. `apply-template` copies them |
-| `width` | **CONFIRMED** | yes, on a copy | A channel's width and the build of every plug-in on it, measured across ten sessions and a Logic-written stereo bus; two auxes made stereo on two templates came back stereo from Logic's re-save, slots included (2026-09-08) |
-| `tempo` | **CONFIRMED** | yes, on a copy | Reads matched every project's LCD, ramps and steps included; `--set 180` showed 180 on Logic's LCD and survived its re-save (2026-09-06); `--add` writes the bare step Logic's Tempo List makes and survived its re-save; `--ramp` writes the event run Logic's Tempo Operations curve makes and survived its re-save event for event. Hand-drawn curves (the 0xb4 line) are read only |
-| `rename` `colour` `hide` | **CONFIRMED** | yes | Applied across three legacy migrations Logic re-saved unchanged (2026-09-04); a rename marks the name as the user's, else the arrange shows the strip setting's name |
-| `transplant` | **CONFIRMED** | yes, within the channel's key range | Refuses a move that overruns the slot key range — which deletes the channel's `.cst` reference record, a loss `validate_project` cannot see — and one that crosses a record class version; `--force` writes anyway. Clones take the destination's own slot keys (2 in projects whose slots start there). Two native slots moved between blank-born projects came back from Logic's re-save byte for byte (2026-09-13) |
-| `bypass` | **CONFIRMED** | yes | Flips the bypass bit on the slots a channel already carries; adds nothing and removes nothing. Two bypassed slots came back from Logic's re-save with the bits as written (2026-09-13) |
-| `clear-slots` | **CONFIRMED** | yes | Drops the records and their key flags; the `.cst` reference label stays. Opened in Logic with the inserts empty (2026-09-04); without the flag sync Logic refuses the file |
-| `header` | **CONFIRMED** | yes | Every bit measured on seventeen single-toggle saves; a written set opened in Logic showing all sixteen components as set |
-| `prefs` | **CONFIRMED** | yes, with Logic closed | Logic's own settings: 150 controls across every Settings pane pinned by single changes (General > Editing 2026-09-05, the rest 2026-09-08); a box written with Logic closed came up that way on relaunch. Not carried: Audio > Devices, Plug-in Delay Compensation, Control Surfaces (Logic's own file). Writes go through `defaults`, are refused while Logic runs, and take a backup first |
-| `controlbar` | **CONFIRMED** | yes | Every id measured on fifty single-toggle saves (2026-09-04); a bar copied whole onto another project came up in Logic with that set. Both display-state files written |
-| `group` | **CONFIRMED** | yes | Every box and the member events measured on twenty-eight single-change saves (2026-09-05); the writer reproduces six of Logic's saves byte for byte, and a migrated song with two groups opened in Logic showing them and re-saved with the identical group records and row list. Leaving a group: Logic's own No Group on a member (2026-09-12) matches the composed leave outside the selection bytes |
-| `apply-template` | **CONFIRMED** | yes, with a map across lineages | Same lineage pairs by object id; across lineages `--map FILE` says how tracks pair (`--propose-map` drafts it, `(none)` leaves a track alone). Three legacy songs migrated onto a mixing template opened in Logic and re-saved with the identical row list (2026-09-04). Never removes a send; inputs past the session's count are made before planning (Logic re-saved six); the template's groups are made and joined by name (2026-09-05, confirmed on the same song). Legacy bus returns the template duplicates are silenced; `-` lines in the map leave template tracks out. A song whose slots start at key 2 beside three sends is moved to base 4 in the same pass, as Logic's own re-save does; a project born at base 2 without that collision is left there (`logic/README.md`: slot keys). Also carries the track power state, icons, header components and the control bar; not the project's own tempo, meter or key, which stay the song's |
-| `migrate` | **CONFIRMED** | yes, on a renamed copy; across lineages only with `--map` or `--force` | Composes `propose-map` (or `--map FILE`) with `apply-template`'s step into `CLAUDE migrated - <song>.logicx`: the ops are apply-template's CONFIRMED writers, A session of the template's lineage pairs by object id and the draft is not applied. `--verify` drives Logic Pro — opens the copy, Save As through `tools/driver`, closes without saving — and compares the row lists ignoring only the flag word; it runs from a checkout on macOS with Logic installed and has not yet been run against Logic. Logic re-saved a migrated legacy session with its 57 rows as written and `--verify` found the row lists equal (2026-09-15, `legacy-migrate-*`) |
+| Command | Level | Safe on a real song? |
+|---|---|---|
+| `project` `manifest` `diff` `decode` `neural` `recdiff` | — | yes, read-only |
+| `plugins` | — | yes, read-only |
+| `regions` | **CONFIRMED** | read yes; `--audio` and the edits on a copy |
+| `markers` | **CONFIRMED** | yes, on a copy |
+| `quantize-drums` | **CONFIRMED** | yes, on a copy |
+| `drums-to-midi` | **CONFIRMED** | yes, on a copy |
+| `sessionplayer` | — | yes, read-only |
+| `automation` | **CONFIRMED** | read-only until `--set`, `--copy` or `--clear`, which need `--out` |
+| `patch` | **CONFIRMED** | read yes; `--build` writes outside Logic's library unless `--install` |
+| `midi` | **CONFIRMED** | read, `--export` and `--map` yes; `--region`, `--note`, the edits by region number and `--remap` on a copy |
+| `beats` | **CONFIRMED** | yes, on a copy |
+| `stacks` | **CONFIRMED** | read-only until `--move`, which needs `--out` |
+| `levels` | **CONFIRMED** | read-only until `--to`, which needs `--out` |
+| `build` `verify` `pst` `donors` `image` `ocr` | — | never touches a project; `build`/`pst` reach Logic's own library only with `--install` |
+| `chains` | **CONFIRMED** | yes, after reading `--plan` |
+| `retrack` | **CONFIRMED** | yes |
+| `strip-save` | **CONFIRMED** | yes |
+| `send` | **CONFIRMED** | yes |
+| `stack-create` | **CONFIRMED** | on a folder stack only |
+| `add-track` | **CONFIRMED** | yes |
+| `reorder` | **CONFIRMED** | yes |
+| `route` | **CONFIRMED** | yes |
+| `arrangement` | **CONFIRMED** | yes, on a copy |
+| `signature` | **CONFIRMED** | yes, on a copy |
+| `toolbar` | **CONFIRMED** | yes, on a copy |
+| `modes` | **CONFIRMED** | yes, on a copy |
+| `metronome` | **CONFIRMED** | yes, on a copy |
+| `width` | **CONFIRMED** | yes, on a copy |
+| `tempo` | **CONFIRMED** | yes, on a copy |
+| `rename` `colour` `hide` | **CONFIRMED** | yes |
+| `transplant` | **CONFIRMED** | yes, within the channel's key range |
+| `bypass` | **CONFIRMED** | yes |
+| `clear-slots` | **CONFIRMED** | yes |
+| `header` | **CONFIRMED** | yes |
+| `prefs` | **CONFIRMED** | yes, with Logic closed |
+| `controlbar` | **CONFIRMED** | yes |
+| `group` | **CONFIRMED** | yes |
+| `apply-template` | **CONFIRMED** | yes, with a map across lineages |
+| `migrate` | **CONFIRMED** | yes, on a renamed copy; across lineages only with `--map` or `--force` |
 
 **`build`/`pst` refuse Logic's own library without `--install`:** a relative `output_dir` in a
 spec resolves under `~/Music/Audio Music Apps`, the channel-strip and plug-in settings libraries
@@ -77,6 +78,161 @@ Logic itself loads from, and writing there exits 2 unless `--install` is passed.
 file is kept unless `--overwrite` is passed. To write elsewhere, set `output_root` (moves only
 the output, for both commands) or give an absolute `output_dir`; `strip_root` and
 `LOGICXKIT_STRIP_ROOT` also move `build`'s output, with its sources, but not `pst`'s.
+
+## The catch, per command
+
+<!-- generated from src/logicxkit/logic/_capabilities.py — edit there, not here -->
+### `project` `manifest` `diff` `decode` `neural` `recdiff`
+
+`project`'s "channels with inserts" counts `.cst` labels, not loaded plugins.
+
+### `plugins`
+
+Names every slot's plug-in — Apple's by type id, a third-party one by the AU component identity in its embedded preset — and checks the third-party ones against `auval -a`. A missing verdict has not yet been compared with Logic's own missing-plug-in dialog. A component whose bundle has gone bad stays in the registry, and Logic itself opened such a project without an alert (FabFilter Pro-C 2 disabled by hand, 2026-09-16); `--validate` opens each listed component with auval -v and reports it broken.
+
+### `regions`
+
+Every MIDI and audio region, numbered, with its track, start, mute, loop and fades; an audio region's file record (name, format, frames, rate, channels, bits), its first frame and length in frames. Read from Logic's imports of two WAVs onto a blank-born project (2026-09-13) and Logic's own move, trim, split, mute, rename, loop, fade and import saves of one (2026-09-15, the `regions-a*` goldens): an entry pairs with its region record by slot word and piece number and with its file by slot on every project on hand (173 projects with audio, pieces up to 29), so a split's second piece reads its own record. Names are UTF-8 with a byte length (region), UTF-16 LE with a unit count (file): `Snare 🥁`, `Pad — é` and `v040-日本.wav` read back as Logic wrote them. `--audio` copies a PCM WAV at the project's rate into the bundle and writes the file, region and container records held field for field to Logic's own first, second and third imports; Logic re-saved two imports written onto a blank-born project with every region record, entry and registry id as written, rewriting only each file's folder path and size, and one word of the stereo file, on load (2026-09-14). It writes onto a project with no audio regions or one whose regions are laid out as Logic's imports and splits leave them (n file records numbered 0, 4, … 4(n-1) with their region records, an ordinal/link chain in file order, one registry entry each), and refuses any other layout, a WAV whose name the project already holds, and other rates and formats. The track selection is not moved. `--move`, `--trim`, `--split`, `--loop`, `--mute`, `--rename`, `--fade-in` and `--fade-out` write the fields Logic's own edits changed, and Logic re-saved a copy carrying all eight on audio and a move, both trims, a split and loops on MIDI with every region, record, entry and the split pieces' fields as written (2026-09-15, `regions-audio-edits-*` and `regions-midi-edits-*`). A split's second piece needs the file record's region count raised — Logic loads that many — and a MIDI piece plays its sequence from an offset, which the MIDI edits then refuse; an audio region's loop length is one measurement (its length in ticks times 1000). The inspector's Gain, Delay, Transpose, Fine Tune and Reverse, the Fade-Out type, the crossfade with the region over it and a region's colour read what Logic's own edits of one region wrote (2026-09-15, the `regions-b*` goldens; gain is a tens byte plus a signed five-bit remainder); `--gain`, `--delay`, `--transpose`, `--fine-tune`, `--reverse`, `--fade-out N=MS:CURVE:TYPE`, `--crossfade` and `--colour` write those fields the way Logic did, entry for entry on the save before its own, and Logic re-saved a copy carrying all of them with every field as written (`regions-params-*`), setting one more bit beside the crossfade's. Transpose on an unflexed region made Logic flex the track, which the writer does not; Logic kept the value on load, but whether it plays transposed is unheard.
+
+### `markers`
+
+Reads the marker track — a marker's bar, name and length — matching Logic's Marker List on its own create, rename, move, second-marker and delete saves (2026-09-15, the `markers-a2*` goldens): 48-byte events like the arrangement's sections on the triple after the 0x11 one, names in `qSxT` records. `--add`, `--rename`, `--move` and `--delete` write those events and plain name records the way `arrangement --add` does, and Logic re-saved a copy carrying all four with both markers as written (`markers-edits-*`); Logic's own first marker also rewrote part of the registry, which ours leaves alone. ASCII names only.
+
+### `quantize-drums`
+
+The drum-quantize procedure as file writes: groups off, the drum group with Editing (Selection) and Quantize-Locked (Audio), Q-Reference on the reference tracks, flex Slicing, and per region the two anchors plus one flex marker per hit found in the reference audio, targets on the grid, with the RBA Sequence carrying the Quantize value. Every layout is from Logic's own saves of one take (2026-09-13). Logic opened a written copy of that take reading Quantize 1/16 Note with Flex on, and its re-save kept every marker list, header, group and object field byte for byte. The hits are ours: the detector finds 78% of the transients Logic marked on that take across four grids and 88% of its own are among them, so the result is a quantize, not Logic's. The reference audio is 16/24/32-bit PCM or 32/64-bit float WAV; `--grid` takes the measured 4, 8, 16 or 32; a song whose tempo changes and reference audio with no hits are refused. `--bars FIRST-LAST` moves only the hits in those song bars onto the grid (each region's own Quantize value unless `--grid`) and keeps every other marker block's bytes, writing a kept Quantize-Off block as a hit block with its target unchanged; it refuses a region off the song's grid, a hit whose target would cross a kept one, and an entry naming a sequence other than an RBA Sequence, and a region already quantized keeps its one RBA Sequence. A member listing only anchors — Logic's first quantize writes the hits on the first Q-Reference region alone — takes that region's hits, and the group is reused when every member with audio regions is in it; on a take Logic itself quantized this wrote one list to every member, and Logic re-saved that `--bars 9-12` copy with every member's marker list and the drum group as written (2026-09-15, `songb-bars-9-12-*`), and those bars listen as tight as Logic's own.
+
+### `drums-to-midi`
+
+Each `--hit TRACK=TERM` audio track's hits, found by `quantize-drums`' detector, become sixteenths on the term's key in the drum map, each cut at the next note on that key, velocity from each hit's peak scaled from the track's quietest to its loudest, quantized to `--grid` when given, in one new region on a software instrument track spanning the bars that hold the quantized notes; `--threshold DB` sets the detector's floor under the track's loudest hit, `--hit TRACK=TERM:THRESHOLD` one track's own, and `--velocity FLOOR..CEILING[:GAMMA]` maps the velocities onto a band. The region is written as `midi --region` writes one and filled through the region edits, and tempo changes are refused. Logic re-saved a copy carrying the region it wrote over a real drum take with all 350 notes as written (2026-09-15, `songb-drums-to-midi-*`). Listened to on that take: the kick and snare lanes are the playing. It is for drums with strong transients — kick, snare, toms; hats and cymbals ring under bleed and are not what this converts (the detector's 24 dB rise, not its floor, is what a hat never gives).
+
+### `sessionplayer`
+
+A Session Player region's settings from the JSON in its MneG record — Complexity (`rComp`), Fill Amount (`fillsAmount`) and Swing pinned by one editor move per save (2026-09-13) — with the drummer, preset and the generated notes' count. One region measured; records pair with drummer sequences in file order.
+
+### `automation`
+
+Reads track automation: the per-channel `*Automation` folders under the Track Automation Root Folder, their fader points (0x50: value byte, fader id) and plug-in parameter points (0x51: 0..1 float, parameter index; bit 14 of the type word, on two points of a real song, reads as flagged), and a region's own automation as the unreferenced sequence that names the track (2026-09-16, the `automation-*` goldens). Points were made with Create 1/2 Automation Point(s) for Visible Parameter (at the selected regions' borders) and in the Automation Event List, where Pan and the relative Volume lane were measured (the relative lane sets bit 7 of the type word's high byte). `--set`, `--copy` and `--clear` write a lane's points as the Event List does, in Logic's own order, into the track's existing folder; Logic listed three lanes written onto the blank as written and re-saved the folder byte for byte but for head +15, its selection state (`automation-ours-resave-logic`). A point's sub-tick fraction (head +2) is read and kept on a copy; Logic's own Automation Event List, read off the screen for every automation golden (2026-09-17), shows the same ticks and values as the reader, the half-tick point as the display tick before it.
+
+### `patch`
+
+Reads a Library patch bundle in both shapes Logic writes: its nodes, each channel's settings and the plug-ins on its strip; one Logic saved from the Library reads back with all eight inserts (2026-09-13). `--build` writes the same shape from a `.cst`; a built patch installed in the user library loaded from Logic's Library with all eight inserts on the channel. A file that does not read as a channel strip, including Logic's older-format factory strips, is refused before anything is written, and `--overwrite` replaces a bundle only once the new one is complete.
+
+### `midi`
+
+Notes, controllers, program changes and pitch bends read from Logic's saves of a blank project, one field changed per save (2026-09-13); the .mid is a format-1 file at the song's PPQ with its tempo map and time signatures, one track per region, and Logic imported one and saved the same events; events before bar 1 are refused. `--region` and `--note` write what Logic's Pencil click and Event List Create wrote; a region with two notes came back from Logic's re-save note for note, and so did regions named four and nine bytes long, every word after the name as written. `--note` goes into the region on its track that holds its bar and is refused when none or several do. An un-named instrument track shows its patch's name after any load. `--transpose`, `--velocity`, `--move`, `--delete`, `--quantize`, `--copy-region`, `--copy-notes` and `--remap` rewrite a region's event lines by its listing number through the integrity gate, and Logic's re-save of one copy carrying every one of them (2026-09-14) kept every region and event as written; the number means the same region (track, start, name) in every alternative. An edit that moves an event out of its region is refused, and so is an edit, not a copy, to a sequence two regions play; a MIDI region goes only onto a software instrument track. `--map` and `--remap` use groovebin's note maps (GM percussion, Addictive Drums 2's keymap, Drum Kit Designer); the pairings between them are the tables' own, chokes and stick clicks have no GM counterpart, a region with polyphonic aftertouch is refused, and no remapped pattern has been listened to. A region name outside ASCII is refused: how Logic stores one is unmeasured. The transforms (`--select` with the operations, and the presets) rewrite the selected notes' fields through the same lines and gate, and Logic re-saved a copy carrying one of every operation and preset on 27 regions with every region and event as written (2026-09-15, `midi-transform-*`); swing's tick is the one Logic's Piano Roll wrote at 60% (`midi-qswing-60-logic`).
+
+### `beats`
+
+The patterns, their index and the picking are groovebin's (`groovebin index`, `search`, `show`, `generate`); this writes them into a project. `place` lays one pattern, `--repeat` times, as a region from a bar whose meter must be the pattern's, `--map` translating from the map it was indexed in; `compose` writes a region per Intro, Verse, Pre-Chorus, Chorus, Bridge or Outro section from one group's patterns, with `--fills` on each section's last bar, and reports every section it skips; `generate` places a seeded phrase picked bar by bar from real library bars by their kick and snare onsets. Each region is written as `midi --region` writes one and filled through the region edits, on a software instrument track only, never lengthened for a note; the loop flag is never written and no output has been opened in Logic or listened to. Logic re-saved a copy holding a placed pattern and a generated phrase, and one holding two composed sections with their fills, with every region and note as written (2026-09-15, `beats-place-generate-*`, `beats-compose-*`).
+
+### `stacks`
+
+Reads folder stacks and the arrange list, nested stacks included (the member byte is the depth). `--move TRACK:STACK --out DIR` writes a copy whose rows match Logic's own drag saves (2026-09-04; into and out of a nested stack 2026-09-16, the `nest-*` goldens, and Logic re-saved a nested move as written, `nest-ours-resave-logic`), through the same integrity gate as every other writer.
+
+### `levels`
+
+Reads fader and pan. `--to OTHER --out DIR` copies them onto another project through the integrity gate; a copy written onto a blank project came back from Logic's re-save with every fader and pan as written (2026-09-12).
+
+### `build` `verify` `pst` `donors` `image` `ocr`
+
+A relative `output_dir` resolves under `~/Music/Audio Music Apps` — Logic's own library — and writing there is refused without `--install`. `--overwrite` is separately required to replace a file. Elsewhere: `output_root` (or `strip_root` / `LOGICXKIT_STRIP_ROOT`, which moves `build`'s sources too), or an absolute `output_dir`.
+
+### `chains`
+
+Replaces a channel's whole chain. `--plan` names every chain it would take off; `--strict` refuses on shape drift. The real tracking chains written onto the tracking template came back from Logic's re-save with all 46 channels' chains identical (2026-09-12). A chain keyed by a channel name puts declared donors on the Stereo Out with parameters named as measured; the example mastering chain opened in Logic with every value shown as written and re-saved intact (2026-09-16, `master-ours-resave-logic`).
+
+### `retrack`
+
+Changes a label, never a chain; basename-only library match. `--channel` repoints one channel at a time, so channels sharing a name can part ways: seven repointed on a tracking template showed on the Setting buttons and survived Logic's re-save byte for byte (2026-09-06).
+
+### `send`
+
+Writes to buses the caller declared missing; no cross-project bus remap. A project with no send to clone gets Logic's own from a blank project (packaged), and Logic re-saved one such add byte for byte (2026-09-13).
+
+### `stack-create`
+
+Summing stacks unimplemented. A session with no stack patterns on Logic's own first stack (packaged); Logic re-saved two such stacks with the header, strip and members as written (2026-09-13).
+
+### `add-track`
+
+Audio, instrument and aux adds; 46 in one migration survived Logic's own re-save row for row (2026-09-04). With no audio stub free a fresh channel is made where Logic makes one, and Logic's re-save kept three such byte for byte (2026-09-06). Keeps the song container's row count, the region placements and the registry's slot entries in step. `--stereo` binds the pair channel `Input N-(N+1)`, as Logic's own New Tracks did with an interface attached (2026-09-17); inside a nested stack the row takes the depth of its place.
+
+### `reorder`
+
+Moves a row among its siblings; a stack header moves with its members, and that move reproduces Logic's own drag of a header byte for byte (2026-09-12). A plain-row move came back from Logic's re-save in the written order, every row byte held but the moved row's selection mark, which Logic clears on load (2026-09-13).
+
+### `route`
+
+Sets a channel's input or output by label; an output rerouted to a bus came back from Logic's re-save with the routing intact and the channel record byte for byte (2026-09-13).
+
+### `arrangement`
+
+Reads matched Logic's display on every project tested; a rename plus a resize survived Logic's re-save byte for byte (2026-09-06), `--add` reproduces Logic's own add record for record and survived its re-save, and a move plus a delete came back from Logic's re-save event for event. On a song with no arrangement track `--add` makes the track as Logic's first section does, and Logic re-saved one with the section intact (2026-09-13).
+
+### `signature`
+
+Reads the signature track and the LCD's division on every project tested. `--time` at bar 1, `--key` (major and minor) and `--division` reproduce Logic's own edits byte for byte (2026-09-06/07); `--key-at` and `--time-at` add changes after bar 1 and survived Logic's re-save byte for byte. `--time` at bar 1 refuses songs with later meter changes.
+
+### `toolbar`
+
+Every button's id measured on seven saves (2026-09-07) and written in Logic's order; Logic re-saved one of ours unchanged. `--row` shows or hides the toolbar row.
+
+### `modes`
+
+Cycle, Replace, Autopunch, Metronome Click, Use Musical Grid and the count-in length in the song record, pinned on Logic's saves of one press apiece (2026-09-08); a copy written with four of them came up in Logic so and was re-saved intact. Solo is read but not copied — Logic clears it on load. `apply-template` copies them.
+
+### `metronome`
+
+The Metronome and Recording panes: nine boxes, the pre-roll time, the four Klopfgeist rows and the four MIDI click rows in the click object, pinned on Logic's saves of one change apiece (2026-09-08); a copy with six boxes and the pre-roll written, and one with changed rows copied in, each came up in Logic's pane as written and re-saved intact. `apply-template` copies them.
+
+### `width`
+
+A channel's width and the build of every plug-in on it, measured across ten sessions and a Logic-written stereo bus; two auxes made stereo on two templates came back stereo from Logic's re-save, slots included (2026-09-08).
+
+### `tempo`
+
+Reads matched every project's LCD, ramps and steps included; `--set 180` showed 180 on Logic's LCD and survived its re-save (2026-09-06); `--add` writes the bare step Logic's Tempo List makes and survived its re-save; `--ramp` writes the event run Logic's Tempo Operations curve makes and survived its re-save event for event. Hand-drawn curves (the 0xb4 line) are read only.
+
+### `rename` `colour` `hide`
+
+Applied across three legacy migrations Logic re-saved unchanged (2026-09-04); a rename marks the name as the user's, else the arrange shows the strip setting's name.
+
+### `transplant`
+
+Refuses a move that overruns the slot key range — which deletes the channel's `.cst` reference record, a loss `validate_project` cannot see — and one that crosses a record class version; `--force` writes anyway. Clones take the destination's own slot keys (2 in projects whose slots start there). Two native slots moved between blank-born projects came back from Logic's re-save byte for byte (2026-09-13).
+
+### `bypass`
+
+Flips the bypass bit on the slots a channel already carries; adds nothing and removes nothing. Two bypassed slots came back from Logic's re-save with the bits as written (2026-09-13).
+
+### `clear-slots`
+
+Drops the records and their key flags; the `.cst` reference label stays. Opened in Logic with the inserts empty (2026-09-04); without the flag sync Logic refuses the file.
+
+### `header`
+
+Every bit measured on seventeen single-toggle saves; a written set opened in Logic showing all sixteen components as set.
+
+### `prefs`
+
+Logic's own settings: 150 controls across every Settings pane pinned by single changes (General > Editing 2026-09-05, the rest 2026-09-08); a box written with Logic closed came up that way on relaunch. Not carried: Audio > Devices, Plug-in Delay Compensation, Control Surfaces (Logic's own file). Writes go through `defaults`, are refused while Logic runs, and take a backup first.
+
+### `controlbar`
+
+Every id measured on fifty single-toggle saves (2026-09-04); a bar copied whole onto another project came up in Logic with that set. Both display-state files written.
+
+### `group`
+
+Every box and the member events measured on twenty-eight single-change saves (2026-09-05); the writer reproduces six of Logic's saves byte for byte, and a migrated song with two groups opened in Logic showing them and re-saved with the identical group records and row list. Leaving a group: Logic's own No Group on a member (2026-09-12) matches the composed leave outside the selection bytes.
+
+### `apply-template`
+
+Same lineage pairs by object id; across lineages `--map FILE` says how tracks pair (`--propose-map` drafts it, `(none)` leaves a track alone). Three legacy songs migrated onto a mixing template opened in Logic and re-saved with the identical row list (2026-09-04). Never removes a send; inputs past the session's count are made before planning (Logic re-saved six); the template's groups are made and joined by name (2026-09-05, confirmed on the same song). Legacy bus returns the template duplicates are silenced; `-` lines in the map leave template tracks out. A song whose slots start at key 2 beside three sends is moved to base 4 in the same pass, as Logic's own re-save does; a project born at base 2 without that collision is left there (`logic/README.md`: slot keys). Also carries the track power state, icons, header components and the control bar; not the project's own tempo, meter or key, which stay the song's. The current tracking template applied onto a tracked song (2026-09-16) re-saved in Logic with the identical row list and strip references, two of them repointed per channel.
+
+### `migrate`
+
+Composes `propose-map` (or `--map FILE`) with `apply-template`'s step into `CLAUDE migrated - <song>.logicx`: the ops are apply-template's CONFIRMED writers, A session of the template's lineage pairs by object id and the draft is not applied. `--verify` drives Logic Pro — opens the copy, Save As through `tools/driver`, closes without saving — and compares the row lists ignoring only the flag word; it runs from a checkout on macOS with Logic installed and has not yet been run against Logic. Logic re-saved a migrated legacy session with its 57 rows as written and `--verify` found the row lists equal (2026-09-15, `legacy-migrate-*`).
 
 ## The two rules that matter most
 

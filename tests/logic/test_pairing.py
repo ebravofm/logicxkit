@@ -78,10 +78,6 @@ class PairTest(unittest.TestCase):
         self.assertEqual([p.template["key"] for p in pair_rows(TEMPLATE, session)], [0, 1, 2, 3, 4])
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class MatchQualityTest(unittest.TestCase):
     def _rows(self, n, *, offset=0, names=None):
         return [{"key": i, "object_id": 100 + i + offset,
@@ -223,3 +219,7 @@ class LeaveOutTest(unittest.TestCase):
             parse_map_full("- \n")
         with self.assertRaises(ValueError):
             parse_map_full('- "Kick In (Audio 1)" extra\n')
+
+
+if __name__ == "__main__":
+    unittest.main()

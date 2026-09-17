@@ -1,6 +1,8 @@
 # Documentation
 
-The navigational index for logicxkit. Every doc in the tree is listed here.
+The navigational index for logicxkit. Every doc in the tree is listed here. (`docs/pf-core` is a
+gitignored symlink into the venv's pf-core documentation that `bin/run setup` makes; it is not
+part of the tree and does not ship.)
 
 This file describes what each doc is for, not what is in it. Two documents own knowledge that
 lives outside this directory, and they are listed too — see

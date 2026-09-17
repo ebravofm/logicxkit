@@ -180,10 +180,6 @@ class WriteTest(unittest.TestCase):
             self.assertIn(15, lo["CLgTransportBtnsTransport"])
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class InsertionOrderTest(unittest.TestCase):
     """A list keeps the order it was stored in; a newly ticked id goes after the last present
     id of lower canonical rank (two transitions Logic made, one per project measured)."""
@@ -199,3 +195,7 @@ class InsertionOrderTest(unittest.TestCase):
         layout = {"CLgTransportBtnsDisplay": [18, 19, 21, 22, 24, 20, 46, 51]}
         out = with_controls(layout, {"MIDI Activity (In/Out)": True})
         self.assertEqual(out["CLgTransportBtnsDisplay"], [18, 19, 21, 22, 24, 20, 46, 51, 23])
+
+
+if __name__ == "__main__":
+    unittest.main()

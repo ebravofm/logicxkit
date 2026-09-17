@@ -88,7 +88,7 @@ def cmd_drums_to_midi(args) -> int:
                                      map_name=args.map, grid=args.grid, detector=detector, floors=floors, velocity=velocity,
                                      track_count=count)
         for line in report.lines():
-            print(f"  {line}")
+            print(f"  {project_file.parent.name}: {line}")
         return data
 
     try:

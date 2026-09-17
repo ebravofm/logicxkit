@@ -54,10 +54,6 @@ class LegacyBaseWordTest(unittest.TestCase):
         self.assertEqual(sorted(r.key for r in recs if not is_send(r) and r.key < 10), [4, 5])
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 @_goldens.needs("transplant-ours", "transplant-resave-logic")
 class LogicResavedTransplantTest(unittest.TestCase):
     def test_logic_kept_both_slots_byte_for_byte(self):
@@ -71,3 +67,7 @@ class LogicResavedTransplantTest(unittest.TestCase):
                     if r.tag == b"UCuA" and r.owner == owner and r.key in (2, 3)}
         self.assertEqual(sorted(slots(ours)), [2, 3])
         self.assertEqual(slots(ours), slots(logic))
+
+
+if __name__ == "__main__":
+    unittest.main()

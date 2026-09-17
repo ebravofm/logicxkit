@@ -23,13 +23,14 @@ from logicxkit.logic.services.insert import HEADER, project_records
 from logicxkit.logic.services.registry import group_entries
 from _data import needs
 
-SAVES = next(iter(sorted((_goldens.path("controlbar-saves") or _paths.RESOURCES / "missing").glob("53-group1-audio5.logicx"))), None)
+GROUP_KEYS = {53: "group-1-audio5-logic", 55: "group-1-audio6-logic", 56: "group-2-audio7-logic",
+              62: "group-1-audio5-nogroup-logic", 66: "group-solo-logic", 80: "group-hide-logic"}
 TEMPLATE = _paths.staged("Mix")
 def _load(path: Path) -> bytes:
     return sorted(path.glob("Alternatives/*/ProjectData"))[0].read_bytes()
 
 
-@unittest.skipIf(SAVES is None, "the group single-change saves are not present")
+@_goldens.needs("group-base", *GROUP_KEYS.values())
 @needs("logic", "group-12.3.1.json")
 class GoldenTest(unittest.TestCase):
     """Logic's own saves, 2026-09-05: a group made on one track (53), a second member (55),
@@ -39,9 +40,8 @@ class GoldenTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        d = SAVES.parent
-        cls.base = _load(next(d.glob("cb-51*.logicx")))
-        cls.saves = {n: _load(next(d.glob(f"{n}-*.logicx"))) for n in (53, 55, 56, 62, 66, 80)}
+        cls.base = _load(_goldens.path("group-base"))
+        cls.saves = {n: _load(_goldens.path(k)) for n, k in GROUP_KEYS.items()}
         objs = {o.name: oid for oid, o in channel_objects(cls.saves[53]).items()}
         cls.a5, cls.a6, cls.a7 = objs["Audio 5"], objs["Audio 6"], objs["Audio 7"]
 
@@ -110,10 +110,6 @@ class TemplateGroupsTest(unittest.TestCase):
         self.assertEqual(_events_for(oh.flags, oh.members, _values(data)), raw[:-16])
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 @_goldens.needs("stack-folder-flattened-logic")
 class EventsSurviveAddTrackTest(unittest.TestCase):
     """A track added after members were assigned used to leave a group short of fader events
@@ -132,3 +128,7 @@ class EventsSurviveAddTrackTest(unittest.TestCase):
         (group,) = read_groups(data)
         self.assertEqual(group.members, (88, 92, report["object_id"]))
         self.assertEqual(group_errors(data), [])
+
+
+if __name__ == "__main__":
+    unittest.main()

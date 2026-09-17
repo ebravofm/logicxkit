@@ -39,21 +39,21 @@ def cmd_group(args) -> int:
         print("  --group N says which group --name / --setting / --on / --off change")
         return 2
 
-    def step(data, count, _file):
+    def step(data, count, data_file):
         if args.create:
             members = [object_by_name(data, n, count) for n in args.track or []]
             data, g = create_group(data, name=args.create, members=members, settings=args.setting)
-            print(f"  group {g.number} {g.label!r}: {', '.join(g.settings)}; {len(members)} member(s)")
+            print(f"  {data_file.parent.name}: group {g.number} {g.label!r}: {', '.join(g.settings)}; {len(members)} member(s)")
         elif args.group:
             data = set_group(data, args.group, name=args.name, settings=args.setting, on=on)
             g = read_groups(data)[args.group - 1]
-            print(f"  group {g.number} {g.label!r}: {', '.join(g.settings)}{'' if g.on else ' (off)'}")
+            print(f"  {data_file.parent.name}: group {g.number} {g.label!r}: {', '.join(g.settings)}{'' if g.on else ' (off)'}")
         for spec in args.assign or []:
             name, _, number = spec.rpartition("=")
             if not name or not number.isdigit():
                 raise CommandError(f"bad --assign {spec!r}: use TRACK=N (0 = no group)")
             data = assign(data, object_by_name(data, name.strip(), count), int(number))
-            print(f"  {name.strip()} -> group {number}")
+            print(f"  {data_file.parent.name}: {name.strip()} -> group {number}")
         return data
 
     try:

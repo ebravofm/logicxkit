@@ -6,16 +6,15 @@ The real-file part of tests/logic/test_apply_template.py; skips without the owne
 
 import unittest
 import _goldens
-import _paths
 from logicxkit.logic.orchestrators.apply_template import apply_template, plan
 
 TEMPLATE = _goldens.path("tracking-template")
-SESSIONS = sorted(p for d in ("legacy", "mixes") for p in (_paths.RESOURCES / d).rglob("*.logicx"))
+SESSIONS = _goldens.sessions()
 if _goldens.path("tracked-song"):                      # a session cut from the template, project data only
     SESSIONS.append(_goldens.path("tracked-song"))
 
 
-@unittest.skipIf(not SESSIONS, "no session staged in the reference store")
+@unittest.skipIf(not SESSIONS, "no owner's session on this machine")
 @_goldens.needs("tracking-template")
 class TrackingTemplateTest(unittest.TestCase):
     """Every session on hand was cut from the template: the plan must be field-only, and
@@ -72,6 +71,46 @@ class TrackingTemplateTest(unittest.TestCase):
         left = [op for op in plan(self.template, out, template_count=self.template_count, session_count=count)
                 if op.status == "planned"]
         self.assertEqual([op.line() for op in left], [])
+
+
+@_goldens.needs("tracking-template", "tracked-song", "apply-current-mine", "apply-current-logic")
+class CurrentTemplateResaveTest(unittest.TestCase):
+    """The current template applied onto a tracked song: the write as staged, reproduced from its
+    inputs and held to Logic's re-save of it (row list and strip references)."""
+
+    def _facts(self, data, count):
+        from logicxkit.logic.services.chains import channel_references
+        from logicxkit.logic.services.stacks import read_tracks
+        from logicxkit.logic.services.validate import validate_project
+        self.assertEqual(validate_project(data), [])
+        return [[t["name"], t.get("label")] for t in read_tracks(data, count)], channel_references(data)
+
+    def _golden(self, key):
+        from logicxkit.logic.services.project import project_metadata
+        from logicxkit.logicx import project_data
+        path = _goldens.path(key)
+        return project_data(path), project_metadata(path).get("tracks")
+
+    def test_apply_reproduces_the_staged_write(self):
+        template, t_count = self._golden("tracking-template")
+        song, s_count = self._golden("tracked-song")
+        out, ops, added = apply_template(template, song, template_count=t_count, session_count=s_count)
+        self.assertEqual([op.line() for op in ops if op.status == "failed"], [])
+        rows, refs = self._facts(out, s_count)
+        self.assertEqual(rows, _goldens.fact("apply-current-mine", "rows"))
+        self.assertEqual((rows, refs), self._facts(*self._golden("apply-current-mine")))
+
+    def test_logic_kept_every_row_and_reference(self):
+        want = _goldens.fact("apply-current-mine", "rows")
+        mine = self._facts(*self._golden("apply-current-mine"))
+        logic = self._facts(*self._golden("apply-current-logic"))
+        self.assertEqual(mine[0], want)
+        self.assertEqual(logic, mine)
+        self.assertEqual(len(logic[1]), _goldens.fact("apply-current-logic", "references"))
+        _, song_refs = self._facts(*self._golden("tracked-song"))
+        repointed = sum(1 for k, v in logic[1].items() if song_refs.get(k) != v)
+        self.assertEqual(repointed, _goldens.fact("apply-current-logic", "repointed"))
+        self.assertGreater(repointed, 0)
 
 
 if __name__ == "__main__":

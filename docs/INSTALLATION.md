@@ -10,7 +10,7 @@ are not in the repo.
 - [Two ways to install](#two-ways-to-install)
 - [What the machine must have](#what-the-machine-must-have)
 - [Configuration](#configuration)
-- [The three things that live outside the repo](#the-three-things-that-live-outside-the-repo)
+- [The two roots that live outside the repo](#the-two-roots-that-live-outside-the-repo)
 - [What a green test run does and does not prove](#what-a-green-test-run-does-and-does-not-prove)
 - [Adding a new environment variable](#adding-a-new-environment-variable)
 
@@ -65,7 +65,7 @@ Treat `.env.example` as the authoritative list — it carries each variable's de
 consequence of leaving it unset. Do not maintain a second copy of that list here or in the
 README; two lists drift.
 
-The variables fall into three groups:
+The variables fall into four groups:
 
 - **Where Logic keeps its own files.** Defaults point at Logic's real locations. Override them
   to read from a staged copy instead of the live library.
@@ -74,17 +74,16 @@ The variables fall into three groups:
   golden into a failure instead of a skip (`=public` fails only on keys the public corpus
   should supply, which is what CI runs), and `LOGICXKIT_GOLDENS=owner`, which prefers the
   owner's file where both corpora have a key.
+- **Logging.** `LOG_FILE` names a JSON-lines file that records every run; `LOG_LEVEL` sets
+  the threshold. Both are pf-core's and read at the CLI boundary only.
 
-## The three things that live outside the repo
+## The two roots that live outside the repo
 
-None of these ship, and none of them can. Each is Logic-authored or vendor-authored material
-that is not ours to redistribute.
-
-**The public corpus** — Logic's own saves of a blank project, one change per save. It is a
-release asset, not part of the clone: `bin/run fetch-corpus` downloads it, checks it against
-the checksum pinned in `tests/goldens/corpus.json`, and unpacks it under `resources/public/`.
-`tests/goldens/manifest.json` (tracked) names each save by a neutral key with the facts a test
-may assert. Fetch it before trusting a golden run.
+The public corpus — Logic's own saves of a blank project, one change per save — is in the
+clone, under `tests/corpus/`, named by neutral key in `tests/goldens/manifest.json` with the
+facts a test may assert. Nothing has to be fetched for its goldens to run. The two roots below
+do not ship, and cannot: each is Logic-authored or vendor-authored material that is not ours
+to redistribute.
 
 **The owner's corpus** (`LOGICXKIT_RESOURCES`) — controlled saves cut from real sessions,
 project templates, finished mixes and a channel-strip library snapshot. It cannot ship. The
@@ -110,20 +109,21 @@ repo so they are versioned and backed up. Do not put real paths, names or values
 
 ## What a green test run does and does not prove
 
-Tests that read real Logic files skip when those files are absent, and they are absent in a
-fresh clone until `bin/run fetch-corpus` has run. **A green suite without the corpus proves the
-synthetic layer only**, and the keys only the owner's corpus has skip on every other machine.
+Tests that read the owner's Logic files skip when those files are absent, and they are absent
+on every machine but the owner's. **A green suite proves the synthetic layer and the public
+goldens**; the keys only the owner's corpus has skip everywhere else.
 
 Every run ends with a line naming how much actually ran:
 
 ```
-goldens: 0 of 185 keys found; none on this machine
+goldens: 220 of 264 keys found; missing: add-section-logic, add-tempo-logic, aux-inst-out,
+chains-logic, chains-mine, changes-base, controlbar-saves, div-48-logic (+36 more)
 ```
 
 Read that line before trusting a run. Set `LOGICXKIT_REQUIRE_GOLDENS=1` to make a missing
-golden fail instead of skip. CI fetches the public corpus and runs with `=public`, so the keys
-only the owner's corpus has skip there too — a green check is not a substitute for a run on a
-machine that has those files.
+golden fail instead of skip. CI runs with `=public`, so a public golden may not skip there while
+the keys only the owner's corpus has still do — a green check is not a substitute for a run on
+a machine that has those files.
 
 ## Adding a new environment variable
 

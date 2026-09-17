@@ -118,7 +118,7 @@ def parse(steps: list[tuple[str, object]] | None, selects: list[str] | None) -> 
 def seed_of(text: str) -> int:
     if text == "random":
         return secrets.randbelow(2**32)
-    if not text.isdigit():
+    if not text.isdecimal():
         raise CommandError(f"bad --seed {text!r}: 0 or more, or random")
     return int(text)
 

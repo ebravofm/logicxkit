@@ -5,7 +5,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .services.retrack import copy_project, find_project
+from ._edit import edit_display
+from .services.retrack import find_project
 from .services.toolbar import (BUTTONS, alternative_dirs, buttons_of, copy_toolbar, read_toolbar, set_buttons,
                                show_toolbar, toolbar_shown)
 
@@ -42,9 +43,8 @@ def cmd_toolbar(args) -> int:
     except ValueError as e:
         print(f"  {e}")
         return 2
-    dest = copy_project(project, Path(args.out))["dest"]
-    print(f"into : {dest}\n")
-    for alt in alternative_dirs(dest):
+
+    def step(alt: Path) -> None:
         if src is not None:
             copy_toolbar(alternative_dirs(src)[0], alt)
         if args.row:
@@ -52,6 +52,12 @@ def cmd_toolbar(args) -> int:
         state = set_buttons(alt, want) if want else buttons_of(read_toolbar(alt))
         print(f"  {alt.name}:")
         _print(alt, state)
+
+    try:
+        edit_display(project, Path(args.out), step)
+    except ValueError as e:
+        print(f"  {e}")
+        return 1
     print("\nUnverified until opened in Logic.")
     return 0
 

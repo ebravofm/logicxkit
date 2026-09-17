@@ -65,14 +65,15 @@ def _only(args, session: bytes, count: int | None) -> set[int] | None:
     """The session rows named by ``--track`` and ``--stack`` (a stack's members), or None."""
     if not (args.track or args.stack):
         return None
-    from .services.stacks import read_stacks, read_tracks
+    from .services.stacks import read_stacks, read_tracks, rows_below
     rows = {r["key"]: r["object_id"] for r in read_tracks(session, count)}
     only = {object_by_name(session, name, count) for name in args.track or []}
-    stacks = {s.name: s for s in read_stacks(session, count)}
+    all_stacks = read_stacks(session, count)
+    stacks = {s.name: s for s in all_stacks}
     for name in args.stack or []:
         if name not in stacks:
             raise CommandError(f"no stack named {name!r} (have: {', '.join(sorted(stacks))})")
-        only.update(rows[key] for key, _n in stacks[name].members)
+        only.update(rows[key] for key, _n in rows_below(all_stacks, stacks[name]))
     return only
 
 

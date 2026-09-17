@@ -82,10 +82,6 @@ class MixTemplateStackTest(unittest.TestCase):
             create_stack(self.data, name="Nested", members=[member["object_id"]], track_count=self.count)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 @_goldens.needs("tracks-three-audio-logic", "stack-folder-logic")
 class PublicStacklessTest(unittest.TestCase):
     """Our stack over Logic's three flat tracks against Logic's own Create Track Stack."""
@@ -124,3 +120,7 @@ class LogicResavedStacksTest(unittest.TestCase):
     @_goldens.needs("stack-sub2-ours", "stack-sub2-resave-logic")
     def test_a_stack_after_a_leftover_sub_strip(self):
         self._check("stack-sub2-ours", "stack-sub2-resave-logic")
+
+
+if __name__ == "__main__":
+    unittest.main()

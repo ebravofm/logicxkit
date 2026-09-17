@@ -108,6 +108,9 @@ PLUGIN_CFG = {
     199: {MONO: 1, STEREO: 2},   # Limiter
     183: {MONO: 1, STEREO: 3},   # Gain
     147: {MONO: 1, STEREO: 2},   # Echo
+    243: {MONO: 1, STEREO: 2},   # Linear Phase EQ
+    194: {MONO: 1, STEREO: 2},   # Multipressor
+    193: {MONO: 1, STEREO: 2},   # Adaptive Limiter
 }
 
 
@@ -143,8 +146,9 @@ def apply_float_overrides(raw: bytes, overrides: dict) -> bytes:
     body = bytearray(raw[HEADER:])
     for i, value in overrides.items():
         i = int(i)
-        if 0 <= i < n:
-            struct.pack_into("<f", body, idx + FLOAT_OFFSET_IN_CHUNK + i * 4, float(value))
+        if not 0 <= i < n:
+            raise ValueError(f"float index {i} is outside the plug-in's block of {n}")
+        struct.pack_into("<f", body, idx + FLOAT_OFFSET_IN_CHUNK + i * 4, float(value))
     return raw[:HEADER] + bytes(body)
 
 
@@ -345,8 +349,6 @@ def _stamp(raw: bytes, owner: int, key: int, floats, limit: int, seed: str,
         if 0 <= off < len(buf) - HEADER:
             buf[HEADER + off] = digest[i % len(digest)]
 
-    if overrides:
-        buf = bytearray(apply_float_overrides(bytes(buf), overrides))
     if label:
         buf = bytearray(relabel_slot(bytes(buf), label))
     if floats:
@@ -357,6 +359,8 @@ def _stamp(raw: bytes, owner: int, key: int, floats, limit: int, seed: str,
             inner = bytearray(body)
             patch_block_floats(inner, idx, 0, list(floats)[:min(limit or len(floats), n)])
             buf[HEADER:] = inner
+    if overrides:                                     # a dialled value wins over the strip's
+        buf = bytearray(apply_float_overrides(bytes(buf), overrides))
     return bytes(buf)
 
 

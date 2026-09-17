@@ -69,5 +69,19 @@ class EveryOverrideGoesThroughItTest(unittest.TestCase):
         importlib.reload(_paths)
 
 
+class BinRunPrecedenceTest(unittest.TestCase):
+    """`bin/run` fills the environment from .env but never overrides a variable already set."""
+
+    def test_a_variable_on_the_command_line_survives_dot_env(self):
+        import subprocess
+        if not (_paths.REPO / ".venv" / "bin" / "python").exists():
+            self.skipTest("no project venv for bin/run")
+        env = dict(os.environ, LOGICXKIT_DATA="/from/the/command/line")
+        got = subprocess.run([str(_paths.REPO / "bin" / "run"), "python", "-c",
+                              "import os; print(os.environ['LOGICXKIT_DATA'])"],
+                             capture_output=True, text=True, env=env, cwd=_paths.REPO)
+        self.assertEqual(got.stdout.strip(), "/from/the/command/line", got.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()

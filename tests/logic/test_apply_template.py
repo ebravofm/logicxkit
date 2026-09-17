@@ -350,5 +350,43 @@ class ApplyTest(unittest.TestCase):
         self.assertEqual(plan(template, out, template_count=2, session_count=2), [])
 
 
+def ref(owner: int, name: str, category: str = "Guitar") -> bytes:
+    """A channel's strip-reference record: the name and category fields a `.cst` reference holds."""
+    from _records import rec
+    return rec(b"UCuA", owner, 10, b"\x00" * 16 + name.encode().ljust(64, b"\x00") + category.encode().ljust(64, b"\x00"))
+
+
+class SharedReferenceTest(unittest.TestCase):
+    """Two session channels sharing a strip reference may part ways: the template names one of
+    them differently, and the refs op repoints that channel alone (the current tracking template
+    does exactly this to a session cut from its predecessor, 2026-09-16)."""
+
+    @staticmethod
+    def _project(ref_a: str, ref_b: str) -> bytes:
+        return proj(env_obj(88, "Gtr 1"), env_obj(92, "Gtr 2"), env_obj(80, "Master", grouping=True),
+                    chan(0, "Audio 1", uuid=uuid(88)), ref(0, ref_a),
+                    chan(1, "Audio 2", uuid=uuid(92)), ref(1, ref_b),
+                    chan(402, "Output 1-2", uuid=uuid(80), size=201),
+                    track(0, 88), track(1, 92), track(2, 80, flag=3), marker())
+
+    def test_a_reference_the_template_lacks_is_named_and_left(self):
+        template = proj(env_obj(88, "Gtr 1"), env_obj(80, "Master", grouping=True),
+                        chan(0, "Audio 1", uuid=uuid(88)),
+                        chan(402, "Output 1-2", uuid=uuid(80), size=201), track(0, 88), track(1, 80, flag=3), marker())
+        session = proj(env_obj(88, "Gtr 1"), env_obj(80, "Master", grouping=True),
+                       chan(0, "Audio 1", uuid=uuid(88)), ref(0, "Guitar SLO.cst"),
+                       chan(402, "Output 1-2", uuid=uuid(80), size=201), track(0, 88), track(1, 80, flag=3), marker())
+        ops = [op for op in plan(template, session, template_count=1, session_count=1) if op.kind == "refs"]
+        self.assertEqual([(op.status, op.detail) for op in ops], [("refused", "carries Guitar SLO.cst; the template has none")])
+
+    def test_one_of_two_channels_sharing_a_reference_is_repointed_alone(self):
+        template = self._project("Guitar SLO.cst", "Guitar SLO M.cst")
+        target = self._project("Guitar SLO.cst", "Guitar SLO.cst")
+        out, ops, _added = apply_template(template, target, template_count=2, session_count=2)
+        refs = [(op.args.get("owner"), op.status) for op in ops if op.kind == "refs"]
+        self.assertEqual(refs, [(1, "done")])
+        self.assertEqual(plan(template, out, template_count=2, session_count=2), [])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -181,9 +181,15 @@ def add_track(data: bytes, *, name: str, after: int, kind: str = "audio", input_
             bare = [o for o in audio if chans[o].size <= BARE_STUB]   # first bare stub, else the end
             owner = bare[0] if bare else audio[-1] + 1
             created_audio = True
-        source = _by_label(chans, f"Input {input_number}")
+        if stereo:                                        # a stereo track takes the pair channel, Input N-(N+1)
+            if input_number % 2 == 0:
+                raise ValueError(f"a stereo input pair starts on an odd input, not Input {input_number}")
+            label = f"Input {input_number}-{input_number + 1}"
+        else:
+            label = f"Input {input_number}"
+        source = _by_label(chans, label)
         if source is None:
-            raise ValueError(f"no Input {input_number} channel")
+            raise ValueError(f"no {label} channel")
     elif kind == "aux":
         owner = max(o for o, c in chans.items() if c.label.startswith(prefix)) + 1
         source = _by_label(chans, "Input 1-2")
@@ -221,16 +227,25 @@ def add_track(data: bytes, *, name: str, after: int, kind: str = "audio", input_
     ref_row = records[run[ref_pos]].raw
     ref_owner = owners_of.get(after)
     ref_label = chans[ref_owner].label if ref_owner in chans else ""
+    ref_depth = ref_row[HEADER + MEMBER_AT]               # the byte is the nesting depth
     if member is None:
-        member = ref_row[HEADER + MEMBER_AT]
+        depth = ref_depth                                 # the anchor's sibling
+    elif not member:
+        depth = 0
+    elif ref_label.startswith("Sub "):
+        depth = ref_depth + 1                             # under the header itself
     else:
-        member = 1 if member else 0
-    if member and ref_label.startswith("Sub "):
-        stack_index = int(ref_label[4:])                  # placed under the header itself
-    elif member and ref_owner in chans:
-        stack_index = chans[ref_owner].stack_index
-    else:
+        depth = ref_depth                                 # beside the anchor, inside its stack
+    if depth == 0:
         stack_index = 0
+    elif depth == ref_depth + 1:
+        stack_index = int(ref_label[4:])
+    else:
+        stack_index = chans[ref_owner].stack_index if ref_owner in chans else 0
+    member = depth
+    if depth <= ref_depth:                                # beside the anchor: after everything it holds
+        from .stacks import span_end
+        ref_pos = span_end([records[i].raw[HEADER + MEMBER_AT] for i in run], ref_pos) - 1
     arrange_row = new_row(records[run[like_pos]].raw, object_id=object_id, member=member,
                           row_type=ROW_TYPE.get(kind, ROW_TYPE["audio"]))
     flat = flat_run(records, run)

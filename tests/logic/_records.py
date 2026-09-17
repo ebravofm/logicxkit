@@ -68,11 +68,11 @@ def chan(owner: int, label: str, *, uuid: bytes = b"", dest: bytes = b"", source
     return rec(b"OCuA", owner, 0xFFFF, bytes(p), 7)
 
 
-def track(key: int, object_id: int, *, flag: int = 1, member: bool = False) -> bytes:
+def track(key: int, object_id: int, *, flag: int = 1, member: bool | int = False) -> bytes:
     p = bytearray(58)
     struct.pack_into("<I", p, 0, flag)
     struct.pack_into("<I", p, 8, object_id)
-    p[14] = 1 if member else 0
+    p[14] = int(member)                      # the nesting depth
     return rec(b"karT", 0xFFFF, key, bytes(p), 6)
 
 

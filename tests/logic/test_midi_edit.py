@@ -170,5 +170,30 @@ class SpecTest(unittest.TestCase):
                 parse([(flag, spec)])
 
 
+class ChannelEditTest(unittest.TestCase):
+    """A note read from a file keeps its own lines; a channel edit has to reach the status byte."""
+
+    def test_a_tagged_notes_channel_lands_in_the_status_byte(self):
+        from dataclasses import replace
+        from logicxkit.logic.services.midi_edit import from_part, to_part
+        from logicxkit.logic.services.midi_write import note_lines
+        head, ext = note_lines(tick=38400, pitch=60, velocity=100, length=240, channel=1)
+        part = to_part([(head, (ext,))])
+        moved = replace(part, notes=tuple(replace(n, channel=5) for n in part.notes))
+        (new_head, _ls), = from_part(moved)
+        self.assertEqual(new_head[0] & 0x0F, 4)
+        self.assertEqual(new_head[0] & 0xF0, head[0] & 0xF0)
+        self.assertEqual([n.channel for n in to_part(from_part(moved)).notes], [5])
+
+
+class NoteOffLineTest(unittest.TestCase):
+    def test_a_note_off_line_is_refused_by_name(self):
+        from logicxkit.logic.services.midi_edit import to_part
+        off = head(0x80, 38400, 0, 60)
+        with self.assertRaises(ValueError) as e:
+            to_part([(off, ())])
+        self.assertIn("note-off line (0x80)", str(e.exception))
+
+
 if __name__ == "__main__":
     unittest.main()

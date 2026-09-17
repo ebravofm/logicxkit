@@ -111,7 +111,7 @@ def _plan(template: bytes, session: bytes, *, template_count: int | None,
                 wanted = [q.session for q in pairs if q.session is not None
                           and t_in.get(q.template["key"], (None,))[0] == t["name"]]
                 for m in wanted:
-                    if m["member"]:                       # inside another stack: out first
+                    for _level in range(m["depth"]):      # inside another stack: out first, one move per level
                         ops.append(Op("member", _row_name(m), f"leave stack {s_in.get(m['key'], ('?',))[0]}",
                                       p.rule, args={"track": m["object_id"], "leave": True}, row=m["object_id"]))
                 op = Op("stack", _row_name(t), f"make a stack of {len(wanted)} track(s)", p.rule,
@@ -205,7 +205,6 @@ def _plan(template: bytes, session: bytes, *, template_count: int | None,
     t_inst, s_inst = read_instrument_outputs(template), read_instrument_outputs(session)
     inst_rows = {p.template["owner"]: p.session["owner"] for p in pairs          # template Inst owner -> session owner
                  if p.session is not None and p.template["owner"] is not None and p.session["owner"] is not None}
-    ref_map: dict[str, str] = {}
     for p in pairs:
         if p.session is None or p.template["owner"] is None or p.session["owner"] is None:
             continue
@@ -225,17 +224,17 @@ def _plan(template: bytes, session: bytes, *, template_count: int | None,
             else:
                 ops.append(Op("chains", name, f"remove {len(s_slots)} slot(s); the template has none",
                               p.rule, args={"dst_owner": so, "remove": True}))
-        if t_ref.get(to) and t_ref.get(to) != s_ref.get(so):
+        if not t_ref.get(to) and s_ref.get(so):
+            ops.append(Op("refs", name, f"carries {s_ref[so]}; the template has none", p.rule, status="refused",
+                          note="clearing a strip reference is not written"))
+        elif t_ref.get(to) and t_ref.get(to) != s_ref.get(so):
             if s_ref.get(so) is None:
                 ops.append(Op("refs", name, f"set reference {t_ref[to]}", p.rule,
                               args={"copy": True, "src_owner": to, "dst_owner": so}))
-            elif ref_map.get(s_ref[so], t_ref[to]) != t_ref[to]:
-                ops.append(Op("refs", name, f"{s_ref[so]} -> {t_ref[to]}", p.rule, status="refused",
-                              note=f"{s_ref[so]} would have to become two different strips"))
             else:
-                ref_map[s_ref[so]] = t_ref[to]
+                # per channel: two session channels sharing a name may part ways here
                 ops.append(Op("refs", name, f"{s_ref[so]} -> {t_ref[to]}", p.rule,
-                              args={"old": s_ref[so], "new": t_ref[to], "category": t_cat.get(t_ref[to])}))
+                              args={"owner": so, "old": s_ref[so], "new": t_ref[to], "category": t_cat.get(t_ref[to])}))
         for kind, t_map, s_map in (("output", t_out, s_out), ("input", t_inp, s_inp)):
             t_dest, s_dest = t_map.get(to), s_map.get(so)
             if t_dest is None:

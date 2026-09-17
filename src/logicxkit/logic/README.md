@@ -55,6 +55,10 @@ test makes `Gain` match `Auto Gain`.
 Band order: `hpf, low_shelf, peak1, peak2, peak3, peak4, high_shelf, lpf`.
 Each band is `[Q, enable, freq_Hz, gain_dB]`; for `hpf`/`lpf` the 4th float is
 the filter **slope** and `enable` toggles the filter.
+The block holds 52 floats from class v3 on; a class v2 strip holds 51, the same layout without
+the trailing float (a v2 strip aligned against v3 and v5 blocks agrees at every index 0–50).
+`chains` copies a v2 source's 51 floats positionally and keeps the donor's last one, reporting
+it as an older layout, not a mismatch.
 
 **Compressor** — `float[1]`=threshold dB, `[2]`=ratio, `[3]`=attack ms,
 `[4]`=release ms, `[5]`=makeup gain dB, `[6]`=knee, `[7]`=peak/RMS,
@@ -62,6 +66,29 @@ the filter **slope** and `enable` toggles the filter.
 `[11]`=limiter threshold, `[12]`=limiter, `[13]`=auto-release.
 Circuit types: `Platinum 0, ClassicVCA 1, VintageVCA 2, VintageFET 3,
 VintageOpto 4, FET 5, StudioFET 6, StudioVCA 7, StudioOpto 8`.
+
+### The output plug-ins — Linear Phase EQ, Multipressor, Adaptive Limiter, Limiter (measured 2026-09-16)
+
+Type ids 243, 194, 193, 199; class v5 blocks of 52, 62, 10 and 13 floats at payload offset 184
+(`master-*` goldens). Inserted on the Stereo Out they take the same records as on a track — the
+two differ only in the mono/stereo fields and the per-instance id — and the Stereo Out's Linear
+Phase EQ and Limiter inserts also wrote two records of the `Inst 1` channel (owner 8; not
+understood). The plug-in whose window was edited last holds an expanded record (468 → 708 bytes
+for the EQ) carrying a second copy of its block; it shrinks back when another plug-in is edited.
+
+Measured float indices, one slider step per save (`services/output_params.py`):
+
+| plug-in | index | parameter |
+|---|---|---|
+| Linear Phase EQ | 1 | Low Cut on/off; bands of four `[enable, freq_hz, gain_db, q]` from index 1 in the Channel EQ band order |
+| | 18, 19, 20 | Peak 3 frequency (Hz), gain (dB), Q |
+| Multipressor | 25 | Band 2 crossover 1/2 (Hz) |
+| | 41, 42, 43 | Band 1 compressor threshold (dB), ratio, make-up (dB) |
+| Adaptive Limiter | 2, 3, 5, 6 | Gain (dB), Out Ceiling (dB), Lookahead (ms), Remove DC (1/0) |
+| Limiter | 1, 2, 4, 5 | Gain (dB), Lookahead (ms), Release (ms), Output Level (dB) |
+
+The plug-in window's Controls view lists every parameter in the plug-in's own order (the row
+tables are in `.ai/plans/v0.6.0/controls-*.txt`); the float order is not that order one for one.
 
 ### Gotchas learned from reading real strips
 
@@ -426,6 +453,13 @@ into `$objects` by `CF$UID`). The older shape is a plain `data.plist` with the s
 beside `#Root.cst`. Read on Logic's own default patches, 2026-09-13; `--build` writes the older
 shape from a `.cst`.
 
+One change per Library save on the eight-insert project (2026-09-16, `patch-c14…c18`): a fader step
+changes only the channel record's fader bytes in `#Root.cst` (the same offsets as a project's `OCuA`,
+so the reader now reports the fader and pan bytes); an insert adds the slot record and grows the channel
+record by four bytes; a send adds a key-0 record like a project's. Saving with a summing stack's header
+selected writes the Aux strip as `#Root.cst`, one `.cst` per member and four channels in `data.plist`.
+A Library save also renames the track and its strip to the patch's name.
+
 ### Audio files and regions (`logic regions`, measured 2026-09-13/15)
 
 An import adds an `lFuA` file record and a `gRuA` region record directly before the first
@@ -491,6 +525,28 @@ the length at +12 — 1 on every marker Logic made, shown as ∞ (to the next ma
 RTF, a move the head tick, a delete removes the event and its record; Logic's first marker also
 rewrote 4.6 KB of the registry and added an empty triple after the marker track, which ours does
 not. `arrangement --add` and `markers --add` share the pieces (`arrangement_write.py`).
+
+### Track automation (`logic automation`, measured 2026-09-16)
+
+Under the `Track Automation Root Folder` sequence (its `qSvE` at tick 34560 holds one 0x20 reference
+per channel, the referenced table slot at data +0) sits one `*Automation` folder per channel: its
+`qeSM` carries the name `*Automation` at `+18`, the track's object at `+234` and its own sequence
+id at `+8`, the owner of the `qSvE` that holds the points. An event's head +2 is the sub-tick
+fraction (u16, 0x8000 half a tick): Logic's region-border point sits at 38399 + 0x8000. A fader
+point is a 0x50 event — tick at head +4, fader id at head +12 (Volume 7, Pan 10), the fader byte
+at head +11 (unity 90); a plug-in parameter point is 0x51 with the 0..1 float at head +8 and the
+parameter index at +12 (bit 14 of its type word, 0x4051, is set on two of a real song's parameter
+points and read as `flagged`; meaning unknown). Head +15 is the Event List's selection state on a
+point it just made (1, 0x81 on the anchor), rewritten on save. Every folder keeps its points in
+(tick, fraction, type, fader, relative) order. Logic's Automation Event List (read for every
+automation golden, 2026-09-17) shows a fader point at the tick and value the reader reads, the
+half-tick point as the display tick before it, a relative point as `± Volume`, and a plug-in
+parameter point by its index with a 0-127 Val (63 for High Shelf Gain's float 1.0; that mapping
+is unmeasured). `Create 1/2 Automation Point(s) for Visible Parameter` writes at the selected
+regions' borders (on a track without a region it writes nothing). Convert Visible Track Automation
+to Region Automation adds an unreferenced sequence naming the track at `+234` with the region's
+copy of the points. The arrange row's byte at +84 is the lane the header shows (a fader id). A Pan
+lane chosen in the header popup wrote no point through the region-border command; unmeasured.
 
 ### Session Player regions (`logic sessionplayer`, measured 2026-09-13)
 
@@ -1228,8 +1284,12 @@ event joins the sequence in tick order. Ours reproduced Logic's add record for r
 Logic's re-save of a section and a tempo change we added kept both. `tempo --add BAR=BPM`
 writes what Logic's own added change was: one bare 32-byte event — no curve lines — with the
 bpm word, `40 88` at +22 of the data line and the point's time word at +8, the same word
-Logic's Tempo List wrote for its own point on the blank project (2026-09-14); the word Logic
-put at head +2 on one of its adds is undecoded and written as zero, which Logic accepted.
+Logic's Tempo List wrote for its own point on the blank project (2026-09-14). The word at head +2
+is 27511 (0x6b77) on the three points the Tempo List added to the owner's song (bars 118, 111 and
+103, 2026-09-16) and 0 on the two it created on the blank, on ramp points and on bar 1 — so it is
+not the mark of a created point; meaning unknown. Ours writes zero, which Logic accepted. Head +15
+bit 0 is set once the list edits a point; cleared by hand and re-saved, Logic left it cleared
+(2026-09-17), so it is edit state, not something Logic reads back.
 `tempo --ramp BAR=BPM:BAR=BPM [--density N]` writes what Logic's Tempo Operations "Create Tempo
 Curve" writes (linear, 1/8, continue with the new tempo): one plain event per division from
 the start bar to the end bar, each holding the tempo at the middle of its division, the

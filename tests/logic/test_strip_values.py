@@ -109,15 +109,28 @@ class StripSourcedValuesTest(unittest.TestCase):
             _plan, report = chain_plan(self.data, cfg, self.eq_donor, self.comp_donor)
             self.assertTrue(report["shape_mismatch"], "Gain in the strip, absent from the plan")
 
-    def test_a_shorter_source_chunk_is_reported_not_silently_partial(self):
+    def test_a_class_v2_eq_block_is_an_older_layout_not_a_mismatch(self):
+        """A class v2 Channel EQ strip holds 51 floats, the v3+ block minus its last one."""
         import tempfile
         from logicxkit.logic import chain_plan
         with tempfile.TemporaryDirectory() as tmp:
-            self._cst(tmp, "G.cst", chunk(236, [1.0] * 51))   # the real guitar bus strip has 51
+            self._cst(tmp, "G.cst", chunk(236, [1.0] * 51))
             cfg = {"strip_root": tmp,
                    "chains": {"Kick In.cst": {"label": "G", "strip": "G.cst"}}}
             _plan, report = chain_plan(self.data, cfg, self.eq_donor, self.comp_donor)
-            self.assertTrue(any("51 floats" in m for m in report["shape_mismatch"]))
+            self.assertEqual(report["shape_mismatch"], [])
+            self.assertTrue(any("51 floats" in m for m in report["older_layout"]))
+
+    def test_any_other_shorter_source_chunk_is_reported_not_silently_partial(self):
+        import tempfile
+        from logicxkit.logic import chain_plan
+        with tempfile.TemporaryDirectory() as tmp:
+            self._cst(tmp, "G.cst", chunk(236, [1.0] * 50))
+            cfg = {"strip_root": tmp,
+                   "chains": {"Kick In.cst": {"label": "G", "strip": "G.cst"}}}
+            _plan, report = chain_plan(self.data, cfg, self.eq_donor, self.comp_donor)
+            self.assertTrue(any("50 floats" in m for m in report["shape_mismatch"]))
+            self.assertEqual(report["older_layout"], [])
 
     def test_strip_plus_a_json_block_is_refused_as_ambiguous(self):
         import json

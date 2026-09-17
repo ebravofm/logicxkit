@@ -29,10 +29,6 @@ class TickTest(unittest.TestCase):
             note_lines(tick=BAR_ONE, pitch=60, velocity=80, length=1 << 32, channel=1)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class NameTest(unittest.TestCase):
     def test_a_region_name_outside_ascii_is_utf8_with_its_byte_length(self):
         import struct
@@ -66,3 +62,7 @@ class PlaceEntryTest(unittest.TestCase):
         self.assertEqual(out[ENTRY:3 * ENTRY], bytes(block) * 2)           # the first entry keeps both blocks
         self.assertEqual(out[5 * ENTRY:6 * ENTRY], bytes(block))           # and the last keeps its one
         self.assertEqual(out[-TAIL:], tail)
+
+
+if __name__ == "__main__":
+    unittest.main()

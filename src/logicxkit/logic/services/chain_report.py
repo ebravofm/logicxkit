@@ -9,11 +9,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .chains import channel_references
+from .chains_channels import channel_name
 from .insert import HEADER
 
 # Native plugin type ids, for naming a slot whose record carries no readable name string.
 # The verbs are the config's own donor types (the spec's `donors` map).
 PLUGIN_NAMES = {236: "Channel EQ", 154: "Compressor", 157: "Enveloper", 199: "Limiter",
+                243: "Linear Phase EQ", 194: "Multipressor", 193: "Adaptive Limiter",
                 183: "Gain", 147: "Echo", 287: "ChromaVerb", 150: "SilverVerb",
                 166: "EnVerb", 231: "Space Designer", 158: "Klopfgeist"}
 NATIVE_INSTRUMENTS = {158}          # type ids that sit in the instrument slot, not an insert
@@ -76,7 +78,7 @@ def chain_changes(data: bytes, plan: dict) -> list[ChainChange]:
         survives = {k: v for k, v in existing.items() if k not in placed}
         out.append(ChainChange(
             owner=owner,
-            ref=refs.get(owner, f"owner {owner}"),
+            ref=refs.get(owner) or channel_name(data, owner),
             before=[existing[k] for k in sorted(existing)],
             after=[v for _k, v in sorted({**survives, **placed}.items())],
             replaced=[existing[k] for k in sorted(existing) if k in placed],

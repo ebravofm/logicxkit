@@ -118,10 +118,6 @@ class StepRaisesTest(unittest.TestCase):
         self.assertEqual(seen, {"000": TRACKS, "001": TRACKS + 3})
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class LevelsSourceTest(unittest.TestCase):
     def test_a_missing_source_project_is_refused_with_a_message(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -163,3 +159,7 @@ class ImageOverwriteTest(unittest.TestCase):
                 self.assertEqual(out.read_bytes(), b"mine")
                 self.assertEqual(main(["image", str(src), "-o", str(out), "--overwrite"]), 0)
             self.assertEqual(out.read_bytes(), b"\xff\xd8 new")
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -10,13 +10,11 @@ Generated output goes to `out/`, and an experiment starts from a copy made into 
 Gitignored except this file and `data/README.md`. The material itself is Logic- and
 vendor-authored project data and is not redistributable, so a fresh clone gets an empty
 directory — stage your own using the layout below. Producing any of it needs Logic Pro on
-macOS.
+macOS. The public corpus is not here: it is tracked under `tests/corpus/`.
 
 ## Layout
 
     templates/    .logicx templates re-saved from the current Logic (File > Save As… here).
-    public/       The public corpus, unpacked by `bin/run fetch-corpus`: Logic's saves of a
-                  blank project, keyed by `tests/goldens/manifest.json`
     experiments/  Controlled saves made by Logic itself: one deliberate change per save, named
                   `NN-what-changed`, so a diff against the previous one isolates the bytes.
                   These are the ground truth the decoders and goldens measure against.
@@ -42,4 +40,5 @@ macOS.
 `tests/_paths.py` reads only what is staged here — never Logic's live library, which
 `tests/_liveguard.py` refuses outright. Goldens skip when a file is absent, so a machine
 without this directory runs green but proves less. `LOGICXKIT_RESOURCES` overrides the root,
-and `experiments/manifest.json` maps each golden's key to its file and facts.
+and `experiments/manifest.json` maps each golden's key to its file and facts, as
+`tests/goldens/manifest.json` does for the public corpus.

@@ -139,10 +139,6 @@ class ChainChangesTest(unittest.TestCase):
         self.assertEqual(clean.after, dialled.after)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 @_goldens.needs("chains-mine", "chains-logic")
 class LogicResavedChainsTest(unittest.TestCase):
     """The tracking chains applied by `chains`, re-saved by Logic: every channel's chain came
@@ -155,3 +151,7 @@ class LogicResavedChainsTest(unittest.TestCase):
         logic = {c["label"]: c["chain"] for c in analyze(project_data(_goldens.path("chains-logic")))["channels"]}
         self.assertEqual(len(ours), _goldens.fact("chains-mine", "channels_with_inserts"))
         self.assertEqual(ours, logic)
+
+
+if __name__ == "__main__":
+    unittest.main()

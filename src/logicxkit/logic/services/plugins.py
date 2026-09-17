@@ -2,8 +2,10 @@
 
 A native slot carries Logic's `GAMETSPP` block with the plug-in's type id (`_binary.find_blocks`);
 a third-party slot embeds an AU preset plist whose `type`, `subtype` and `manufacturer` are the
-component identity (`au.services.embed`). The installed set is what `auval -a` lists. Apple's
-own components are counted present without asking: Logic ships them.
+component identity (`au.services.embed`). The installed set is what `auval -a` lists — a
+registry that keeps a component whose bundle has gone bad, as Logic's own launch does, so
+``validate_components`` opens each one with `auval -v` when asked. Apple's own components are
+counted present without asking: Logic ships them.
 """
 
 from __future__ import annotations
@@ -37,7 +39,7 @@ class PluginRef:
 
 @dataclass(frozen=True)
 class Verdict:
-    slots: list[tuple[PluginRef, str]]        # status: apple, installed, missing, unknown
+    slots: list[tuple[PluginRef, str]]        # status: apple, installed, missing, broken, unknown
     missing: list[PluginRef]
 
     @property
@@ -81,16 +83,54 @@ def installed_from_auval(text: str) -> set[tuple[str, str, str]]:
     return out
 
 
-def installed_components() -> set[tuple[str, str, str]] | None:
-    """What `auval -a` lists, or None when the tool is not on this machine."""
+REGISTRY_TIMEOUT = 300               # one `auval -a` over the whole registry
+
+
+def installed_components(*, timeout: float = REGISTRY_TIMEOUT) -> set[tuple[str, str, str]] | None:
+    """What `auval -a` lists, or None when the tool is not on this machine or its registry scan
+    ran past ``timeout`` — either way the third-party status is unknown, not clean."""
     auval = shutil.which("auval")
     if auval is None:
         return None
-    run = subprocess.run([auval, "-a"], capture_output=True, text=True, timeout=120)
+    try:
+        run = subprocess.run([auval, "-a"], capture_output=True, text=True, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        return None
     return installed_from_auval(run.stdout)
 
 
-def verdict(refs: list[PluginRef], installed: set[tuple[str, str, str]] | None) -> Verdict:
+VALIDATE_TIMEOUT = 300               # per component; a hang past it reads as broken
+FAILED_MARKERS = ("FATAL ERROR", "AU VALIDATION FAILED", "* * FAIL")
+PASSED_MARKERS = ("AU VALIDATION SUCCEEDED", "* * PASS")
+
+
+def validate_components(components: set[tuple[str, str, str]], *, timeout: float = VALIDATE_TIMEOUT,
+                        progress=None) -> dict[tuple[str, str, str], bool]:
+    """Whether each component opens and passes `auval -v` — the check the registry cannot make.
+    A component that hangs past ``timeout`` is broken; ``progress(component)`` is called before
+    each one. Empty without `auval`, which `verdict` reads as nothing checked."""
+    auval = shutil.which("auval")
+    if auval is None:
+        return {}
+    out = {}
+    for comp in sorted(components):
+        if progress is not None:
+            progress(comp)
+        try:
+            run = subprocess.run([auval, "-v", *comp], capture_output=True, text=True, timeout=timeout)
+        except subprocess.TimeoutExpired:
+            out[comp] = False
+            continue
+        text = run.stdout + run.stderr
+        out[comp] = (run.returncode == 0 and any(m in text for m in PASSED_MARKERS)
+                     and not any(m in text for m in FAILED_MARKERS))
+    return out
+
+
+def verdict(refs: list[PluginRef], installed: set[tuple[str, str, str]] | None,
+            validated: dict[tuple[str, str, str], bool] | None = None) -> Verdict:
+    """``validated`` (from `validate_components`) marks a listed component that fails to open as
+    broken, which counts as missing."""
     slots, missing = [], []
     for ref in refs:
         if ref.native:
@@ -99,6 +139,9 @@ def verdict(refs: list[PluginRef], installed: set[tuple[str, str, str]] | None) 
             status = "unknown"
         elif ref.component in installed:
             status = "installed"
+            if validated is not None and validated.get(ref.component) is False:
+                status = "broken"
+                missing.append(ref)
         else:
             status = "missing"
             missing.append(ref)

@@ -9,7 +9,7 @@ from .insert import HEADER, project_records, reassemble
 from .recbuild import with_key
 from .regions import sync_region_tracks
 from .selection import select_track
-from .stacks import MEMBER_AT, read_stacks, read_tracks
+from .stacks import MEMBER_AT, read_stacks, read_tracks, span_end
 from .tracklist import arrange_run, row_object
 from .validate import require_full_walk, require_valid
 
@@ -40,14 +40,12 @@ def move_track(data: bytes, track_object: int, *, before: int | None = None,
     raws = [records[i].raw for i in run]
 
     def block(obj: int) -> slice:
-        """A header's row and the member rows under it; a plain row alone (Logic's own drag of
-        a stack header moved header and member as one block, 2026-09-12)."""
+        """A header's row and every row it holds, a nested stack included; a plain row alone."""
         start = order.index(obj)
-        end = start + 1
-        if obj in headers:
-            while end < len(raws) and raws[end][HEADER + MEMBER_AT] == 1:
-                end += 1
-        return slice(start, end)
+        if obj not in headers:
+            return slice(start, start + 1)
+        depths = [raw[HEADER + MEMBER_AT] for raw in raws]
+        return slice(start, span_end(depths, start))
 
     src = block(track_object)
     moving, moving_ids = raws[src], order[src]

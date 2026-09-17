@@ -79,6 +79,8 @@ def _edit(alternative: Path, plist_edit, archive_edit) -> None:
     for w in windows:
         plist_edit(w)
     atomic_write_bytes(state_path, plistlib.dumps(state, fmt=plistlib.FMT_BINARY))
+    if plistlib.loads(state_path.read_bytes()) != state:
+        raise ValueError(f"{state_path}: the plist on disk is not the one written")
     path = alternative / "DisplayStateArchive"
     if not path.exists():
         return
@@ -87,6 +89,8 @@ def _edit(alternative: Path, plist_edit, archive_edit) -> None:
     if isinstance(objs, list):
         archive_edit(objs)
         atomic_write_bytes(path, plistlib.dumps(archive, fmt=plistlib.FMT_BINARY))
+        if plistlib.loads(path.read_bytes()) != archive:
+            raise ValueError(f"{path}: the archive on disk is not the one written")
 
 
 def write_toolbar(alternative: Path, ids: list[int]) -> None:

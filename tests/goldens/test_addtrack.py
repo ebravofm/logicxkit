@@ -4,6 +4,9 @@ real-file golden now holds the output to the invariants every Logic file obeys.
 The real-file part of tests/logic/test_addtrack.py; skips without the owner's files."""
 
 import unittest
+import _goldens
+from logicxkit.logic.services.stacks import read_tracks
+from logicxkit.logicx import project_data
 import _paths
 from _data import needs
 
@@ -60,6 +63,36 @@ class MixTemplateAddTest(unittest.TestCase):
         for owner, chan in before.items():
             if owner >= report["owner"] and not chan.label.startswith("Inst "):
                 self.assertEqual(after[owner + 1].label, chan.label)
+
+
+@_goldens.needs("tracks-three-audio-logic", "tracks-stereo-pair-logic")
+class StereoPairInputTest(unittest.TestCase):
+    """Logic's own New Tracks with Audio Input "Input 1-2" (an interface attached, 2026-09-17): the
+    new track is stereo and its input is the pair channel; ours binds the same way."""
+
+    @staticmethod
+    def _audio4(data):
+        from logicxkit.logic.services.binding import channels, input_routing
+        from logicxkit.logic.services.insert import channel_formats
+        ch = channels(data)
+        owner = next(o for o, c in ch.items() if c.label == "Audio 4")
+        source = input_routing(data).get(owner)
+        return channel_formats(data).get(owner), ch[source].label if source in ch else None
+
+    def test_logics_save_binds_the_pair_channel(self):
+        logic = project_data(_goldens.path("tracks-stereo-pair-logic"))
+        self.assertEqual(self._audio4(logic), (_goldens.fact("tracks-stereo-pair-logic", "format"),
+                                               _goldens.fact("tracks-stereo-pair-logic", "input")))
+        self.assertEqual([r["name"] for r in read_tracks(logic)][:4], ["Audio 1", "Audio 2", "Audio 3", "Audio 4"])
+
+    def test_ours_binds_the_pair_channel_like_logic(self):
+        from logicxkit.logic.services.addtrack import add_track
+        base = project_data(_goldens.path("tracks-three-audio-logic"))
+        after = next(r["object_id"] for r in read_tracks(base) if r["name"] == "Audio 3")
+        out, _report = add_track(base, name="Audio 4", after=after, stereo=True)
+        self.assertEqual(self._audio4(out), (2, "Input 1-2"))
+        with self.assertRaises(ValueError):
+            add_track(base, name="Audio 4", after=after, stereo=True, input_number=2)
 
 
 if __name__ == "__main__":

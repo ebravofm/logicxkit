@@ -9,7 +9,7 @@ things: a payload-header constant, the plugin-variant id, and four trailing byte
 import struct
 import unittest
 
-from logicxkit.utils.data import data_dir
+from logicxkit.utils.data import data_dirs
 
 from logicxkit.logic._binary import find_blocks
 from logicxkit.logic.services.donors import (
@@ -20,18 +20,17 @@ from logicxkit.logic.services.donors import (
     retarget_version,
 )
 
-HDR = 36
+from _data import needs
 
-LIBRARY = data_dir("donors")
+HDR = 36
 
 
 def _lib():
-    if not LIBRARY.exists():
-        raise unittest.SkipTest("donor library not present")
     return {k: (v[0] if isinstance(v, tuple) else v) for k, v in
-            load_donor_library(LIBRARY).items()}
+            load_donor_library(data_dirs("donors")).items()}
 
 
+@needs("donors", *(f"{tid}-v{v}.slot" for tid in (236, 154, 147) for v in (3, 5)))
 class RetargetVersionTest(unittest.TestCase):
     PAIRS = (236, 154, 147)   # pairs whose float count is unchanged across versions
 

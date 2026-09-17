@@ -1,7 +1,8 @@
-"""The goldens by key. `tests/goldens/manifest.json` names the public corpus and the untracked
-`resources/experiments/manifest.json` the owner's sessions, so their titles stay out of the
-tracked tree. Each key asked for is tallied for the end-of-run line; `LOGICXKIT_REQUIRE_GOLDENS=1`
-fails on any missing key, `=public` only on one the public manifest names."""
+"""The goldens by key. `tests/goldens/manifest.json` names the public corpus, tracked under
+`tests/corpus/`, and the untracked `resources/experiments/manifest.json` the owner's sessions, so
+their titles stay out of the tracked tree. Each key asked for is tallied for the end-of-run line;
+`LOGICXKIT_REQUIRE_GOLDENS=1` fails on any missing key, `=public` only on one the public manifest
+names."""
 
 from __future__ import annotations
 
@@ -12,14 +13,19 @@ from pathlib import Path
 
 from _paths import RESOURCES
 
-MANIFEST = RESOURCES / "experiments" / "manifest.json"                 # the owner's
-PUBLIC = Path(__file__).resolve().parent / "goldens" / "manifest.json"  # the public corpus
+TESTS = Path(__file__).resolve().parent
+CORPUS = TESTS / "corpus"                                   # the public corpus, tracked
+PUBLIC = TESTS / "goldens" / "manifest.json"                # its manifest, paths under CORPUS
+MANIFEST = RESOURCES / "experiments" / "manifest.json"      # the owner's, paths under RESOURCES
+LEGACY_KEYS = ("legacy-song", "legacy-02", "legacy-03")      # the owner's older-template projects
+MIX_KEYS = ("mix-01", "mix-02", "mix-03", "mix-04")          # the owner's finished mixes
+SESSION_KEYS = LEGACY_KEYS + MIX_KEYS
 REQUIRE = "LOGICXKIT_REQUIRE_GOLDENS"
 MISSING_SHOWN = 8
 
 asked: dict[str, bool] = {}          # key -> found, for the end-of-run line
 _loaded: dict[str, dict] = {}        # manifest file -> its entries
-_resolved: dict[str, dict | None] = {}
+_resolved: dict[str, tuple[dict | None, Path | None]] = {}   # key -> (entry, its corpus root)
 
 
 def reset() -> None:
@@ -41,35 +47,46 @@ def manifest() -> dict:
     return {**_read(MANIFEST), **_read(PUBLIC)}
 
 
-def entry(key: str) -> dict | None:
-    """The entry whose file is present, public first (owner first with ``LOGICXKIT_GOLDENS=owner``);
-    else whichever names the key, so a missing file reports as missing, not unknown."""
+def _lookup(key: str) -> tuple[dict | None, Path | None]:
+    """The entry whose file is present, public first (owner first with ``LOGICXKIT_GOLDENS=owner``),
+    with the root its path is relative to; else whichever names the key, so a missing file
+    reports as missing, not unknown."""
     if key not in _resolved:
-        order = (MANIFEST, PUBLIC) if os.environ.get("LOGICXKIT_GOLDENS") == "owner" else (PUBLIC, MANIFEST)
-        candidates = [_read(m).get(key) for m in order]
-        present = [e for e in candidates if e and "path" in e
-                   and (RESOURCES / _under_resources(key, e["path"])).exists()]
-        _resolved[key] = present[0] if present else next((e for e in candidates if e), None)
+        public, owner = (PUBLIC, CORPUS), (MANIFEST, RESOURCES)
+        order = (owner, public) if os.environ.get("LOGICXKIT_GOLDENS") == "owner" else (public, owner)
+        candidates = [(e, root) for m, root in order if (e := _read(m).get(key))]
+        present = [(e, root) for e, root in candidates
+                   if "path" in e and (root / _relative(key, e["path"])).exists()]
+        _resolved[key] = present[0] if present else (candidates[0] if candidates else (None, None))
     return _resolved[key]
+
+
+def entry(key: str) -> dict | None:
+    return _lookup(key)[0]
 
 
 def path(key: str) -> Path | None:
     """The golden's path, or None (recorded) when no manifest names it or the file is missing."""
-    e = entry(key)
-    p = RESOURCES / _under_resources(key, e["path"]) if e and "path" in e else None
+    e, root = _lookup(key)
+    p = root / _relative(key, e["path"]) if e and "path" in e else None
     found = p is not None and p.exists()
     asked[key] = found
     return p if found else None
 
 
-def _under_resources(key: str, raw: str) -> str:
-    """A manifest path has to stay inside `resources/`; `Path("resources") / "/abs"` is
-    silently the absolute path, so an entry could point a golden anywhere."""
+def _relative(key: str, raw: str) -> str:
+    """A manifest path has to stay inside its corpus root; `Path(root) / "/abs"` is silently the
+    absolute path, so an entry could point a golden anywhere."""
     p = Path(raw)
     if p.is_absolute() or ".." in p.parts:
         raise ValueError(f"golden {key!r} names {raw!r} — a manifest path must be relative to "
-                         f"{RESOURCES} with no '..'")
+                         "its corpus root with no '..'")
     return raw
+
+
+def sessions(*keys: str) -> list[Path]:
+    """The owner's sessions on this machine (every key asked, so the run's line counts it)."""
+    return [p for k in (keys or SESSION_KEYS) if (p := path(k)) is not None]
 
 
 def fact(key: str, name: str, default=None):
@@ -103,7 +120,7 @@ def report() -> str | None:
         raise AssertionError(full + f" ({REQUIRE} is set)")
     if public_missing and mode == "public":
         raise AssertionError(f"{line}; public corpus keys missing: " + ", ".join(public_missing)
-                             + f" ({REQUIRE}=public — run bin/run fetch-corpus)")
+                             + f" ({REQUIRE}=public — the checkout lacks part of {CORPUS})")
     if not missing:
         return line
     # A checkout without the corpus misses every key; naming all of them buries the count.

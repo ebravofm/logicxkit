@@ -22,10 +22,6 @@ class GoldenMoveTest(unittest.TestCase):
         self.assertEqual([(s.name, len(s.members)) for s in read_stacks(out, count)], before)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 @_goldens.needs("stack-folder-of-one-logic", "stack-header-reordered-logic")
 class StackHeaderMoveTest(unittest.TestCase):
     """Logic's own drag of a stack header two rows down: header and member move as a block."""
@@ -69,3 +65,7 @@ class LogicResavedPlainMoveTest(unittest.TestCase):
         order = lambda data: [r["name"] for r in read_tracks(data, 3)]  # noqa: E731
         self.assertEqual(order(ours), _goldens.fact("reorder-ours", "order"))
         self.assertEqual(order(ours), order(logic))
+
+
+if __name__ == "__main__":
+    unittest.main()

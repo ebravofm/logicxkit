@@ -63,10 +63,6 @@ class MixTemplateSendTest(unittest.TestCase):
         self.assertEqual(report(out, self.count)["bad_send_flags"], [])
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 @_goldens.needs("send-packaged-ours", "send-packaged-resave-logic")
 class LogicResavedPackagedSendTest(unittest.TestCase):
     """A send added to a project that had none to clone: the packaged template, re-saved."""
@@ -83,3 +79,7 @@ class LogicResavedPackagedSendTest(unittest.TestCase):
         self.assertEqual(mine.raw, theirs.raw)
         strip = lambda data: next(r.raw for r in project_records(data) if is_mixer_record(r) and r.owner == owner)  # noqa: E731
         self.assertEqual(strip(ours), strip(logic))
+
+
+if __name__ == "__main__":
+    unittest.main()

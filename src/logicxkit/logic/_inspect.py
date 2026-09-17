@@ -150,14 +150,15 @@ def cmd_stacks(args) -> int:
     """Track stacks and the arrange track list; --move puts a track into one."""
     from .services.stacks import read_stacks, read_tracks
 
-    logicx = Path(args.logicx)
-    project = logicx if logicx.suffix == ".logicx" else next(logicx.glob("*.logicx"))
+    from .services.retrack import find_project
+
+    project = find_project(Path(args.logicx))
+    if args.move:
+        return _move_into_stack(args, project)
     data = sorted(project.glob("Alternatives/*/ProjectData"))[0].read_bytes()
     count = project_metadata(project).get("tracks")
     stacks = read_stacks(data, count)
 
-    if args.move:
-        return _move_into_stack(args, project, count)
 
     if args.tracks:
         for row in read_tracks(data, count):
@@ -168,6 +169,7 @@ def cmd_stacks(args) -> int:
     if args.json:
         print(json.dumps([{"name": s.name, "kind": s.kind, "track_key": s.track_key,
                            "object_id": s.object_id, "index": s.index, "owner": s.owner,
+                           "depth": s.depth, "parent": s.parent,
                            "members": [n for _k, n in s.members]} for s in stacks], indent=2))
         return 0
     from .services.levels import read_levels
@@ -178,17 +180,20 @@ def cmd_stacks(args) -> int:
     print(f"# {project.stem} — {len(stacks)} stack(s)\n")
     for stack in stacks:
         fader = levels.get(stack.owner, {}).get("fader")
-        print(f"  {stack.name}  [{stack.kind}]  Sub {stack.index} · fader {fader} · "
-              f"track {stack.track_key}")
+        pad = "    " * stack.depth
+        print(f"  {pad}{stack.name}  [{stack.kind}]  Sub {stack.index} · fader {fader} · "
+              f"track {stack.track_key}{'  (in ' + next(s.name for s in stacks if s.object_id == stack.parent) + ')' if stack.parent else ''}")
         for key, name in stack.members:
             oid = next((r["object_id"] for r in rows if r["key"] == key), None)
             moved = "  (dragged in)" if parents.get(oid) == stack.object_id else ""
-            print(f"      {name}{moved}")
+            nested = "  [stack]" if any(s.object_id == oid for s in stacks) else ""
+            print(f"      {pad}{name}{moved}{nested}")
     return 0
 
 
-def _move_into_stack(args, project: Path, count: int | None) -> int:
-    """`--move "Track:Stack"` — writes a copy, never the input."""
+def _move_into_stack(args, project: Path) -> int:
+    """`--move "Track:Stack"` — writes a copy, never the input; each alternative read with its
+    own track count."""
     from ._edit import CommandError, edit_copy, object_by_name
     from .services.stacks import move_to_stack, read_stacks
 
@@ -196,7 +201,7 @@ def _move_into_stack(args, project: Path, count: int | None) -> int:
         print("logic stacks: --move needs --out")
         return 2
 
-    def step(data, _count, _file):
+    def step(data, count, data_file):
         stacks = {s.name: s.object_id for s in read_stacks(data, count)}
         for pair in args.move:
             track, _, stack = pair.partition(":")
@@ -204,7 +209,7 @@ def _move_into_stack(args, project: Path, count: int | None) -> int:
             if stack not in stacks:
                 raise CommandError(f"no stack named {stack!r} (have: {', '.join(sorted(stacks))})")
             data = move_to_stack(data, track_object, stacks[stack], track_count=count)
-            print(f"  {track} -> {stack}")
+            print(f"  {data_file.parent.name}: {track} -> {stack}")
         return data
 
     print(f"in  : {project}")
@@ -214,6 +219,6 @@ def _move_into_stack(args, project: Path, count: int | None) -> int:
         print(f"  {e}")
         return 1
     for stack in read_stacks(sorted(dest.glob("Alternatives/*/ProjectData"))[0].read_bytes(),
-                             count):
+                             project_metadata(dest).get("tracks")):
         print(f"\n  {stack.name}: {', '.join(n for _k, n in stack.members) or '(empty)'}")
     return 0

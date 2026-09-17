@@ -249,10 +249,6 @@ class ScopeTest(unittest.TestCase):
         self.assertIn("note(s) selected; random-velocity 3", text)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 @_goldens.needs("midi-transform-ours", "midi-transform-resave-logic")
 class LogicResavedTransformsTest(unittest.TestCase):
     """One of every operation and preset on separate regions of one copy, re-saved by Logic: back as written."""
@@ -266,3 +262,7 @@ class LogicResavedTransformsTest(unittest.TestCase):
         self.assertEqual(validate_project(project_data(_goldens.path("midi-transform-resave-logic"))), [])
         swung = next(r for r in ours if r.name == "T swing")
         self.assertEqual([e.tick - swung.start for e in swung.events], [0, 288, 960, 1920])
+
+
+if __name__ == "__main__":
+    unittest.main()

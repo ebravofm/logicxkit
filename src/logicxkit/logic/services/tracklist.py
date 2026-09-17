@@ -116,12 +116,12 @@ def new_row(template: bytes, *, object_id: int, member: int, row_type: int | Non
     return bytes(row)
 
 
-def with_member(raw: bytes, member: int) -> bytes:
-    """The +14 byte; a row moved inside a stack also loses the expanded bit, which no
-    member row carries."""
+def with_member(raw: bytes, member: int, *, header: bool = False) -> bytes:
+    """The +14 byte (the nesting depth). A plain row moved inside a stack loses the expanded bit;
+    a header keeps its own."""
     row = bytearray(raw)
     row[HEADER + MEMBER_AT] = member
-    if member:
+    if member and not header:
         row[HEADER + EXPANDED_AT] &= ~EXPANDED_BIT & 0xFF
     return bytes(row)
 

@@ -62,10 +62,11 @@ def cmd_patch(args) -> int:
             continue
         print(f"{patch.name}: {len(patch.nodes)} node(s) {patch.nodes}, {len(patch.channels)} channel(s)")
         for c in patch.channels:
-            vol = f"{c.volume:.3f}" if c.volume is not None else "-"
+            vol = f"{c.volume:.3f}" if c.volume is not None else (f"{c.fader}" if c.fader is not None else "-")
+            pan = c.pan if c.pan is not None else (c.pan_byte if c.pan_byte is not None else "-")
             width = {1: "mono", 2: "stereo"}.get(c.width, str(c.width))
             flags = "".join(f for f, on in (("M", c.muted), ("S", c.solo)) if on) or "-"
-            print(f"  {c.name:20s} {c.strip or '-':28s} vol {vol:6s} pan {c.pan if c.pan is not None else '-'!s:6s} {width:6s} -> {c.output or '-':10s} {flags:2s} {' → '.join(c.plugins) or '(no plug-ins)'}")
+            print(f"  {c.name:20s} {c.strip or '-':28s} vol {vol:6s} pan {pan!s:6s} {width:6s} -> {c.output or '-':10s} {flags:2s} {' → '.join(c.plugins) or '(no plug-ins)'}")
     if args.json:
         print(json.dumps(report, indent=1))
     return 0 if report else 1

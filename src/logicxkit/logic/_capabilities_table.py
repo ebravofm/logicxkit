@@ -21,7 +21,10 @@ CAPABILITIES = (
     Capability(("plugins",), "—", "yes, read-only",
                "Names every slot's plug-in — Apple's by type id, a third-party one by the AU component "
                "identity in its embedded preset — and checks the third-party ones against `auval -a`. "
-               "A missing verdict has not yet been compared with Logic's own missing-plug-in dialog"),
+               "A missing verdict has not yet been compared with Logic's own missing-plug-in dialog. A component whose bundle has gone bad stays in the "
+               "registry, and Logic itself opened such a project without an alert (FabFilter Pro-C 2 "
+               "disabled by hand, 2026-09-16); `--validate` opens each listed component with auval -v "
+               "and reports it broken"),
     Capability(("regions",), "CONFIRMED", "read yes; `--audio` and the edits on a copy",
                "Every MIDI and audio region, numbered, with its track, start, mute, loop and fades; an "
                "audio region's file record (name, format, frames, rate, channels, bits), its first frame "
@@ -106,6 +109,21 @@ CAPABILITIES = (
                "(`rComp`), Fill Amount (`fillsAmount`) and Swing pinned by one editor move per save "
                "(2026-09-13) — with the drummer, preset and the generated notes' count. One region "
                "measured; records pair with drummer sequences in file order"),
+    Capability(("automation",), "CONFIRMED", "read-only until `--set`, `--copy` or `--clear`, which need `--out`",
+               "Reads track automation: the per-channel `*Automation` folders under the Track Automation "
+               "Root Folder, their fader points (0x50: value byte, fader id) and plug-in parameter points "
+               "(0x51: 0..1 float, parameter index; bit 14 of the type word, on two points of a real song, "
+               "reads as flagged), and a region's own automation as the unreferenced "
+               "sequence that names the track (2026-09-16, the `automation-*` goldens). Points were made "
+               "with Create 1/2 Automation Point(s) for Visible Parameter (at the selected regions' "
+               "borders) and in the Automation Event List, where Pan and the relative Volume lane were "
+               "measured (the relative lane sets bit 7 of the type word's high byte). `--set`, `--copy` and "
+               "`--clear` write a lane's points as the Event List does, in Logic's own order, into the track's "
+               "existing folder; Logic listed three lanes written onto the blank as written and re-saved the "
+               "folder byte for byte but for head +15, its selection state (`automation-ours-resave-logic`). "
+               "A point's sub-tick fraction (head +2) is read and kept on a copy; Logic's own Automation Event "
+               "List, read off the screen for every automation golden (2026-09-17), shows the same ticks "
+               "and values as the reader, the half-tick point as the display tick before it"),
     Capability(("patch",), "CONFIRMED", "read yes; `--build` writes outside Logic's library unless `--install`",
                "Reads a Library patch bundle in both shapes Logic writes: its nodes, each channel's "
                "settings and the plug-ins on its strip; one Logic saved from the Library reads back "
@@ -153,9 +171,11 @@ CAPABILITIES = (
                "a software instrument track only, never lengthened for a note; the loop flag is never "
                "written and no output has been opened in Logic or listened to. Logic re-saved a copy holding a placed pattern and a generated phrase, and one holding two composed sections with their fills, with every region and note as written (2026-09-15, `beats-place-generate-*`, `beats-compose-*`)"),
     Capability(("stacks",), "CONFIRMED", "read-only until `--move`, which needs `--out`",
-               "Reads folder stacks and the arrange list. `--move TRACK:STACK --out DIR` writes "
-               "a copy whose rows match Logic's own drag saves (2026-09-04), through the "
-               "same integrity gate as every other writer"),
+               "Reads folder stacks and the arrange list, nested stacks included (the member byte is "
+               "the depth). `--move TRACK:STACK --out DIR` writes a copy whose rows match Logic's own drag "
+               "saves (2026-09-04; into and out of a nested stack 2026-09-16, the `nest-*` goldens, and "
+               "Logic re-saved a nested move as written, `nest-ours-resave-logic`), through the same "
+               "integrity gate as every other writer"),
     Capability(("levels",), "CONFIRMED", "read-only until `--to`, which needs `--out`",
                "Reads fader and pan. `--to OTHER --out DIR` copies them onto another project "
                "through the integrity gate; a copy written onto a blank project came back from "
@@ -172,7 +192,10 @@ CAPABILITIES = (
                "Replaces a channel's whole chain. `--plan` names every chain it would "
                "take off; `--strict` refuses on shape drift. The real tracking chains written "
                "onto the tracking template came back from Logic's re-save with all 46 "
-               "channels' chains identical (2026-09-12)"),
+               "channels' chains identical (2026-09-12). A chain keyed by a channel name puts declared "
+               "donors on the Stereo Out with parameters named as measured; the example mastering chain "
+               "opened in Logic with every value shown as written and re-saved intact "
+               "(2026-09-16, `master-ours-resave-logic`)"),
     Capability(("retrack",), "CONFIRMED", "yes",
                "Changes a label, never a chain; basename-only library match. `--channel` repoints one "
                "channel at a time, so channels sharing a name can part ways: seven repointed on a "
@@ -192,7 +215,9 @@ CAPABILITIES = (
                "row for row (2026-09-04). With no audio stub free a fresh channel is made where "
                "Logic makes one, and Logic's re-save kept three such byte for byte (2026-09-06). "
                "Keeps the song container's row count, the region placements and the registry's "
-               "slot entries in step"),
+               "slot entries in step. `--stereo` binds the pair channel `Input N-(N+1)`, as Logic's own "
+               "New Tracks did with an interface attached (2026-09-17); inside a nested stack the row "
+               "takes the depth of its place"),
     Capability(("reorder",), "CONFIRMED", "yes",
                "Moves a row among its siblings; a stack header moves with its members, and that "
                "move reproduces Logic's own drag of a header byte for byte (2026-09-12). A plain-row "
@@ -285,7 +310,9 @@ CAPABILITIES = (
                "whose slots start at key 2 beside three sends is moved to base 4 in the same pass, as Logic's own re-save does; a project born at base 2 without that collision is left there "
                "(`logic/README.md`: slot keys). Also carries the track power state, icons, "
                "header components and the control bar; not the project's own tempo, meter or key, "
-               "which stay the song's"),
+               "which stay the song's. The current tracking template applied onto a tracked song "
+               "(2026-09-16) re-saved in Logic with the identical row list and strip references, "
+               "two of them repointed per channel"),
     Capability(("migrate",), "CONFIRMED", "yes, on a renamed copy; across lineages only with `--map` or `--force`",
                "Composes `propose-map` (or `--map FILE`) with `apply-template`'s step into "
                "`CLAUDE migrated - <song>.logicx`: the ops are apply-template's CONFIRMED writers, "

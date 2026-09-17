@@ -152,11 +152,11 @@ class FloatOverrideTest(unittest.TestCase):
         donor = self._donor([0.0] * 20)
         self.assertEqual(len(apply_float_overrides(donor, {3: 2.0})), len(donor))
 
-    def test_index_past_the_array_is_ignored(self):
+    def test_index_past_the_array_is_refused(self):
         from logicxkit.logic import apply_float_overrides
-        donor = self._donor([0.0] * 5)
-        out = apply_float_overrides(donor, {99: 1.0})
-        self.assertEqual(out, donor)
+        with self.assertRaises(ValueError) as e:
+            apply_float_overrides(self._donor([0.5] * 5), {99: 1.0})
+        self.assertIn("outside the plug-in's block of 5", str(e.exception))
 
     def test_no_overrides_is_a_no_op(self):
         from logicxkit.logic import apply_float_overrides

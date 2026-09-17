@@ -29,7 +29,7 @@ class FakeRunner:
 class TestAuHost(unittest.TestCase):
     def test_dump_preset_parses_params(self):
         host = AuHost(runner=FakeRunner())
-        dump = host.dump_preset("/tmp/x.aupreset")
+        dump = host.dump_preset("/nowhere/x.aupreset")
         self.assertEqual(dump.component, "FabFilter: Pro-C 2")
         self.assertEqual(dump.subtype, "FC2p")
         self.assertEqual(len(dump.params), 2)
@@ -38,20 +38,20 @@ class TestAuHost(unittest.TestCase):
 
     def test_changed_params_filters_defaults(self):
         host = AuHost(runner=FakeRunner())
-        dump = host.dump_preset("/tmp/x.aupreset")
+        dump = host.dump_preset("/nowhere/x.aupreset")
         changed = dump.changed_params()
         self.assertEqual([p.name for p in changed], ["Threshold"])
 
     def test_error_raises_with_stderr_tail(self):
         host = AuHost(runner=FakeRunner(rc=1, out="", err="ERROR: component not found"))
         with self.assertRaises(AuHostError) as ctx:
-            host.dump_preset("/tmp/x.aupreset")
+            host.dump_preset("/nowhere/x.aupreset")
         self.assertIn("component not found", str(ctx.exception))
 
     def test_non_json_output_raises(self):
         host = AuHost(runner=FakeRunner(out="objc[123]: mayhem"))
         with self.assertRaises(AuHostError):
-            host.dump_preset("/tmp/x.aupreset")
+            host.dump_preset("/nowhere/x.aupreset")
 
 
 class TestHeadlessDenylist(unittest.TestCase):

@@ -18,25 +18,31 @@ from .services.chains import (
     duplicate_chain_slots,
     load_chain_config,
     load_extra_donors,
+    verify_channel_values,
     verify_strip_values,
     width_plan,
 )
 from ._edit import _discard
 from .services.chain_report import chain_changes
 from .services.donors import load_donor_library
-from .services.insert import insert_slots, project_records, widen_channels
+from .services.insert import MONO, STEREO, insert_slots, project_records, widen_channels
 from .services.integrity import regressions
 from .services.retrack import copy_project, find_project
 
 _REPORT_LABELS = (("unmatched", "no chain configured"),
                   ("missing_from_project", "configured but absent here"),
                   ("degraded", "wanted a plugin with no donor"),
+                  ("older_layout", "older plug-in layout, trailing floats from the donor"),
                   ("shape_mismatch", "CHAIN DIFFERS FROM ITS SOURCE STRIP"))
 
 
 def _prepare(data: bytes, cfg: dict, library: Path) -> dict:
     """Everything up to the write: widen, pick donors, plan, patch, read back."""
-    data, widened = widen_channels(data, width_plan(data, cfg))
+    original = data
+    want = width_plan(data, cfg)
+    data, changed = widen_channels(data, want)
+    widened = [o for o in changed if want.get(o) == STEREO]
+    narrowed = [o for o in changed if want.get(o) == MONO]
     version = next((r.ver for r in project_records(data) if r.tag == b"UCuA"), None)
     eq_donor, comp_donor, from_library = base_donors(data, version, library)
     extra, derived = load_extra_donors(cfg, version, library)
@@ -51,19 +57,21 @@ def _prepare(data: bytes, cfg: dict, library: Path) -> dict:
             drop.setdefault(owner, set()).add(key)
         patched = insert_slots(data, plan, drop=drop)
     return {
-        "data": data, "patched": patched, "plan": plan, "report": report,
-        "changes": chain_changes(data, plan), "widened": widened, "version": version,
+        "original": original, "data": data, "patched": patched, "plan": plan, "report": report,
+        "changes": chain_changes(data, plan), "widened": widened, "narrowed": narrowed, "version": version,
         "eq": eq_donor, "comp": comp_donor, "from_library": from_library,
         "derived": derived, "missing": [n for n in (cfg.get("donors") or {}) if n not in extra],
         "dupes": describe_duplicates(patched, dupes),
-        "drift": verify_strip_values(patched, cfg) + describe_duplicates(
-            patched, duplicate_chain_slots(patched, plan)),
+        "drift": verify_strip_values(patched, cfg) + verify_channel_values(patched, cfg, extra)
+        + describe_duplicates(patched, duplicate_chain_slots(patched, plan)),
     }
 
 
 def _print_context(p: dict, library: Path) -> None:
     if p["widened"]:
         print(f"  widened to stereo: {len(p['widened'])} channel(s)")
+    if p["narrowed"]:
+        print(f"  narrowed to mono: {len(p['narrowed'])} channel(s)")
     print(f"  class v{p['version']} · library {len(load_donor_library(library))} donor(s) · "
           f"EQ {'ok' if p['eq'] else 'MISSING'} · Comp {'ok' if p['comp'] else 'MISSING'}")
     if p["from_library"]:
@@ -94,8 +102,9 @@ def _print_changes(changes: list) -> int:
 
 
 def _apply_chains(dest: Path, cfg, library: Path, *, strict: bool) -> int:
-    """Patch every alternative in the copy. Raises before or after any write; the caller
-    discards the whole copy, so a refusal never leaves a half-patched bundle."""
+    """Patch every alternative in the copy. Raises before or after any write — a refusal or any
+    ValueError from planning — and the caller discards the whole copy, so no half-patched bundle
+    is left."""
     total = 0
     for data_file in sorted(dest.glob("Alternatives/*/ProjectData")):
         p = _prepare(data_file.read_bytes(), cfg, library)
@@ -108,7 +117,7 @@ def _apply_chains(dest: Path, cfg, library: Path, *, strict: bool) -> int:
             raise PreconditionError(
                 "refusing to write (--strict): a chain differs from its source strip:\n  "
                 + "\n  ".join(p["report"]["shape_mismatch"]))
-        broke = regressions(p["data"], p["patched"])
+        broke = regressions(p["original"], p["patched"])
         if broke:
             raise PreconditionError(
                 "refusing to write: the chain edit broke structure the input had right:\n  "
@@ -153,7 +162,7 @@ def cmd_chains(args) -> int:
 
     try:
         total = _apply_chains(dest, cfg, library, strict=args.strict)
-    except PreconditionError:
+    except (PreconditionError, ValueError):
         # An earlier alternative may already be patched; a half-written bundle is worse than none.
         _discard(copied["dest_root"])
         raise

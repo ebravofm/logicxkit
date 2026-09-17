@@ -38,8 +38,14 @@ class TestViews(unittest.TestCase):
 
 
 class TestCliRouting(unittest.TestCase):
-    def test_au_tables_lists_checked_in_tables(self):
-        self.assertEqual(logicxkit_main(["au", "tables"]), 0)
+    def test_au_tables_lists_every_table_the_data_root_holds(self):
+        import contextlib
+        import io
+        from logicxkit.au.services.tables import available_tables
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(logicxkit_main(["au", "tables"]), 0)
+        self.assertEqual(out.getvalue().splitlines(), available_tables() or ["no tables checked in"])
 
 
 if __name__ == "__main__":

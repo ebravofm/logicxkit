@@ -107,10 +107,6 @@ class TailTest(unittest.TestCase):
         self.assertEqual(TAIL, len(TAIL_BYTES))
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class FlexEntryTest(unittest.TestCase):
     def test_flex_marker_blocks_after_an_entry_are_not_entries(self):
         from logicxkit.logic.services.regions import entry_offsets
@@ -142,3 +138,7 @@ class RegionPairTest(unittest.TestCase):
         data = proj(env_obj(10, "a"), env_obj(20, "b"), env_obj(30, "c"),
                     *song(rows, [audio_entry(47), audio_entry(63, 1)]), take_folder, *flat(10, 20, 30))
         self.assertEqual(sorted(audio_entry_pairs(project_records(data))), [(172, 0), (176, 2), (188, 0), (252, 1)])
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -34,6 +34,7 @@ from ._plugins_cmd import register as register_plugins
 from ._patch_cmd import register as register_patch
 from ._regions_cmd import register as register_regions
 from ._markers_cmd import register as register_markers
+from ._automation_cmd import register as register_automation
 from ._sessionplayer_cmd import register as register_sessionplayer
 from ._quantize_cmd import register as register_quantize
 from ._diagnose import register as register_diagnose
@@ -417,6 +418,7 @@ def main(argv: list[str] | None = None) -> int:
     register_regions(sub)
     register_markers(sub)
     register_sessionplayer(sub)
+    register_automation(sub)
     register_quantize(sub)
     register_drums_to_midi(sub)
     register_capabilities(sub)

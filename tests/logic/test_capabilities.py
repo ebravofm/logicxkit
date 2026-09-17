@@ -61,12 +61,13 @@ class DocMatchesCodeTest(unittest.TestCase):
         self.assertIn(table(), DOC.read_text(),
                       "docs/CAPABILITIES.md is stale — regenerate it from _capabilities.py")
 
+    def test_the_doc_carries_the_generated_catches(self):
+        from logicxkit.logic._capabilities import catches
+        self.assertIn(catches(), DOC.read_text(),
+                      "docs/CAPABILITIES.md is stale — regenerate its catches from _capabilities.py")
+
     def test_the_doc_points_at_the_source_of_truth(self):
         self.assertIn("generated from src/logicxkit/logic/_capabilities.py", DOC.read_text())
-
-
-if __name__ == "__main__":
-    unittest.main()
 
 
 def test_notice_only_for_unconfirmed_levels():

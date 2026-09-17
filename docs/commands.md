@@ -188,6 +188,21 @@ and start) in every alternative, and is refused where an alternative lacks it �
 number (name and bar) for `logic markers`. `logic markers` lists the marker track and edits it on a copy: `--add
 BAR[:BARS]:NAME`, `--rename N=NAME`, `--move N=BAR`, `--delete N`, ASCII names only. Logic's
 re-save of copies carrying every region edit and every marker edit kept all of them.
+`logic chains` also takes a chain keyed by a channel name instead of a strip reference — `Stereo Out`
+for the main output — listing its plug-ins in slot order as declared donors with parameters named as
+`services/output_params.py` names them, or by an index inside the donor's block; `config/example-mastering.json`
+is the shape. A label two channels carry, a channel keyed both by strip and by name, or an index past the
+block is refused before anything is written, and every configured value is read back afterwards.
+`logic plugins --validate` opens each listed third-party component with `auval -v`, since the
+registry keeps a component whose bundle has gone bad and Logic's own launch trusts that registry.
+
+`logic automation` lists each track's automation lanes and points (`--json` for the raw ticks and
+values; `--all` includes tracks with an empty folder). `--set "TRACK:LANE=V@BAR,..."` replaces a
+lane's points on a copy (`--out`), `--copy "TRACK:LANE->TRACK"` copies a lane onto another track and
+`--clear "TRACK:LANE"` empties one, the three applied in command-line order; lanes are Volume, Pan,
+Mute, Solo and ±Volume (the relative lane), values 0-127 with Volume 90 and Pan 64 at unity. A parameter point whose type word carries
+bit 14 is listed with a `?`: read, not decoded.
+
 `logic sessionplayer` reads a Session Player region's settings and generated notes. `logic
 patch` reads a Library patch bundle; `--build` writes one from a `.cst`, refuses a file that does
 not read as a channel strip before writing anything, replaces an existing bundle with

@@ -67,8 +67,9 @@ def transformed(lines: EventLines, transform: Transform, m: Meter, region: MidiR
     def change(part):
         # One selection for every pass, carried by each note's tag: a pass can move and reorder the
         # notes, so neither re-picking nor an index mask would name the same notes. None is every note.
-        chosen = None if not where else {part.notes[i].tag for i in select(part, **where)}
-        picked.append(len(part.notes) if chosen is None else len(chosen))
+        selected = None if not where else select(part, **where)
+        chosen = None if selected is None else {part.notes[i].tag for i in selected}
+        picked.append(len(part.notes) if selected is None else len(selected))
         for kind, payload in transform.steps:
             mask = None if chosen is None else frozenset(k for k, n in enumerate(part.notes) if n.tag in chosen)
             part = apply_all(part, mask, payload, seed=rng, meters=meters, start=start) if kind == "ops" else \

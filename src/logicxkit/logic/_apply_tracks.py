@@ -14,7 +14,7 @@ def cmd_reorder(args) -> int:
     """Move a track before or after another one under the same parent."""
     from .services.reorder import move_track
 
-    def step(data, count, _file):
+    def step(data, count, data_file):
         for spec in args.move:
             track, _, rest = spec.partition(":")
             where, _, target = rest.partition(":")
@@ -22,7 +22,7 @@ def cmd_reorder(args) -> int:
                 raise CommandError(f"bad --move {spec!r}: use TRACK:before:OTHER or TRACK:after:OTHER")
             kw = {where: object_by_name(data, target, count)}
             data = move_track(data, object_by_name(data, track, count), track_count=count, **kw)
-            print(f"  {track} -> {where} {target}")
+            print(f"  {data_file.parent.name}: {track} -> {where} {target}")
         return data
     return _run(args, step)
 
@@ -32,12 +32,12 @@ def cmd_colour(args) -> int:
     from .services.environment import set_colour
     from .services.validate import require_full_walk, require_valid
 
-    def step(data, count, _file):
+    def step(data, count, data_file):
         require_full_walk(data)
         for spec in args.track:
             name, _, value = spec.rpartition("=")
             data = set_colour(data, object_by_name(data, name, count), int(value))
-            print(f"  {name} -> colour {value}")
+            print(f"  {data_file.parent.name}: {name} -> colour {value}")
         require_valid(data)
         return data
     return _run(args, step)
@@ -48,14 +48,14 @@ def cmd_rename(args) -> int:
     from .services.environment import rename_track
     from .services.validate import require_full_walk, require_valid
 
-    def step(data, count, _file):
+    def step(data, count, data_file):
         require_full_walk(data)
         for spec in args.track:
             old, _, new = spec.partition("=")
             if not new:
                 raise CommandError(f"bad --track {spec!r}: use OLD=NEW")
             data = rename_track(data, object_by_name(data, old.strip(), count), new.strip())
-            print(f"  {old.strip()} -> {new.strip()}")
+            print(f"  {data_file.parent.name}: {old.strip()} -> {new.strip()}")
         require_valid(data)
         return data
     return _run(args, step, note=UNVERIFIED)
@@ -65,10 +65,10 @@ def cmd_hide(args) -> int:
     """Hide (or --show) tracks in the arrange window."""
     from .services.stacks import set_hidden
 
-    def step(data, count, _file):
+    def step(data, count, data_file):
         for name in args.track:
             data = set_hidden(data, object_by_name(data, name, count), not args.show, track_count=count)
-            print(f"  {name} {'shown' if args.show else 'hidden'}")
+            print(f"  {data_file.parent.name}: {name} {'shown' if args.show else 'hidden'}")
         return data
     return _run(args, step, note=UNVERIFIED)
 
@@ -83,7 +83,7 @@ def cmd_add_track(args) -> int:
             kind="instrument" if args.instrument else "audio",
             input_number=args.input, stereo=args.stereo, track_count=count)
         tracks = bump_track_count(data_file)
-        print(f"  {args.name!r} after {args.after!r}: object {report['object_id']}, bound "
+        print(f"  {data_file.parent.name}: {args.name!r} after {args.after!r}: object {report['object_id']}, bound "
               f"{report['label']} (owner {report['owner']}), sequence {report['sequence']}, "
               f"input {report['input']}; NumberOfTracks -> {tracks}")
         return data
@@ -99,7 +99,7 @@ def cmd_stack_create(args) -> int:
         data, report = create_stack(data, name=args.name, members=members, track_count=count,
                                     colour=args.colour)
         tracks = bump_track_count(data_file)
-        print(f"  {args.name!r}: {report['label']} (owner {report['owner']}), object "
+        print(f"  {data_file.parent.name}: {args.name!r}: {report['label']} (owner {report['owner']}), object "
               f"{report['object_id']}, sequence {report['sequence']}, "
               f"{len(report['members'])} member(s); NumberOfTracks -> {tracks}")
         return data

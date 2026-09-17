@@ -7,6 +7,8 @@ before) goes at 0."""
 
 from __future__ import annotations
 
+from collections import Counter
+
 from groovebin.events import Event, Note
 from groovebin.midi import write
 from groovebin.song import Part, Song
@@ -53,6 +55,12 @@ def _conductor(tempos: list[tuple[int, float]], meters: list[tuple[int, int, int
     placed = [m for m in ordered if m[0] <= BAR_ONE][-1:] + [m for m in ordered if m[0] > BAR_ONE]
     events += [_meta(max(t - BAR_ONE, 0), 0x58, bytes([n, d.bit_length() - 1, 24, 8])) for t, n, d in placed]
     return Part(PPQ, (), tuple(events))
+
+
+def unexportable(regions: list[MidiRegion]) -> Counter:
+    """Events the file cannot carry, by kind: polyphonic aftertouch and channel pressure read
+    from a region are not written, since their order against notes is unmeasured."""
+    return Counter(e.kind for r in regions for e in r.played if e.kind != "note" and e.kind not in STATUS)
 
 
 def _track(r: MidiRegion) -> Part:

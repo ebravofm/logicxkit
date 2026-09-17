@@ -1,17 +1,17 @@
 {
- "_about": "Public goldens: Logic's own saves of a blank project, one change per save. Paths are relative to resources/; bin/run fetch-corpus puts the files there. Facts are what tests may assert.",
+ "_about": "Public goldens: Logic's own saves of a blank project, one change per save, tracked under tests/corpus/. Paths are relative to that directory. Facts are what tests may assert.",
  "blank-base": {
-  "path": "public/blank-00-empty-audio.logicx",
+  "path": "blank-00-empty-audio.logicx",
   "note": "an empty project with one audio track, Logic's first save",
   "facts": {}
  },
  "modes-base-logic": {
-  "path": "public/modes-00-base.logicx",
+  "path": "modes-00-base.logicx",
   "note": "every mode off, count-in off",
   "facts": {}
  },
  "modes-cycle-logic": {
-  "path": "public/modes-01-cycle-on.logicx",
+  "path": "modes-01-cycle-on.logicx",
   "note": "Cycle pressed on",
   "facts": {
    "on": [
@@ -20,14 +20,14 @@
   }
  },
  "modes-count-in-logic": {
-  "path": "public/modes-02-count-in-on.logicx",
+  "path": "modes-02-count-in-on.logicx",
   "note": "Count In pressed on (count-in was Off)",
   "facts": {
    "count_in": "1 Bar"
   }
  },
  "modes-replace-logic": {
-  "path": "public/modes-03-replace-on.logicx",
+  "path": "modes-03-replace-on.logicx",
   "note": "Replace pressed on",
   "facts": {
    "on": [
@@ -37,7 +37,7 @@
   }
  },
  "modes-solo-logic": {
-  "path": "public/modes-04-solo-on.logicx",
+  "path": "modes-04-solo-on.logicx",
   "note": "Solo pressed on",
   "facts": {
    "on": [
@@ -49,7 +49,7 @@
   }
  },
  "modes-cycle-off-logic": {
-  "path": "public/modes-05-cycle-off.logicx",
+  "path": "modes-05-cycle-off.logicx",
   "note": "Cycle pressed off",
   "facts": {
    "on": [
@@ -59,7 +59,7 @@
   }
  },
  "modes-replace-off-logic": {
-  "path": "public/modes-06-replace-off.logicx",
+  "path": "modes-06-replace-off.logicx",
   "note": "Replace pressed off",
   "facts": {
    "on": [
@@ -68,7 +68,7 @@
   }
  },
  "modes-solo-off-logic": {
-  "path": "public/modes-07-solo-off.logicx",
+  "path": "modes-07-solo-off.logicx",
   "note": "Solo pressed off",
   "facts": {
    "on": [],
@@ -76,12 +76,12 @@
   }
  },
  "modes-base-b-logic": {
-  "path": "public/modes-08-base-b.logicx",
+  "path": "modes-08-base-b.logicx",
   "note": "a second base: every mode off, count-in off",
   "facts": {}
  },
  "modes-autopunch-logic": {
-  "path": "public/modes-09-autopunch-on.logicx",
+  "path": "modes-09-autopunch-on.logicx",
   "note": "Autopunch pressed on",
   "facts": {
    "on": [
@@ -90,7 +90,7 @@
   }
  },
  "modes-metronome-logic": {
-  "path": "public/modes-10-metronome-click-on.logicx",
+  "path": "modes-10-metronome-click-on.logicx",
   "note": "Metronome Click pressed on",
   "facts": {
    "on": [
@@ -100,28 +100,28 @@
   }
  },
  "modes-count-in-2-bars-logic": {
-  "path": "public/modes-11-count-in-2-bars.logicx",
+  "path": "modes-11-count-in-2-bars.logicx",
   "note": "Record > Count-in > 2 Bars",
   "facts": {
    "count_in": "2 Bars"
   }
  },
  "modes-count-in-3-beats-logic": {
-  "path": "public/modes-12-count-in-3-beats.logicx",
+  "path": "modes-12-count-in-3-beats.logicx",
   "note": "Record > Count-in > 3/4",
   "facts": {
    "count_in": "3/4"
   }
  },
  "modes-count-in-1-bar-logic": {
-  "path": "public/modes-13-count-in-1-bar.logicx",
+  "path": "modes-13-count-in-1-bar.logicx",
   "note": "Record > Count-in > 1 Bar",
   "facts": {
    "count_in": "1 Bar"
   }
  },
  "metronome-simple-on-logic": {
-  "path": "public/settings-00-simple-on.logicx",
+  "path": "settings-00-simple-on.logicx",
   "note": "simple on",
   "facts": {
    "on": [
@@ -130,7 +130,7 @@
   }
  },
  "metronome-simple-off-logic": {
-  "path": "public/settings-01-simple-off.logicx",
+  "path": "settings-01-simple-off.logicx",
   "note": "simple off",
   "facts": {
    "off": [
@@ -139,7 +139,7 @@
   }
  },
  "metronome-click-recording-off-logic": {
-  "path": "public/settings-02-click-recording-off.logicx",
+  "path": "settings-02-click-recording-off.logicx",
   "note": "click recording off",
   "facts": {
    "off": [
@@ -148,7 +148,7 @@
   }
  },
  "metronome-click-playing-off-logic": {
-  "path": "public/settings-03-click-playing-off.logicx",
+  "path": "settings-03-click-playing-off.logicx",
   "note": "click playing off",
   "facts": {
    "off": [
@@ -157,7 +157,7 @@
   }
  },
  "metronome-polyphonic-off-logic": {
-  "path": "public/settings-04-polyphonic-off.logicx",
+  "path": "settings-04-polyphonic-off.logicx",
   "note": "polyphonic off",
   "facts": {
    "off": [
@@ -166,7 +166,7 @@
   }
  },
  "metronome-polyphonic-on-logic": {
-  "path": "public/settings-05-polyphonic-on.logicx",
+  "path": "settings-05-polyphonic-on.logicx",
   "note": "polyphonic on",
   "facts": {
    "on": [
@@ -175,7 +175,7 @@
   }
  },
  "metronome-rows-base-logic": {
-  "path": "public/settings-06-rows-base.logicx",
+  "path": "settings-06-rows-base.logicx",
   "note": "rows base",
   "facts": {
    "rows_on": [
@@ -186,7 +186,7 @@
   }
  },
  "metronome-row-bar-off-logic": {
-  "path": "public/settings-07-row-bar-off.logicx",
+  "path": "settings-07-row-bar-off.logicx",
   "note": "row bar off",
   "facts": {
    "rows_on": [
@@ -196,7 +196,7 @@
   }
  },
  "metronome-row-group-off-logic": {
-  "path": "public/settings-08-row-group-off.logicx",
+  "path": "settings-08-row-group-off.logicx",
   "note": "row group off",
   "facts": {
    "rows_on": [
@@ -205,14 +205,14 @@
   }
  },
  "metronome-row-beat-off-logic": {
-  "path": "public/settings-09-row-beat-off.logicx",
+  "path": "settings-09-row-beat-off.logicx",
   "note": "row beat off",
   "facts": {
    "rows_on": []
   }
  },
  "metronome-rows-flipped-logic": {
-  "path": "public/settings-10-rows-flipped-division-on.logicx",
+  "path": "settings-10-rows-flipped-division-on.logicx",
   "note": "rows flipped division on",
   "facts": {
    "rows_on": [
@@ -221,7 +221,7 @@
   }
  },
  "metronome-midi-division-channel-up-logic": {
-  "path": "public/settings-20-midi-division-channel-up.logicx",
+  "path": "settings-20-midi-division-channel-up.logicx",
   "note": "MIDI click/Division/channel 10 -> 16",
   "facts": {
    "moved": {
@@ -230,7 +230,7 @@
   }
  },
  "metronome-midi-division-note-up-logic": {
-  "path": "public/settings-21-midi-division-note-up.logicx",
+  "path": "settings-21-midi-division-note-up.logicx",
   "note": "MIDI click/Division/note 37 -> 47",
   "facts": {
    "moved": {
@@ -239,7 +239,7 @@
   }
  },
  "metronome-midi-division-velocity-up-logic": {
-  "path": "public/settings-22-midi-division-velocity-up.logicx",
+  "path": "settings-22-midi-division-velocity-up.logicx",
   "note": "MIDI click/Division/velocity 52 -> 62",
   "facts": {
    "moved": {
@@ -248,7 +248,7 @@
   }
  },
  "recording-colorize-on-logic": {
-  "path": "public/settings-33-colorize-on.logicx",
+  "path": "settings-33-colorize-on.logicx",
   "note": "colorize on",
   "facts": {
    "on": [
@@ -257,7 +257,7 @@
   }
  },
  "recording-tempo-change-on-logic": {
-  "path": "public/settings-34-tempo-change-on.logicx",
+  "path": "settings-34-tempo-change-on.logicx",
   "note": "tempo change on",
   "facts": {
    "on": [
@@ -266,7 +266,7 @@
   }
  },
  "recording-reduction-off-logic": {
-  "path": "public/settings-35-reduction-off.logicx",
+  "path": "settings-35-reduction-off.logicx",
   "note": "reduction off",
   "facts": {
    "off": [
@@ -275,7 +275,7 @@
   }
  },
  "recording-erase-off-logic": {
-  "path": "public/settings-36-erase-off.logicx",
+  "path": "settings-36-erase-off.logicx",
   "note": "erase off",
   "facts": {
    "off": [
@@ -284,7 +284,7 @@
   }
  },
  "recording-preroll-on-logic": {
-  "path": "public/settings-37-preroll-on.logicx",
+  "path": "settings-37-preroll-on.logicx",
   "note": "preroll on",
   "facts": {
    "on": [
@@ -293,14 +293,14 @@
   }
  },
  "recording-preroll-10s-logic": {
-  "path": "public/settings-38-preroll-time-up.logicx",
+  "path": "settings-38-preroll-time-up.logicx",
   "note": "preroll time up",
   "facts": {
    "preroll": 10.0
   }
  },
  "recording-count-in-radio-logic": {
-  "path": "public/settings-39-count-in-radio.logicx",
+  "path": "settings-39-count-in-radio.logicx",
   "note": "count-in radio",
   "facts": {
    "off": [
@@ -309,28 +309,28 @@
   }
  },
  "recording-count-in-2-bars-logic": {
-  "path": "public/settings-40-count-in-2-bars.logicx",
+  "path": "settings-40-count-in-2-bars.logicx",
   "note": "count-in 2 bars",
   "facts": {
    "count_in": "2 Bars"
   }
  },
  "grid-on-logic": {
-  "path": "public/settings-41-grid-on.logicx",
+  "path": "settings-41-grid-on.logicx",
   "note": "grid on",
   "facts": {
    "grid": true
   }
  },
  "grid-off-logic": {
-  "path": "public/settings-42-grid-off.logicx",
+  "path": "settings-42-grid-off.logicx",
   "note": "grid off",
   "facts": {
    "grid": false
   }
  },
  "click-button-on-logic": {
-  "path": "public/settings-43-click-button-on.logicx",
+  "path": "settings-43-click-button-on.logicx",
   "note": "click button on",
   "facts": {
    "on": [
@@ -339,7 +339,7 @@
   }
  },
  "metronome-division-row-logic": {
-  "path": "public/settings-22-midi-division-velocity-up.logicx",
+  "path": "settings-22-midi-division-velocity-up.logicx",
   "note": "MIDI click/Division/velocity 52 -> 62",
   "facts": {
    "division": {
@@ -350,7 +350,7 @@
   }
  },
  "header-00": {
-  "path": "public/header-00-baseline.logicx",
+  "path": "header-00-baseline.logicx",
   "note": "the blank project's header set",
   "facts": {
    "components": {
@@ -374,7 +374,7 @@
   }
  },
  "header-01": {
-  "path": "public/header-01-onoff on.logicx",
+  "path": "header-01-onoff on.logicx",
   "note": "On/Off shown",
   "facts": {
    "toggle": [
@@ -384,7 +384,7 @@
   }
  },
  "header-02": {
-  "path": "public/header-02-mute.logicx",
+  "path": "header-02-mute.logicx",
   "note": "Mute hidden",
   "facts": {
    "toggle": [
@@ -394,7 +394,7 @@
   }
  },
  "header-03": {
-  "path": "public/header-03-solo.logicx",
+  "path": "header-03-solo.logicx",
   "note": "Solo hidden",
   "facts": {
    "toggle": [
@@ -404,7 +404,7 @@
   }
  },
  "header-04": {
-  "path": "public/header-04-track-protect.logicx",
+  "path": "header-04-track-protect.logicx",
   "note": "Track Protect shown",
   "facts": {
    "toggle": [
@@ -414,7 +414,7 @@
   }
  },
  "header-05": {
-  "path": "public/header-05-freeze.logicx",
+  "path": "header-05-freeze.logicx",
   "note": "Freeze shown",
   "facts": {
    "toggle": [
@@ -424,7 +424,7 @@
   }
  },
  "header-06": {
-  "path": "public/header-06-record-enable.logicx",
+  "path": "header-06-record-enable.logicx",
   "note": "Record Enable hidden",
   "facts": {
    "toggle": [
@@ -434,7 +434,7 @@
   }
  },
  "header-07": {
-  "path": "public/header-07-input-monitoring.logicx",
+  "path": "header-07-input-monitoring.logicx",
   "note": "Input Monitoring hidden",
   "facts": {
    "toggle": [
@@ -444,7 +444,7 @@
   }
  },
  "header-08": {
-  "path": "public/header-08-volume.logicx",
+  "path": "header-08-volume.logicx",
   "note": "Volume hidden",
   "facts": {
    "toggle": [
@@ -454,7 +454,7 @@
   }
  },
  "header-09": {
-  "path": "public/header-09-pansend.logicx",
+  "path": "header-09-pansend.logicx",
   "note": "Pan/Send hidden",
   "facts": {
    "toggle": [
@@ -464,7 +464,7 @@
   }
  },
  "header-10": {
-  "path": "public/header-10-additional-name-column.logicx",
+  "path": "header-10-additional-name-column.logicx",
   "note": "Additional Name Column shown",
   "facts": {
    "toggle": [
@@ -474,7 +474,7 @@
   }
  },
  "header-11": {
-  "path": "public/header-11-control-surface-bars.logicx",
+  "path": "header-11-control-surface-bars.logicx",
   "note": "Control Surface Bars hidden",
   "facts": {
    "toggle": [
@@ -484,7 +484,7 @@
   }
  },
  "header-12": {
-  "path": "public/header-12-track-numbers.logicx",
+  "path": "header-12-track-numbers.logicx",
   "note": "Track Numbers hidden",
   "facts": {
    "toggle": [
@@ -494,7 +494,7 @@
   }
  },
  "header-13": {
-  "path": "public/header-13-track-color-bars.logicx",
+  "path": "header-13-track-color-bars.logicx",
   "note": "Track Color Bars shown",
   "facts": {
    "toggle": [
@@ -504,7 +504,7 @@
   }
  },
  "header-14": {
-  "path": "public/header-14-groove-track.logicx",
+  "path": "header-14-groove-track.logicx",
   "note": "Groove Track shown",
   "facts": {
    "toggle": [
@@ -514,7 +514,7 @@
   }
  },
  "header-15": {
-  "path": "public/header-15-track-icons.logicx",
+  "path": "header-15-track-icons.logicx",
   "note": "Track Icons hidden",
   "facts": {
    "toggle": [
@@ -524,7 +524,7 @@
   }
  },
  "header-16": {
-  "path": "public/header-16-track-alternatives.logicx",
+  "path": "header-16-track-alternatives.logicx",
   "note": "Track Alternatives shown",
   "facts": {
    "toggle": [
@@ -534,12 +534,12 @@
   }
  },
  "controlbar-base": {
-  "path": "public/controlbar-00-base.logicx",
+  "path": "controlbar-00-base.logicx",
   "note": "base",
   "facts": {}
  },
  "controlbar-go-to-position-on": {
-  "path": "public/controlbar-01-go-to-position-on.logicx",
+  "path": "controlbar-01-go-to-position-on.logicx",
   "note": "go-to-position on",
   "facts": {
    "toggle": [
@@ -549,7 +549,7 @@
   }
  },
  "controlbar-go-to-left-locator-on": {
-  "path": "public/controlbar-02-go-to-left-locator-on.logicx",
+  "path": "controlbar-02-go-to-left-locator-on.logicx",
   "note": "go-to-left-locator on",
   "facts": {
    "toggle": [
@@ -559,7 +559,7 @@
   }
  },
  "controlbar-go-to-right-locator-on": {
-  "path": "public/controlbar-03-go-to-right-locator-on.logicx",
+  "path": "controlbar-03-go-to-right-locator-on.logicx",
   "note": "go-to-right-locator on",
   "facts": {
    "toggle": [
@@ -569,7 +569,7 @@
   }
  },
  "controlbar-go-to-selection-start-on": {
-  "path": "public/controlbar-04-go-to-selection-start-on.logicx",
+  "path": "controlbar-04-go-to-selection-start-on.logicx",
   "note": "go-to-selection-start on",
   "facts": {
    "toggle": [
@@ -579,7 +579,7 @@
   }
  },
  "controlbar-play-from-beginning-on": {
-  "path": "public/controlbar-05-play-from-beginning-on.logicx",
+  "path": "controlbar-05-play-from-beginning-on.logicx",
   "note": "play-from-beginning on",
   "facts": {
    "toggle": [
@@ -589,7 +589,7 @@
   }
  },
  "controlbar-play-from-left-window-edge-on": {
-  "path": "public/controlbar-06-play-from-left-window-edge-on.logicx",
+  "path": "controlbar-06-play-from-left-window-edge-on.logicx",
   "note": "play-from-left-window-edge on",
   "facts": {
    "toggle": [
@@ -599,7 +599,7 @@
   }
  },
  "controlbar-play-from-left-locator-on": {
-  "path": "public/controlbar-07-play-from-left-locator-on.logicx",
+  "path": "controlbar-07-play-from-left-locator-on.logicx",
   "note": "play-from-left-locator on",
   "facts": {
    "toggle": [
@@ -609,7 +609,7 @@
   }
  },
  "controlbar-play-from-right-locator-on": {
-  "path": "public/controlbar-08-play-from-right-locator-on.logicx",
+  "path": "controlbar-08-play-from-right-locator-on.logicx",
   "note": "play-from-right-locator on",
   "facts": {
    "toggle": [
@@ -619,7 +619,7 @@
   }
  },
  "controlbar-play-from-selection-on": {
-  "path": "public/controlbar-09-play-from-selection-on.logicx",
+  "path": "controlbar-09-play-from-selection-on.logicx",
   "note": "play-from-selection on",
   "facts": {
    "toggle": [
@@ -629,7 +629,7 @@
   }
  },
  "controlbar-pause-on": {
-  "path": "public/controlbar-10-pause-on.logicx",
+  "path": "controlbar-10-pause-on.logicx",
   "note": "pause on",
   "facts": {
    "toggle": [
@@ -639,7 +639,7 @@
   }
  },
  "controlbar-free-tempo-recording-on": {
-  "path": "public/controlbar-11-free-tempo-recording-on.logicx",
+  "path": "controlbar-11-free-tempo-recording-on.logicx",
   "note": "free-tempo-recording on",
   "facts": {
    "toggle": [
@@ -649,7 +649,7 @@
   }
  },
  "controlbar-flashback-capture-on": {
-  "path": "public/controlbar-12-flashback-capture-on.logicx",
+  "path": "controlbar-12-flashback-capture-on.logicx",
   "note": "flashback-capture on",
   "facts": {
    "toggle": [
@@ -659,7 +659,7 @@
   }
  },
  "controlbar-skip-cycle-on": {
-  "path": "public/controlbar-13-skip-cycle-on.logicx",
+  "path": "controlbar-13-skip-cycle-on.logicx",
   "note": "skip-cycle on",
   "facts": {
    "toggle": [
@@ -669,7 +669,7 @@
   }
  },
  "controlbar-sample-rate-off": {
-  "path": "public/controlbar-14-sample-rate-off.logicx",
+  "path": "controlbar-14-sample-rate-off.logicx",
   "note": "sample-rate off",
   "facts": {
    "toggle": [
@@ -679,7 +679,7 @@
   }
  },
  "controlbar-sample-rate-on": {
-  "path": "public/controlbar-15-sample-rate-on.logicx",
+  "path": "controlbar-15-sample-rate-on.logicx",
   "note": "sample-rate on",
   "facts": {
    "toggle": [
@@ -689,7 +689,7 @@
   }
  },
  "controlbar-varispeed-on": {
-  "path": "public/controlbar-16-varispeed-on.logicx",
+  "path": "controlbar-16-varispeed-on.logicx",
   "note": "varispeed on",
   "facts": {
    "toggle": [
@@ -699,7 +699,7 @@
   }
  },
  "controlbar-key-signature-on": {
-  "path": "public/controlbar-17-key-signature-on.logicx",
+  "path": "controlbar-17-key-signature-on.logicx",
   "note": "key-signature on",
   "facts": {
    "toggle": [
@@ -709,7 +709,7 @@
   }
  },
  "controlbar-midi-activity-on": {
-  "path": "public/controlbar-18-midi-activity-on.logicx",
+  "path": "controlbar-18-midi-activity-on.logicx",
   "note": "midi-activity on",
   "facts": {
    "toggle": [
@@ -719,7 +719,7 @@
   }
  },
  "controlbar-sync-on": {
-  "path": "public/controlbar-19-sync-on.logicx",
+  "path": "controlbar-19-sync-on.logicx",
   "note": "sync on",
   "facts": {
    "toggle": [
@@ -729,7 +729,7 @@
   }
  },
  "controlbar-autopunch-off": {
-  "path": "public/controlbar-20-autopunch-off.logicx",
+  "path": "controlbar-20-autopunch-off.logicx",
   "note": "autopunch off",
   "facts": {
    "toggle": [
@@ -739,7 +739,7 @@
   }
  },
  "controlbar-autopunch-on": {
-  "path": "public/controlbar-21-autopunch-on.logicx",
+  "path": "controlbar-21-autopunch-on.logicx",
   "note": "autopunch on",
   "facts": {
    "toggle": [
@@ -749,7 +749,7 @@
   }
  },
  "controlbar-set-punch-by-playhead-on": {
-  "path": "public/controlbar-22-set-punch-by-playhead-on.logicx",
+  "path": "controlbar-22-set-punch-by-playhead-on.logicx",
   "note": "set-punch-by-playhead on",
   "facts": {
    "toggle": [
@@ -759,7 +759,7 @@
   }
  },
  "controlbar-software-monitoring-on": {
-  "path": "public/controlbar-23-software-monitoring-on.logicx",
+  "path": "controlbar-23-software-monitoring-on.logicx",
   "note": "software-monitoring on",
   "facts": {
    "toggle": [
@@ -769,7 +769,7 @@
   }
  },
  "controlbar-pre-fader-metering-on": {
-  "path": "public/controlbar-24-pre-fader-metering-on.logicx",
+  "path": "controlbar-24-pre-fader-metering-on.logicx",
   "note": "pre-fader-metering on",
   "facts": {
    "toggle": [
@@ -779,7 +779,7 @@
   }
  },
  "controlbar-set-lr-by-playhead-on": {
-  "path": "public/controlbar-25-set-lr-by-playhead-on.logicx",
+  "path": "controlbar-25-set-lr-by-playhead-on.logicx",
   "note": "set-lr-by-playhead on",
   "facts": {
    "toggle": [
@@ -789,7 +789,7 @@
   }
  },
  "controlbar-set-lr-numerically-on": {
-  "path": "public/controlbar-26-set-lr-numerically-on.logicx",
+  "path": "controlbar-26-set-lr-numerically-on.logicx",
   "note": "set-lr-numerically on",
   "facts": {
    "toggle": [
@@ -799,7 +799,7 @@
   }
  },
  "controlbar-move-locators-on": {
-  "path": "public/controlbar-27-move-locators-on.logicx",
+  "path": "controlbar-27-move-locators-on.logicx",
   "note": "move-locators on",
   "facts": {
    "toggle": [
@@ -809,7 +809,7 @@
   }
  },
  "controlbar-left-length-radio": {
-  "path": "public/controlbar-28-left-length-radio.logicx",
+  "path": "controlbar-28-left-length-radio.logicx",
   "note": "left-length radio",
   "facts": {
    "toggle": [
@@ -819,7 +819,7 @@
   }
  },
  "controlbar-library-off": {
-  "path": "public/controlbar-29-library-off.logicx",
+  "path": "controlbar-29-library-off.logicx",
   "note": "library off",
   "facts": {
    "toggle": [
@@ -829,7 +829,7 @@
   }
  },
  "controlbar-master-volume-off": {
-  "path": "public/controlbar-30-master-volume-off.logicx",
+  "path": "controlbar-30-master-volume-off.logicx",
   "note": "master-volume off",
   "facts": {
    "toggle": [
@@ -839,7 +839,7 @@
   }
  },
  "controlbar-output-meter-on": {
-  "path": "public/controlbar-31-output-meter-on.logicx",
+  "path": "controlbar-31-output-meter-on.logicx",
   "note": "output-meter on",
   "facts": {
    "changed": [
@@ -853,7 +853,7 @@
   }
  },
  "controlbar-replace-off": {
-  "path": "public/controlbar-32-replace-off.logicx",
+  "path": "controlbar-32-replace-off.logicx",
   "note": "replace off",
   "facts": {
    "toggle": [
@@ -863,7 +863,7 @@
   }
  },
  "controlbar-tuner-off": {
-  "path": "public/controlbar-33-tuner-off.logicx",
+  "path": "controlbar-33-tuner-off.logicx",
   "note": "tuner off",
   "facts": {
    "toggle": [
@@ -873,7 +873,7 @@
   }
  },
  "controlbar-solo-off": {
-  "path": "public/controlbar-34-solo-off.logicx",
+  "path": "controlbar-34-solo-off.logicx",
   "note": "solo off",
   "facts": {
    "toggle": [
@@ -883,7 +883,7 @@
   }
  },
  "controlbar-count-in-off": {
-  "path": "public/controlbar-35-count-in-off.logicx",
+  "path": "controlbar-35-count-in-off.logicx",
   "note": "count-in off",
   "facts": {
    "toggle": [
@@ -893,7 +893,7 @@
   }
  },
  "controlbar-inspector-off": {
-  "path": "public/controlbar-36-inspector-off.logicx",
+  "path": "controlbar-36-inspector-off.logicx",
   "note": "inspector off",
   "facts": {
    "toggle": [
@@ -903,7 +903,7 @@
   }
  },
  "controlbar-browsers-off": {
-  "path": "public/controlbar-37-browsers-off.logicx",
+  "path": "controlbar-37-browsers-off.logicx",
   "note": "browsers off",
   "facts": {
    "toggle": [
@@ -913,7 +913,7 @@
   }
  },
  "controlbar-positions-off": {
-  "path": "public/controlbar-38-positions-off.logicx",
+  "path": "controlbar-38-positions-off.logicx",
   "note": "positions off",
   "facts": {
    "toggle": [
@@ -923,7 +923,7 @@
   }
  },
  "controlbar-performance-meter-off": {
-  "path": "public/controlbar-39-performance-meter-off.logicx",
+  "path": "controlbar-39-performance-meter-off.logicx",
   "note": "performance-meter off",
   "facts": {
    "toggle": [
@@ -933,7 +933,7 @@
   }
  },
  "controlbar-locators-off": {
-  "path": "public/controlbar-40-locators-off.logicx",
+  "path": "controlbar-40-locators-off.logicx",
   "note": "locators off",
   "facts": {
    "toggle": [
@@ -943,7 +943,7 @@
   }
  },
  "controlbar-midi-activity-off": {
-  "path": "public/controlbar-41-midi-activity-off.logicx",
+  "path": "controlbar-41-midi-activity-off.logicx",
   "note": "midi-activity off",
   "facts": {
    "toggle": [
@@ -953,7 +953,7 @@
   }
  },
  "controlbar-tempo-off": {
-  "path": "public/controlbar-42-tempo-off.logicx",
+  "path": "controlbar-42-tempo-off.logicx",
   "note": "tempo off",
   "facts": {
    "toggle": [
@@ -963,7 +963,7 @@
   }
  },
  "controlbar-master-volume-popup": {
-  "path": "public/controlbar-43-master-volume-popup.logicx",
+  "path": "controlbar-43-master-volume-popup.logicx",
   "note": "master-volume popup",
   "facts": {
    "toggle": [
@@ -973,49 +973,49 @@
   }
  },
  "controlbar-display-time": {
-  "path": "public/controlbar-44-display-time.logicx",
+  "path": "controlbar-44-display-time.logicx",
   "note": "display time",
   "facts": {
    "display_mode": 1
   }
  },
  "controlbar-display-custom": {
-  "path": "public/controlbar-45-display-custom.logicx",
+  "path": "controlbar-45-display-custom.logicx",
   "note": "display custom",
   "facts": {
    "display_mode": 0
   }
  },
  "controlbar-display-beats-project-large": {
-  "path": "public/controlbar-46-display-beats-project-large.logicx",
+  "path": "controlbar-46-display-beats-project-large.logicx",
   "note": "display beats-project-large",
   "facts": {
    "display_mode": 4
   }
  },
  "controlbar-display-beats-time-large": {
-  "path": "public/controlbar-47-display-beats-time-large.logicx",
+  "path": "controlbar-47-display-beats-time-large.logicx",
   "note": "display beats-time-large",
   "facts": {
    "display_mode": 3
   }
  },
  "controlbar-display-beats-project": {
-  "path": "public/controlbar-48-display-beats-project.logicx",
+  "path": "controlbar-48-display-beats-project.logicx",
   "note": "display beats-project",
   "facts": {
    "display_mode": 7
   }
  },
  "controlbar-display-beats-time": {
-  "path": "public/controlbar-49-display-beats-time.logicx",
+  "path": "controlbar-49-display-beats-time.logicx",
   "note": "display beats-time",
   "facts": {
    "display_mode": 8
   }
  },
  "toolbar-all-logic": {
-  "path": "public/toolbar-01-all-on.logicx",
+  "path": "toolbar-01-all-on.logicx",
   "note": "all on",
   "facts": {
    "buttons": 31,
@@ -1023,7 +1023,7 @@
   }
  },
  "toolbar-bit0-logic": {
-  "path": "public/toolbar-02-bit0.logicx",
+  "path": "toolbar-02-bit0.logicx",
   "note": "bit0",
   "facts": {
    "buttons": 15,
@@ -1032,7 +1032,7 @@
   }
  },
  "toolbar-bit1-logic": {
-  "path": "public/toolbar-03-bit1.logicx",
+  "path": "toolbar-03-bit1.logicx",
   "note": "bit1",
   "facts": {
    "buttons": 15,
@@ -1041,7 +1041,7 @@
   }
  },
  "toolbar-bit2-logic": {
-  "path": "public/toolbar-04-bit2.logicx",
+  "path": "toolbar-04-bit2.logicx",
   "note": "bit2",
   "facts": {
    "buttons": 15,
@@ -1050,7 +1050,7 @@
   }
  },
  "toolbar-bit3-logic": {
-  "path": "public/toolbar-05-bit3.logicx",
+  "path": "toolbar-05-bit3.logicx",
   "note": "bit3",
   "facts": {
    "buttons": 15,
@@ -1059,7 +1059,7 @@
   }
  },
  "toolbar-bit4-logic": {
-  "path": "public/toolbar-06-bit4.logicx",
+  "path": "toolbar-06-bit4.logicx",
   "note": "bit4",
   "facts": {
    "buttons": 15,
@@ -1068,7 +1068,7 @@
   }
  },
  "toolbar-rest-logic": {
-  "path": "public/toolbar-07-rest.logicx",
+  "path": "toolbar-07-rest.logicx",
   "note": "rest",
   "facts": {
    "buttons": 14,
@@ -1076,7 +1076,7 @@
   }
  },
  "metronome-klopfgeist-on-logic": {
-  "path": "public/klopf-00-klopfgeist-on.logicx",
+  "path": "klopf-00-klopfgeist-on.logicx",
   "note": "Audio Click (Klopfgeist) ticked",
   "facts": {
    "moved": {
@@ -1085,7 +1085,7 @@
   }
  },
  "metronome-klopf-division-note-up-logic": {
-  "path": "public/klopf-07-klopf-division-note-up.logicx",
+  "path": "klopf-07-klopf-division-note-up.logicx",
   "note": "Klopfgeist/Division/note 48 -> 58",
   "facts": {
    "moved": {
@@ -1094,7 +1094,7 @@
   }
  },
  "metronome-klopf-division-velocity-up-logic": {
-  "path": "public/klopf-08-klopf-division-velocity-up.logicx",
+  "path": "klopf-08-klopf-division-velocity-up.logicx",
   "note": "Klopfgeist/Division/velocity 60 -> 70",
   "facts": {
    "moved": {
@@ -1103,7 +1103,7 @@
   }
  },
  "metronome-klopf-division-note-down-logic": {
-  "path": "public/klopf-17-klopf-division-note-down.logicx",
+  "path": "klopf-17-klopf-division-note-down.logicx",
   "note": "Klopfgeist/Division/note 58 -> 57",
   "facts": {
    "moved": {
@@ -1112,7 +1112,7 @@
   }
  },
  "metronome-klopf-division-velocity-down-logic": {
-  "path": "public/klopf-18-klopf-division-velocity-down.logicx",
+  "path": "klopf-18-klopf-division-velocity-down.logicx",
   "note": "Klopfgeist/Division/velocity 70 -> 69",
   "facts": {
    "moved": {
@@ -1121,7 +1121,7 @@
   }
  },
  "metronome-midi-bar-on-up-logic": {
-  "path": "public/klopf-30-midi-bar-on-up.logicx",
+  "path": "klopf-30-midi-bar-on-up.logicx",
   "note": "MIDI click/Bar/on False -> True",
   "facts": {
    "moved": {
@@ -1130,7 +1130,7 @@
   }
  },
  "metronome-midi-group-on-up-logic": {
-  "path": "public/klopf-31-midi-group-on-up.logicx",
+  "path": "klopf-31-midi-group-on-up.logicx",
   "note": "MIDI click/Group/on False -> True",
   "facts": {
    "moved": {
@@ -1139,7 +1139,7 @@
   }
  },
  "metronome-midi-beat-on-up-logic": {
-  "path": "public/klopf-32-midi-beat-on-up.logicx",
+  "path": "klopf-32-midi-beat-on-up.logicx",
   "note": "MIDI click/Beat/on False -> True",
   "facts": {
    "moved": {
@@ -1148,7 +1148,7 @@
   }
  },
  "metronome-klopf-bar-note-up-logic": {
-  "path": "public/klopf-33-klopf-bar-note-up.logicx",
+  "path": "klopf-33-klopf-bar-note-up.logicx",
   "note": "Klopfgeist/Bar/note 91 -> 101",
   "facts": {
    "moved": {
@@ -1157,7 +1157,7 @@
   }
  },
  "metronome-klopf-group-note-up-logic": {
-  "path": "public/klopf-35-klopf-group-note-up.logicx",
+  "path": "klopf-35-klopf-group-note-up.logicx",
   "note": "Klopfgeist/Group/note 97 -> 107",
   "facts": {
    "moved": {
@@ -1166,7 +1166,7 @@
   }
  },
  "metronome-beat-note-logic": {
-  "path": "public/klopf-37-klopf-beat-note-up.logicx",
+  "path": "klopf-37-klopf-beat-note-up.logicx",
   "note": "Klopfgeist/Beat/note 95 -> 105",
   "facts": {
    "moved": {
@@ -1176,7 +1176,7 @@
   }
  },
  "metronome-klopf-beat-velocity-up-logic": {
-  "path": "public/klopf-38-klopf-beat-velocity-up.logicx",
+  "path": "klopf-38-klopf-beat-velocity-up.logicx",
   "note": "Klopfgeist/Beat/velocity 112 -> 122",
   "facts": {
    "moved": {
@@ -1185,7 +1185,7 @@
   }
  },
  "metronome-klopf-bar-velocity-down-logic": {
-  "path": "public/klopf-39-klopf-bar-velocity-down.logicx",
+  "path": "klopf-39-klopf-bar-velocity-down.logicx",
   "note": "Klopfgeist/Bar/velocity 127 -> 117",
   "facts": {
    "moved": {
@@ -1194,7 +1194,7 @@
   }
  },
  "metronome-group-velocity-logic": {
-  "path": "public/klopf-40-klopf-group-velocity-down.logicx",
+  "path": "klopf-40-klopf-group-velocity-down.logicx",
   "note": "Klopfgeist/Group/velocity 127 -> 117",
   "facts": {
    "moved": {
@@ -1204,21 +1204,21 @@
   }
  },
  "tracks-two-audio-logic": {
-  "path": "public/stack-01-new-audio-track-2.logicx",
+  "path": "stack-01-new-audio-track-2.logicx",
   "note": "Track > New Audio Track on the blank project",
   "facts": {
    "tracks": 2
   }
  },
  "tracks-three-audio-logic": {
-  "path": "public/stack-02-new-audio-track-3.logicx",
+  "path": "stack-02-new-audio-track-3.logicx",
   "note": "Track > New Audio Track again",
   "facts": {
    "tracks": 3
   }
  },
  "stack-folder-logic": {
-  "path": "public/stack-03-folder-stack.logicx",
+  "path": "stack-03-folder-stack.logicx",
   "note": "Create Track Stack (Folder) over all three tracks, on a project that had none",
   "facts": {
    "stacks": 1,
@@ -1231,7 +1231,7 @@
   }
  },
  "stack-folder-flattened-logic": {
-  "path": "public/stack-04-flattened.logicx",
+  "path": "stack-04-flattened.logicx",
   "note": "Flatten Stack",
   "facts": {
    "stacks": 0,
@@ -1239,7 +1239,7 @@
   }
  },
  "stack-summing-logic": {
-  "path": "public/stack-06-summing-stack.logicx",
+  "path": "stack-06-summing-stack.logicx",
   "note": "Create Track Stack (Summing) over all three tracks",
   "facts": {
    "stacks": 1,
@@ -1252,7 +1252,7 @@
   }
  },
  "stack-summing-flattened-logic": {
-  "path": "public/stack-07-summing-flattened.logicx",
+  "path": "stack-07-summing-flattened.logicx",
   "note": "Flatten Stack on the summing stack",
   "facts": {
    "stacks": 0,
@@ -1260,14 +1260,14 @@
   }
  },
  "tracks-four-audio-logic": {
-  "path": "public/tracks-04-new-tracks-dialog.logicx",
+  "path": "tracks-04-new-tracks-dialog.logicx",
   "note": "Track > New Tracks\u2026 (Audio, input 1) added a fourth track after the selected one",
   "facts": {
    "tracks": 4
   }
  },
  "stack-folder-of-one-logic": {
-  "path": "public/stack-08-folder-of-one.logicx",
+  "path": "stack-08-folder-of-one.logicx",
   "note": "Create Track Stack (Folder) over the selected Audio 1 alone, four tracks in the project",
   "facts": {
    "stacks": 1,
@@ -1285,7 +1285,7 @@
   }
  },
  "stack-header-reordered-logic": {
-  "path": "public/stack-09-header-dragged.logicx",
+  "path": "stack-09-header-dragged.logicx",
   "note": "the stack header dragged two rows down; header and member moved as a block",
   "facts": {
    "stacks": 1,
@@ -1303,7 +1303,7 @@
   }
  },
  "levels-ours": {
-  "path": "public/levels-00-ours.logicx",
+  "path": "levels-00-ours.logicx",
   "note": "levels --to by owner onto the base: the Click channel's fader 127 -> 120",
   "facts": {
    "click_owner": 8,
@@ -1311,7 +1311,7 @@
   }
  },
  "levels-resave-logic": {
-  "path": "public/levels-01-resave.logicx",
+  "path": "levels-01-resave.logicx",
   "note": "Logic's re-save of levels-ours",
   "facts": {
    "click_owner": 8,
@@ -1319,7 +1319,7 @@
   }
  },
  "send-bus-1-logic": {
-  "path": "public/send-00-bus-1.logicx",
+  "path": "send-00-bus-1.logicx",
   "note": "a send from Audio 1 to Bus 1 made in the inspector's Sends menu, level as Logic sets a new send",
   "facts": {
    "owner": 0,
@@ -1328,7 +1328,7 @@
   }
  },
  "send-level-1-logic": {
-  "path": "public/send-01-knob-up.logicx",
+  "path": "send-01-knob-up.logicx",
   "note": "the send knob dragged up once",
   "facts": {
    "owner": 0,
@@ -1337,7 +1337,7 @@
   }
  },
  "send-level-2-logic": {
-  "path": "public/send-02-knob-up.logicx",
+  "path": "send-02-knob-up.logicx",
   "note": "the send knob dragged up again",
   "facts": {
    "owner": 0,
@@ -1346,7 +1346,7 @@
   }
  },
  "send-two-base-3-logic": {
-  "path": "public/send-03-second-send.logicx",
+  "path": "send-03-second-send.logicx",
   "note": "a second send (Audio 1 -> Bus 2): Logic moved every channel's slot base word from 2 to 3 and the Click instrument to key 3",
   "facts": {
    "owner": 0,
@@ -1364,7 +1364,7 @@
   }
  },
  "group-drums-logic": {
-  "path": "public/group-00-drums-resave.logicx",
+  "path": "group-00-drums-resave.logicx",
   "note": "Logic's re-save of a group made by `logic group --create` over Audio 1 and Audio 2 on a blank-born project",
   "facts": {
    "name": "Drums",
@@ -1375,7 +1375,7 @@
   }
  },
  "group-leave-logic": {
-  "path": "public/group-01-audio-1-left.logicx",
+  "path": "group-01-audio-1-left.logicx",
   "note": "Audio 1 set to No Group in the strip's Group popup",
   "facts": {
    "name": "Drums",
@@ -1386,7 +1386,7 @@
   }
  },
  "arrangement-track-logic": {
-  "path": "public/arrangement-01-track.logicx",
+  "path": "arrangement-01-track.logicx",
   "note": "Track > Global Tracks > Arrangement Track shown on the flattened three-track project",
   "facts": {
    "sections": 0,
@@ -1395,7 +1395,7 @@
   }
  },
  "arrangement-first-section-logic": {
-  "path": "public/arrangement-02-first-section.logicx",
+  "path": "arrangement-02-first-section.logicx",
   "note": "the arrangement track's + pressed once",
   "facts": {
    "sections": 1,
@@ -1408,7 +1408,7 @@
   }
  },
  "arrangement-two-sections-logic": {
-  "path": "public/arrangement-03-second-section.logicx",
+  "path": "arrangement-03-second-section.logicx",
   "note": "+ pressed again",
   "facts": {
    "sections": 2,
@@ -1423,7 +1423,7 @@
   }
  },
  "arrangement-section-1-selected-logic": {
-  "path": "public/arrangement-04-section-1-selected.logicx",
+  "path": "arrangement-04-section-1-selected.logicx",
   "note": "section 1 clicked in the arrangement lane",
   "facts": {
    "sections": 2,
@@ -1431,7 +1431,7 @@
   }
  },
  "tracks-instrument-logic": {
-  "path": "public/tracks-05-instrument.logicx",
+  "path": "tracks-05-instrument.logicx",
   "note": "Track > New Software Instrument Track with Audio 1 selected",
   "facts": {
    "tracks": 4,
@@ -1441,7 +1441,7 @@
   }
  },
  "select-audio-1-logic": {
-  "path": "public/select-06-audio-1.logicx",
+  "path": "select-06-audio-1.logicx",
   "note": "Audio 1's track header clicked (the instrument track was selected before)",
   "facts": {
    "selected": "Audio 1",
@@ -1449,7 +1449,7 @@
   }
  },
  "inserts-channel-eq-logic": {
-  "path": "public/inserts-07-channel-eq.logicx",
+  "path": "inserts-07-channel-eq.logicx",
   "note": "Channel EQ inserted on Audio 1 from the inspector strip's Audio FX menu",
   "facts": {
    "channel": "Audio 1",
@@ -1459,7 +1459,7 @@
   }
  },
  "inserts-native-logic": {
-  "path": "public/inserts-08-compressor.logicx",
+  "path": "inserts-08-compressor.logicx",
   "note": "Compressor inserted below Channel EQ on Audio 1",
   "facts": {
    "channel": "Audio 1",
@@ -1470,7 +1470,7 @@
   }
  },
  "inserts-native-all-logic": {
-  "path": "public/inserts-09-native-all.logicx",
+  "path": "inserts-09-native-all.logicx",
   "note": "Gain, ChromaVerb, SilverVerb, EnVerb, Echo and Enveloper inserted after the first two",
   "facts": {
    "channel": "Audio 1",
@@ -1497,7 +1497,7 @@
   }
  },
  "midi-empty-region-logic": {
-  "path": "public/midi-10-empty-region.logicx",
+  "path": "midi-10-empty-region.logicx",
   "note": "Pencil tool click on Inst 1 at bar 3: one empty one-bar MIDI region",
   "facts": {
    "track": "Inst 1",
@@ -1507,7 +1507,7 @@
   }
  },
  "midi-one-note-logic": {
-  "path": "public/midi-11-one-note.logicx",
+  "path": "midi-11-one-note.logicx",
   "note": "Event List > Create new Event with the playhead at bar 3: one note; ticks are absolute, bar 1 = 38400 (the region starts at bar 3 = 46080)",
   "facts": {
    "notes": 1,
@@ -1519,7 +1519,7 @@
   }
  },
  "midi-note-pitch-62-logic": {
-  "path": "public/midi-12-note-pitch-62.logicx",
+  "path": "midi-12-note-pitch-62.logicx",
   "note": "the note's Num set to 62 in the Event List",
   "facts": {
    "notes": 1,
@@ -1531,7 +1531,7 @@
   }
  },
  "midi-note-base-logic": {
-  "path": "public/midi-16-note-base.logicx",
+  "path": "midi-16-note-base.logicx",
   "note": "the pitch-62 note again, with cycle on and the Event List open: base for the note-edit pairs",
   "facts": {
    "notes": 1,
@@ -1543,7 +1543,7 @@
   }
  },
  "midi-note-velocity-79-logic": {
-  "path": "public/midi-17-note-velocity-79.logicx",
+  "path": "midi-17-note-velocity-79.logicx",
   "note": "the note's Val nudged in the Event List (80 -> 79)",
   "facts": {
    "notes": 1,
@@ -1555,7 +1555,7 @@
   }
  },
  "midi-note-length-960-logic": {
-  "path": "public/midi-18-note-length-1-beat.logicx",
+  "path": "midi-18-note-length-1-beat.logicx",
   "note": "the note's Length set to 0 1 0 0 (one beat)",
   "facts": {
    "notes": 1,
@@ -1567,7 +1567,7 @@
   }
  },
  "midi-note-beat-2-logic": {
-  "path": "public/midi-19-note-beat-2.logicx",
+  "path": "midi-19-note-beat-2.logicx",
   "note": "the note's Position set to 3 2 1 1",
   "facts": {
    "notes": 1,
@@ -1579,7 +1579,7 @@
   }
  },
  "midi-note-channel-2-logic": {
-  "path": "public/midi-20-note-channel-2.logicx",
+  "path": "midi-20-note-channel-2.logicx",
   "note": "the note's Ch set to 2",
   "facts": {
    "notes": 1,
@@ -1591,7 +1591,7 @@
   }
  },
  "midi-two-notes-logic": {
-  "path": "public/midi-21-two-notes.logicx",
+  "path": "midi-21-two-notes.logicx",
   "note": "Create new Event again with the playhead at bar 3: a second note",
   "facts": {
    "notes": 2,
@@ -1610,7 +1610,7 @@
   }
  },
  "midi-pitch-bend-logic": {
-  "path": "public/midi-23-pitch-bend.logicx",
+  "path": "midi-23-pitch-bend.logicx",
   "note": "Create with the type popup on Pitch Bend",
   "facts": {
    "notes": 2,
@@ -1623,7 +1623,7 @@
   }
  },
  "midi-controller-logic": {
-  "path": "public/midi-22-controller.logicx",
+  "path": "midi-22-controller.logicx",
   "note": "Create with the type popup on Controller",
   "facts": {
    "notes": 2,
@@ -1632,7 +1632,7 @@
   }
  },
  "midi-program-change-logic": {
-  "path": "public/midi-24-program-change.logicx",
+  "path": "midi-24-program-change.logicx",
   "note": "Create with the type popup on Progr. Change",
   "facts": {
    "notes": 2,
@@ -1640,7 +1640,7 @@
   }
  },
  "midi-region-unlooped-logic": {
-  "path": "public/midi-25-region-unlooped.logicx",
+  "path": "midi-25-region-unlooped.logicx",
   "note": "a re-save of the program-change state; base for the loop pair",
   "facts": {
    "regions": 1,
@@ -1648,7 +1648,7 @@
   }
  },
  "midi-region-looped-logic": {
-  "path": "public/midi-25-region-looped.logicx",
+  "path": "midi-25-region-looped.logicx",
   "note": "the region selected and L pressed (Loop on in the region inspector)",
   "facts": {
    "regions": 1,
@@ -1656,7 +1656,7 @@
   }
  },
  "signature-meter-3-4-logic": {
-  "path": "public/signature-27-meter-3-4.logicx",
+  "path": "signature-27-meter-3-4.logicx",
   "note": "the initial time signature's numerator set to 3 in the Signature List",
   "facts": {
    "meter": [
@@ -1667,7 +1667,7 @@
   }
  },
  "signature-meter-3-8-logic": {
-  "path": "public/signature-28-meter-3-8.logicx",
+  "path": "signature-28-meter-3-8.logicx",
   "note": "its denominator set to /8",
   "facts": {
    "meter": [
@@ -1678,7 +1678,7 @@
   }
  },
  "route-ours": {
-  "path": "public/route-b01-ours.logicx",
+  "path": "route-b01-ours.logicx",
   "note": "logic route --output 'Audio 2=Bus 1' on the flattened three-track project",
   "facts": {
    "channel": "Audio 2",
@@ -1686,7 +1686,7 @@
   }
  },
  "route-resave-logic": {
-  "path": "public/route-b01-resave.logicx",
+  "path": "route-b01-resave.logicx",
   "note": "Logic's re-save of route-ours",
   "facts": {
    "channel": "Audio 2",
@@ -1694,7 +1694,7 @@
   }
  },
  "transplant-ours": {
-  "path": "public/transplant-b02-ours.logicx",
+  "path": "transplant-b02-ours.logicx",
   "note": "logic transplant of Audio 1's Channel EQ + Compressor from the inserts save onto the flattened project",
   "facts": {
    "channel": "Audio 1",
@@ -1705,7 +1705,7 @@
   }
  },
  "transplant-resave-logic": {
-  "path": "public/transplant-b02-resave.logicx",
+  "path": "transplant-b02-resave.logicx",
   "note": "Logic's re-save of transplant-ours",
   "facts": {
    "channel": "Audio 1",
@@ -1716,7 +1716,7 @@
   }
  },
  "bypass-ours": {
-  "path": "public/bypass-b03-ours.logicx",
+  "path": "bypass-b03-ours.logicx",
   "note": "logic bypass --channel 'Audio 1' on transplant-ours",
   "facts": {
    "channel": "Audio 1",
@@ -1727,7 +1727,7 @@
   }
  },
  "bypass-resave-logic": {
-  "path": "public/bypass-b03-resave.logicx",
+  "path": "bypass-b03-resave.logicx",
   "note": "Logic's re-save of bypass-ours",
   "facts": {
    "channel": "Audio 1",
@@ -1738,7 +1738,7 @@
   }
  },
  "send-packaged-ours": {
-  "path": "public/send-b04-packaged-ours.logicx",
+  "path": "send-b04-packaged-ours.logicx",
   "note": "logic send --add 'Audio 1=Bus 1' on a project with no send: the packaged send template",
   "facts": {
    "owner": 0,
@@ -1747,7 +1747,7 @@
   }
  },
  "send-packaged-resave-logic": {
-  "path": "public/send-b04-packaged-resave.logicx",
+  "path": "send-b04-packaged-resave.logicx",
   "note": "Logic's re-save of send-packaged-ours",
   "facts": {
    "owner": 0,
@@ -1756,7 +1756,7 @@
   }
  },
  "stack-ours": {
-  "path": "public/stack-b05-ours.logicx",
+  "path": "stack-b05-ours.logicx",
   "note": "logic stack-create --name Drums over Audio 1 and Audio 2 on Logic's three flat tracks: the packaged first-stack pattern",
   "facts": {
    "stacks": 1,
@@ -1770,7 +1770,7 @@
   }
  },
  "stack-resave-logic": {
-  "path": "public/stack-b05-resave.logicx",
+  "path": "stack-b05-resave.logicx",
   "note": "Logic's re-save of stack-ours",
   "facts": {
    "stacks": 1,
@@ -1784,7 +1784,7 @@
   }
  },
  "arrangement-ours": {
-  "path": "public/arrangement-b06-ours.logicx",
+  "path": "arrangement-b06-ours.logicx",
   "note": "logic arrangement --add 1:8:Intro:custom on the flattened project, which had no arrangement track",
   "facts": {
    "sections": 1,
@@ -1797,7 +1797,7 @@
   }
  },
  "arrangement-resave-logic": {
-  "path": "public/arrangement-b06-resave.logicx",
+  "path": "arrangement-b06-resave.logicx",
   "note": "Logic's re-save of arrangement-ours",
   "facts": {
    "sections": 1,
@@ -1810,7 +1810,7 @@
   }
  },
  "stack-sub2-ours": {
-  "path": "public/stack-b07-sub2-ours.logicx",
+  "path": "stack-b07-sub2-ours.logicx",
   "note": "logic stack-create --name Drums on the flattened project, whose flattened stack left a Sub 1 strip behind",
   "facts": {
    "stacks": 1,
@@ -1825,7 +1825,7 @@
   }
  },
  "stack-sub2-resave-logic": {
-  "path": "public/stack-b07-sub2-resave.logicx",
+  "path": "stack-b07-sub2-resave.logicx",
   "note": "Logic's re-save of stack-sub2-ours",
   "facts": {
    "stacks": 1,
@@ -1840,7 +1840,7 @@
   }
  },
  "midi-import-resave-logic": {
-  "path": "public/midi-b08-import-resave.logicx",
+  "path": "midi-b08-import-resave.logicx",
   "note": "Logic's new project from the .mid that `logic midi --export` wrote from midi-region-looped-logic, saved once",
   "facts": {
    "regions": 1,
@@ -1864,7 +1864,7 @@
   }
  },
  "reorder-ours": {
-  "path": "public/reorder-b09-ours.logicx",
+  "path": "reorder-b09-ours.logicx",
   "note": "logic reorder --move 'Audio 3:before:Audio 1' on Logic's three flat tracks",
   "facts": {
    "order": [
@@ -1876,7 +1876,7 @@
   }
  },
  "reorder-resave-logic": {
-  "path": "public/reorder-b09-resave.logicx",
+  "path": "reorder-b09-resave.logicx",
   "note": "Logic's re-save of reorder-ours; the moved row's selection mark (+79 bit 6) came back cleared, every other row byte held",
   "facts": {
    "order": [
@@ -1888,7 +1888,7 @@
   }
  },
  "midi-write-ours": {
-  "path": "public/midi-b10-write-ours.logicx",
+  "path": "midi-b10-write-ours.logicx",
   "note": "logic midi --region 'Inst 1:3:1' --note 'Inst 1:3:60:80:240' --note 'Inst 1:3.5:64:100:480:2' on the eight-insert save",
   "facts": {
    "regions": 1,
@@ -1912,7 +1912,7 @@
   }
  },
  "midi-write-resave-logic": {
-  "path": "public/midi-b10-write-resave.logicx",
+  "path": "midi-b10-write-resave.logicx",
   "note": "Logic's re-save of midi-write-ours; Logic re-numbered the sequence ids and showed the instrument's preset name on the un-named track",
   "facts": {
    "regions": 1,
@@ -1936,7 +1936,7 @@
   }
  },
  "audio-one-region-logic": {
-  "path": "public/audio-c01-one-region.logicx",
+  "path": "audio-c01-one-region.logicx",
   "note": "File > Import > Audio File\u2026 of a one-second 44.1 kHz mono WAV onto Audio 2 at bar 1 (the bundle's Media folder is not staged; the file record names it)",
   "facts": {
    "regions": 1,
@@ -1950,7 +1950,7 @@
   }
  },
  "audio-three-regions-logic": {
-  "path": "public/audio-c03-three-regions.logicx",
+  "path": "audio-c03-three-regions.logicx",
   "note": "the same WAV imported again onto Audio 3 (Logic copied it as v030-tone_1.wav), then a two-second 48 kHz stereo WAV onto Audio 3 (converted to 44.1 kHz on import)",
   "facts": {
    "regions": 3,
@@ -1977,7 +1977,7 @@
   }
  },
  "audio-write-ours": {
-  "path": "public/audio-c05-write-ours.logicx",
+  "path": "audio-c05-write-ours.logicx",
   "note": "logic regions --audio 'Audio 2:1:v030-tone.wav' on the MIDI-write re-save (the bundle's Media folder is not staged)",
   "facts": {
    "regions": 1,
@@ -1989,7 +1989,7 @@
   }
  },
  "audio-write-resave-logic": {
-  "path": "public/audio-c05-write-resave.logicx",
+  "path": "audio-c05-write-resave.logicx",
   "note": "staged as Logic's re-save of audio-write-ours, but its records are Logic's own import (audio-one-region-logic) saved again: the region record and its UUID match that save, not ours; only the folder path and one qeSM differ",
   "facts": {
    "regions": 1,
@@ -2001,7 +2001,7 @@
   }
  },
  "sessionplayer-track-logic": {
-  "path": "public/sessionplayer-c06-track.logicx",
+  "path": "sessionplayer-c06-track.logicx",
   "note": "Track > New Session Player SI Track\u2026 with the defaults (Create): a drummer track with one generated region",
   "facts": {
    "track": "SoCal",
@@ -2016,7 +2016,7 @@
   }
  },
  "sessionplayer-complexity-logic": {
-  "path": "public/sessionplayer-c07-complexity.logicx",
+  "path": "sessionplayer-c07-complexity.logicx",
   "note": "the editor's Complexity slider dragged up",
   "facts": {
    "complexity": 66.79032897949219,
@@ -2025,7 +2025,7 @@
   }
  },
  "sessionplayer-fills-logic": {
-  "path": "public/sessionplayer-c08-fills.logicx",
+  "path": "sessionplayer-c08-fills.logicx",
   "note": "the Fill Amount knob dragged up",
   "facts": {
    "complexity": 66.79032897949219,
@@ -2034,7 +2034,7 @@
   }
  },
  "sessionplayer-swing-logic": {
-  "path": "public/sessionplayer-c09-swing.logicx",
+  "path": "sessionplayer-c09-swing.logicx",
   "note": "the Swing knob dragged up",
   "facts": {
    "complexity": 66.79032897949219,
@@ -2043,7 +2043,7 @@
   }
  },
  "patch-audio-1-logic": {
-  "path": "public/patch-c10-audio-1.patch",
+  "path": "patch-c10-audio-1.patch",
   "note": "Library > Save\u2026 on Audio 1 of the eight-insert project: the patch bundle Logic 12.3.1 writes (#Root.cst + data.plist)",
   "facts": {
    "channels": 1,
@@ -2062,7 +2062,7 @@
   }
  },
  "patch-built-loaded-logic": {
-  "path": "public/patch-c12-built-loaded.logicx",
+  "path": "patch-c12-built-loaded.logicx",
   "note": "the patch logic patch --build made from the saved patch's #Root.cst, installed in the user library and chosen from the Library's User Patches on Audio 2",
   "facts": {
    "channel": "Audio 2",
@@ -2079,7 +2079,7 @@
   }
  },
  "send-three-base-4-logic": {
-  "path": "public/send-04-third-send.logicx",
+  "path": "send-04-third-send.logicx",
   "note": "a third send (Audio 1 -> Bus 3) picked in the Sends slot's search field: Logic moved every channel's slot base word from 3 to 4",
   "facts": {
    "owner": 0,
@@ -2101,7 +2101,7 @@
   }
  },
  "signature-list-base-logic": {
-  "path": "public/signature-30-list-base.logicx",
+  "path": "signature-30-list-base.logicx",
   "note": "the blank project with the List Editors pane shown and the playhead put at bar 5 beat 3 by a click on the ruler",
   "facts": {
    "meters": [
@@ -2123,7 +2123,7 @@
   }
  },
  "signature-meter-created-logic": {
-  "path": "public/signature-31-meter-created.logicx",
+  "path": "signature-31-meter-created.logicx",
   "note": "Create pressed in the Signature List (type Time): Logic made 5/4 on the next bar line after the playhead, bar 6",
   "facts": {
    "meters": [
@@ -2150,7 +2150,7 @@
   }
  },
  "signature-meter-5-8-bar-6-logic": {
-  "path": "public/signature-32-meter-5-8-bar-6.logicx",
+  "path": "signature-32-meter-5-8-bar-6.logicx",
   "note": "the new event's denominator set to /8 in the list",
   "facts": {
    "meters": [
@@ -2177,7 +2177,7 @@
   }
  },
  "signature-meter-3-8-bar-6-logic": {
-  "path": "public/signature-33-meter-3-8-bar-6.logicx",
+  "path": "signature-33-meter-3-8-bar-6.logicx",
   "note": "its numerator set to 3",
   "facts": {
    "meters": [
@@ -2204,7 +2204,7 @@
   }
  },
  "signature-key-created-logic": {
-  "path": "public/signature-34-key-created.logicx",
+  "path": "signature-34-key-created.logicx",
   "note": "Create with the type set to Key: Logic made F major at the playhead, bar 5 beat 3",
   "facts": {
    "meters": [
@@ -2236,7 +2236,7 @@
   }
  },
  "signature-key-a-minor-logic": {
-  "path": "public/signature-35-key-a-minor.logicx",
+  "path": "signature-35-key-a-minor.logicx",
   "note": "the new key event set to A minor in its popup",
   "facts": {
    "meters": [
@@ -2268,7 +2268,7 @@
   }
  },
  "tempo-point-created-logic": {
-  "path": "public/tempo-01-point-created.logicx",
+  "path": "tempo-01-point-created.logicx",
   "note": "Create pressed in the Tempo List: a 120 bpm point at the playhead, bar 5 beat 3",
   "facts": {
    "tempos": [
@@ -2288,7 +2288,7 @@
   }
  },
  "tempo-point-140-logic": {
-  "path": "public/tempo-02-point-140.logicx",
+  "path": "tempo-02-point-140.logicx",
   "note": "the new point set to 140 bpm in the list",
   "facts": {
    "tempos": [
@@ -2308,7 +2308,7 @@
   }
  },
  "audio-write-two-ours": {
-  "path": "public/audio-c13-write-two-ours.logicx",
+  "path": "audio-c13-write-two-ours.logicx",
   "note": "logic regions --audio 'Audio 2:1:v030-tone.wav' --audio 'Audio 3:2:v030-tone2.wav' (1 s mono, then 2 s stereo, 44.1 kHz) on the MIDI-write re-save (the bundle's Media folder is not staged)",
   "facts": {
    "regions": [
@@ -2332,7 +2332,7 @@
   }
  },
  "audio-write-two-resave-logic": {
-  "path": "public/audio-c13-write-two-resave.logicx",
+  "path": "audio-c13-write-two-resave.logicx",
   "note": "Logic's re-save of audio-write-two-ours; on load Logic rewrote each file record's folder path and file size, and the stereo file's +531 word",
   "facts": {
    "regions": [
@@ -2356,7 +2356,7 @@
   }
  },
  "midi-names-ours": {
-  "path": "public/midi-c14-region-names-ours.logicx",
+  "path": "midi-c14-region-names-ours.logicx",
   "note": "logic midi --region 'Inst 1:2:2:Keys' --region 'Inst 1:5:1:Pad Layer' --note 'Inst 1:2:60:100:480' --note 'Inst 1:5.5:64:90:240' on the instrument-track save",
   "facts": {
    "regions": [
@@ -2388,7 +2388,7 @@
   }
  },
  "midi-names-resave-logic": {
-  "path": "public/midi-c14-region-names-resave.logicx",
+  "path": "midi-c14-region-names-resave.logicx",
   "note": "Logic's re-save of midi-names-ours; Logic renumbered the sequence ids and rewrote the byte 225 past each region's name",
   "facts": {
    "regions": [
@@ -2420,7 +2420,7 @@
   }
  },
  "midi-edits-ours": {
-  "path": "public/midi-b11-edits-ours.logicx",
+  "path": "midi-b11-edits-ours.logicx",
   "note": "logic midi --transpose 1=2 --velocity 1=0.8 --quantize 2=1/8 --move 2=120 --delete 3:40 --remap 3=gm:addictive-drums-2 --copy-region '1=Inst 1:12' --copy-notes '2=Inst 1:3' on a copy of midi-names-resave-logic that had first gained notes in both regions and a GM drum region ('Drums GM', bar 9)",
   "facts": {
    "regions": [
@@ -2592,7 +2592,7 @@
   }
  },
  "midi-edits-resave-logic": {
-  "path": "public/midi-b11-edits-resave.logicx",
+  "path": "midi-b11-edits-resave.logicx",
   "note": "Logic's re-save of midi-edits-ours: every region and event as written, the sequence ids renumbered",
   "facts": {
    "regions": [
@@ -2764,7 +2764,7 @@
   }
  },
  "regions-a00-base-logic": {
-  "path": "public/regions-a00-base.logicx",
+  "path": "regions-a00-base.logicx",
   "note": "the v0.3.0 three-audio-regions save with its MIDI region: the base the `regions-a*` saves start from",
   "facts": {
    "regions": [
@@ -2873,7 +2873,7 @@
   }
  },
  "regions-a01-audio-moved-logic": {
-  "path": "public/regions-a01-audio-moved.logicx",
+  "path": "regions-a01-audio-moved.logicx",
   "note": "audio region 'v030-tone' nudged one bar right",
   "facts": {
    "regions": [
@@ -2982,7 +2982,7 @@
   }
  },
  "regions-a02-audio-start-trimmed-logic": {
-  "path": "public/regions-a02-audio-start-trimmed.logicx",
+  "path": "regions-a02-audio-start-trimmed.logicx",
   "note": "its start nudged one beat right: first frame 22050, 22050 frames",
   "facts": {
    "regions": [
@@ -3091,7 +3091,7 @@
   }
  },
  "regions-a03-audio-end-trimmed-logic": {
-  "path": "public/regions-a03-audio-end-trimmed.logicx",
+  "path": "regions-a03-audio-end-trimmed.logicx",
   "note": "'v030-tone2' lengthened to 66150 frames (nudge length)",
   "facts": {
    "regions": [
@@ -3200,7 +3200,7 @@
   }
  },
  "regions-a04-audio-split-logic": {
-  "path": "public/regions-a04-audio-split.logicx",
+  "path": "regions-a04-audio-split.logicx",
   "note": "'v030-tone2' split at bar 1.5: piece 'v030-tone2.1' from frame 44100, 22050 frames",
   "facts": {
    "regions": [
@@ -3329,7 +3329,7 @@
   }
  },
  "regions-a05-audio-muted-logic": {
-  "path": "public/regions-a05-audio-muted.logicx",
+  "path": "regions-a05-audio-muted.logicx",
   "note": "'v030-tone_1' muted",
   "facts": {
    "regions": [
@@ -3458,7 +3458,7 @@
   }
  },
  "regions-a06-audio-renamed-logic": {
-  "path": "public/regions-a06-audio-renamed.logicx",
+  "path": "regions-a06-audio-renamed.logicx",
   "note": "'v030-tone_1' renamed 'tone renamed'",
   "facts": {
    "regions": [
@@ -3587,7 +3587,7 @@
   }
  },
  "regions-a07-midi-moved-logic": {
-  "path": "public/regions-a07-midi-moved.logicx",
+  "path": "regions-a07-midi-moved.logicx",
   "note": "MIDI region 'Inst 1' nudged to bar 4",
   "facts": {
    "regions": [
@@ -3716,7 +3716,7 @@
   }
  },
  "regions-a08-midi-end-trimmed-logic": {
-  "path": "public/regions-a08-midi-end-trimmed.logicx",
+  "path": "regions-a08-midi-end-trimmed.logicx",
   "note": "its length nudged to three beats",
   "facts": {
    "regions": [
@@ -3845,7 +3845,7 @@
   }
  },
  "regions-a09-midi-start-trimmed-logic": {
-  "path": "public/regions-a09-midi-start-trimmed.logicx",
+  "path": "regions-a09-midi-start-trimmed.logicx",
   "note": "its start nudged one beat right; the notes keep their time",
   "facts": {
    "regions": [
@@ -3974,7 +3974,7 @@
   }
  },
  "regions-a10-midi-split-logic": {
-  "path": "public/regions-a10-midi-split.logicx",
+  "path": "regions-a10-midi-split.logicx",
   "note": "split at bar 4.5: a second 'Inst 1' with its own sequence",
   "facts": {
    "regions": [
@@ -4126,7 +4126,7 @@
   }
  },
  "regions-a11-midi-loop-on-logic": {
-  "path": "public/regions-a11-midi-loop-on.logicx",
+  "path": "regions-a11-midi-loop-on.logicx",
   "note": "the first 'Inst 1' looped",
   "facts": {
    "regions": [
@@ -4278,7 +4278,7 @@
   }
  },
  "regions-a12-midi-loop-off-logic": {
-  "path": "public/regions-a12-midi-loop-off.logicx",
+  "path": "regions-a12-midi-loop-off.logicx",
   "note": "its loop off again",
   "facts": {
    "regions": [
@@ -4430,7 +4430,7 @@
   }
  },
  "regions-a13-audio-loop-on-logic": {
-  "path": "public/regions-a13-audio-loop-on.logicx",
+  "path": "regions-a13-audio-loop-on.logicx",
   "note": "'v030-tone' looped",
   "facts": {
    "regions": [
@@ -4582,7 +4582,7 @@
   }
  },
  "regions-a14-audio-loop-off-logic": {
-  "path": "public/regions-a14-audio-loop-off.logicx",
+  "path": "regions-a14-audio-loop-off.logicx",
   "note": "its loop off again",
   "facts": {
    "regions": [
@@ -4734,7 +4734,7 @@
   }
  },
  "regions-a15-fade-in-500-logic": {
-  "path": "public/regions-a15-fade-in-500.logicx",
+  "path": "regions-a15-fade-in-500.logicx",
   "note": "'tone renamed' Fade In 500 ms",
   "facts": {
    "regions": [
@@ -4886,7 +4886,7 @@
   }
  },
  "regions-a16-fade-in-curve-50-logic": {
-  "path": "public/regions-a16-fade-in-curve-50.logicx",
+  "path": "regions-a16-fade-in-curve-50.logicx",
   "note": "its Fade In curve 50",
   "facts": {
    "regions": [
@@ -5038,7 +5038,7 @@
   }
  },
  "regions-a17-fade-out-500-logic": {
-  "path": "public/regions-a17-fade-out-500.logicx",
+  "path": "regions-a17-fade-out-500.logicx",
   "note": "its Fade Out 500 ms",
   "facts": {
    "regions": [
@@ -5190,7 +5190,7 @@
   }
  },
  "regions-a18-fade-in-speed-up-logic": {
-  "path": "public/regions-a18-fade-in-speed-up.logicx",
+  "path": "regions-a18-fade-in-speed-up.logicx",
   "note": "its Fade In type Speed Up (saved after regions-a19, the fade-out curve)",
   "facts": {
    "regions": [
@@ -5342,7 +5342,7 @@
   }
  },
  "regions-a19-fade-out-curve-30-logic": {
-  "path": "public/regions-a19-fade-out-curve-30.logicx",
+  "path": "regions-a19-fade-out-curve-30.logicx",
   "note": "its Fade Out curve 30",
   "facts": {
    "regions": [
@@ -5494,7 +5494,7 @@
   }
  },
  "regions-a20-crossfade-logic": {
-  "path": "public/regions-a20-crossfade.logicx",
+  "path": "regions-a20-crossfade.logicx",
   "note": "'v030-tone2.1' nudged a beat left under Drag: X-Fade, overlapping 'tone renamed'",
   "facts": {
    "regions": [
@@ -5646,7 +5646,7 @@
   }
  },
  "markers-a21-created-logic": {
-  "path": "public/markers-a21-created.logicx",
+  "path": "markers-a21-created.logicx",
   "note": "a marker created at bar 5 (Option-')",
   "facts": {
    "regions": [
@@ -5804,7 +5804,7 @@
   }
  },
  "markers-a22-renamed-logic": {
-  "path": "public/markers-a22-renamed.logicx",
+  "path": "markers-a22-renamed.logicx",
   "note": "renamed 'Chorus'",
   "facts": {
    "regions": [
@@ -5962,7 +5962,7 @@
   }
  },
  "markers-a23-second-logic": {
-  "path": "public/markers-a23-second.logicx",
+  "path": "markers-a23-second.logicx",
   "note": "a second marker at bar 7",
   "facts": {
    "regions": [
@@ -6125,7 +6125,7 @@
   }
  },
  "markers-a24-moved-logic": {
-  "path": "public/markers-a24-moved.logicx",
+  "path": "markers-a24-moved.logicx",
   "note": "the first moved to bar 6 in the Marker List",
   "facts": {
    "regions": [
@@ -6288,7 +6288,7 @@
   }
  },
  "markers-a25-deleted-logic": {
-  "path": "public/markers-a25-deleted.logicx",
+  "path": "markers-a25-deleted.logicx",
   "note": "the second deleted",
   "facts": {
    "regions": [
@@ -6446,7 +6446,7 @@
   }
  },
  "regions-a26-import-e-acute-logic": {
-  "path": "public/regions-a26-import-e-acute.logicx",
+  "path": "regions-a26-import-e-acute.logicx",
   "note": "File > Import > Audio File of v040-\u00e9.wav (NFD on disk) at bar 9",
   "facts": {
    "regions": [
@@ -6629,7 +6629,7 @@
   }
  },
  "regions-a27-import-emoji-logic": {
-  "path": "public/regions-a27-import-emoji.logicx",
+  "path": "regions-a27-import-emoji.logicx",
   "note": "import of v040-\ud83e\udd41.wav at bar 11",
   "facts": {
    "regions": [
@@ -6837,7 +6837,7 @@
   }
  },
  "regions-a28-import-kanji-logic": {
-  "path": "public/regions-a28-import-kanji.logicx",
+  "path": "regions-a28-import-kanji.logicx",
   "note": "import of v040-\u65e5\u672c.wav at bar 13",
   "facts": {
    "regions": [
@@ -7070,7 +7070,7 @@
   }
  },
  "regions-a29-rename-emoji-logic": {
-  "path": "public/regions-a29-rename-emoji.logicx",
+  "path": "regions-a29-rename-emoji.logicx",
   "note": "the \u00e9 region renamed 'Snare \ud83e\udd41'",
   "facts": {
    "regions": [
@@ -7303,7 +7303,7 @@
   }
  },
  "regions-a30-midi-rename-logic": {
-  "path": "public/regions-a30-midi-rename.logicx",
+  "path": "regions-a30-midi-rename.logicx",
   "note": "the first MIDI region renamed 'Pad \u2014 \u00e9'",
   "facts": {
    "regions": [
@@ -7536,7 +7536,7 @@
   }
  },
  "beats-place-generate-ours": {
-  "path": "public/beats-place-generate-ours.logicx",
+  "path": "beats-place-generate-ours.logicx",
   "note": "logic beats place (a library pattern, --repeat) and beats generate (a seeded phrase) onto a copy of midi-two-notes-logic over a synthetic groovebin library",
   "facts": {
    "regions": [
@@ -7709,7 +7709,7 @@
   }
  },
  "beats-place-generate-resave-logic": {
-  "path": "public/beats-place-generate-resave.logicx",
+  "path": "beats-place-generate-resave.logicx",
   "note": "Logic's re-save of beats-place-generate-ours",
   "facts": {
    "regions": [
@@ -7882,7 +7882,7 @@
   }
  },
  "beats-compose-ours": {
-  "path": "public/beats-compose-ours.logicx",
+  "path": "beats-compose-ours.logicx",
   "note": "logic beats compose --fills over the arrangement's sections onto a copy of midi-two-notes-logic",
   "facts": {
    "regions": [
@@ -8258,7 +8258,7 @@
   }
  },
  "beats-compose-resave-logic": {
-  "path": "public/beats-compose-resave.logicx",
+  "path": "beats-compose-resave.logicx",
   "note": "Logic's re-save of beats-compose-ours",
   "facts": {
    "regions": [
@@ -8634,7 +8634,7 @@
   }
  },
  "regions-midi-edits-ours": {
-  "path": "public/regions-midi-edits-ours.logicx",
+  "path": "regions-midi-edits-ours.logicx",
   "note": "logic regions --move 1=4 --trim 1=4.25:0.5 --split 1=4.5 --loop 1 --loop 4 on regions-a06-audio-renamed-logic",
   "facts": {
    "regions": [
@@ -8761,7 +8761,7 @@
   }
  },
  "regions-midi-edits-resave-logic": {
-  "path": "public/regions-midi-edits-resave.logicx",
+  "path": "regions-midi-edits-resave.logicx",
   "note": "Logic's re-save of regions-midi-edits-ours: every region, entry, record and the split piece's sequence offset as written",
   "facts": {
    "regions": [
@@ -8888,7 +8888,7 @@
   }
  },
  "markers-edits-ours": {
-  "path": "public/markers-edits-ours.logicx",
+  "path": "markers-edits-ours.logicx",
   "note": "logic markers --add 8:Bridge --rename '1=Chorus A' --move 1=5 --add 10:2:Outro --delete 2 on markers-a25-deleted-logic",
   "facts": {
    "regions": [
@@ -9026,7 +9026,7 @@
   }
  },
  "markers-edits-resave-logic": {
-  "path": "public/markers-edits-resave.logicx",
+  "path": "markers-edits-resave.logicx",
   "note": "Logic's re-save of markers-edits-ours: both markers as written",
   "facts": {
    "regions": [
@@ -9164,7 +9164,7 @@
   }
  },
  "regions-audio-edits-ours": {
-  "path": "public/regions-audio-edits-ours.logicx",
+  "path": "regions-audio-edits-ours.logicx",
   "note": "logic regions --move 2=2 --trim 2=2.25: --split 3=1.5 --mute 4 --rename '4=tone renamed' --loop 1 --fade-in 4=500:50:speed-up --fade-out 4=500:30 on regions-a00-base-logic",
   "facts": {
    "regions": [
@@ -9267,7 +9267,7 @@
   }
  },
  "regions-audio-edits-resave-logic": {
-  "path": "public/regions-audio-edits-resave.logicx",
+  "path": "regions-audio-edits-resave.logicx",
   "note": "Logic's re-save of regions-audio-edits-ours: every region, the split's second piece and record, the mute, name, loop and fades as written",
   "facts": {
    "regions": [
@@ -9370,28 +9370,28 @@
   }
  },
  "regions-b00-base-logic": {
-  "path": "public/regions-b00-base.logicx",
+  "path": "regions-b00-base.logicx",
   "note": "the base the `regions-b*` saves start from: the regions-a20 crossfade save with its Media folder",
   "facts": {
    "region": "tone renamed"
   }
  },
  "regions-b01-gain-plus-3-logic": {
-  "path": "public/regions-b01-gain-plus-3.logicx",
+  "path": "regions-b01-gain-plus-3.logicx",
   "note": "'tone renamed' Gain +3 dB",
   "facts": {
    "gain": 3
   }
  },
  "regions-b02-gain-minus-6-logic": {
-  "path": "public/regions-b02-gain-minus-6.logicx",
+  "path": "regions-b02-gain-minus-6.logicx",
   "note": "its Gain -6 dB",
   "facts": {
    "gain": -6
   }
  },
  "regions-b03-delay-plus-120-logic": {
-  "path": "public/regions-b03-delay-plus-120.logicx",
+  "path": "regions-b03-delay-plus-120.logicx",
   "note": "its Delay +120 ticks",
   "facts": {
    "gain": -6,
@@ -9399,7 +9399,7 @@
   }
  },
  "regions-b04-transpose-plus-2-logic": {
-  "path": "public/regions-b04-transpose-plus-2.logicx",
+  "path": "regions-b04-transpose-plus-2.logicx",
   "note": "its Transpose +2 (Logic switched the track to Flex Pitch: two marker blocks after the entry)",
   "facts": {
    "gain": -6,
@@ -9408,7 +9408,7 @@
   }
  },
  "regions-b05-fine-tune-plus-25-logic": {
-  "path": "public/regions-b05-fine-tune-plus-25.logicx",
+  "path": "regions-b05-fine-tune-plus-25.logicx",
   "note": "its Fine Tune +25 cents",
   "facts": {
    "gain": -6,
@@ -9418,7 +9418,7 @@
   }
  },
  "regions-b07-gain-0-logic": {
-  "path": "public/regions-b07-gain-0.logicx",
+  "path": "regions-b07-gain-0.logicx",
   "note": "its Gain back to 0 (a Reverse press on this flexed region did nothing: the row is disabled)",
   "facts": {
    "gain": 0,
@@ -9428,56 +9428,56 @@
   }
  },
  "regions-b08-fade-out-type-x-logic": {
-  "path": "public/regions-b08-fade-out-type-x.logicx",
+  "path": "regions-b08-fade-out-type-x.logicx",
   "note": "its Fade-Out Type X (Crossfade)",
   "facts": {
    "out_type": "x"
   }
  },
  "regions-b09-fade-out-type-eqp-logic": {
-  "path": "public/regions-b09-fade-out-type-eqp.logicx",
+  "path": "regions-b09-fade-out-type-eqp.logicx",
   "note": "its Fade-Out Type EqP",
   "facts": {
    "out_type": "eqp"
   }
  },
  "regions-b10-fade-out-type-xs-logic": {
-  "path": "public/regions-b10-fade-out-type-xs.logicx",
+  "path": "regions-b10-fade-out-type-xs.logicx",
   "note": "its Fade-Out Type X S",
   "facts": {
    "out_type": "xs"
   }
  },
  "regions-b11-fade-out-type-out-logic": {
-  "path": "public/regions-b11-fade-out-type-out.logicx",
+  "path": "regions-b11-fade-out-type-out.logicx",
   "note": "its Fade-Out Type Out",
   "facts": {
    "out_type": "out"
   }
  },
  "regions-b15-gain-plus-30-logic": {
-  "path": "public/regions-b15-gain-plus-30.logicx",
+  "path": "regions-b15-gain-plus-30.logicx",
   "note": "its Gain +30 dB",
   "facts": {
    "gain": 30
   }
  },
  "regions-b16-gain-minus-30-logic": {
-  "path": "public/regions-b16-gain-minus-30.logicx",
+  "path": "regions-b16-gain-minus-30.logicx",
   "note": "its Gain -30 dB",
   "facts": {
    "gain": -30
   }
  },
  "regions-b17-gain-minus-17-logic": {
-  "path": "public/regions-b17-gain-minus-17.logicx",
+  "path": "regions-b17-gain-minus-17.logicx",
   "note": "its Gain -17 dB",
   "facts": {
    "gain": -17
   }
  },
  "regions-b20-transpose-minus-3-logic": {
-  "path": "public/regions-b20-transpose-minus-3.logicx",
+  "path": "regions-b20-transpose-minus-3.logicx",
   "note": "its Transpose -3",
   "facts": {
    "gain": 0,
@@ -9487,7 +9487,7 @@
   }
  },
  "regions-b21-fine-tune-minus-25-logic": {
-  "path": "public/regions-b21-fine-tune-minus-25.logicx",
+  "path": "regions-b21-fine-tune-minus-25.logicx",
   "note": "its Fine Tune -25 cents",
   "facts": {
    "gain": 0,
@@ -9497,7 +9497,7 @@
   }
  },
  "regions-b22-delay-minus-120-logic": {
-  "path": "public/regions-b22-delay-minus-120.logicx",
+  "path": "regions-b22-delay-minus-120.logicx",
   "note": "its Delay -120 ticks",
   "facts": {
    "gain": 0,
@@ -9507,7 +9507,7 @@
   }
  },
  "regions-b23-reverse-on-logic": {
-  "path": "public/regions-b23-reverse-on.logicx",
+  "path": "regions-b23-reverse-on.logicx",
   "note": "'v030-tone' (Audio 2, unflexed) Reverse on",
   "facts": {
    "region": "v030-tone",
@@ -9515,7 +9515,7 @@
   }
  },
  "regions-b24-reverse-off-logic": {
-  "path": "public/regions-b24-reverse-off.logicx",
+  "path": "regions-b24-reverse-off.logicx",
   "note": "its Reverse off",
   "facts": {
    "region": "v030-tone",
@@ -9523,7 +9523,7 @@
   }
  },
  "regions-b25-crossfade-curve-drag-logic": {
-  "path": "public/regions-b25-crossfade-curve-drag.logicx",
+  "path": "regions-b25-crossfade-curve-drag.logicx",
   "note": "a drag on the crossfade of 'tone renamed' (the fade-out side) set its curve to -40",
   "facts": {
    "out_curve": -40,
@@ -9531,7 +9531,7 @@
   }
  },
  "regions-b26-crossfade-curve-40-logic": {
-  "path": "public/regions-b26-crossfade-curve-40.logicx",
+  "path": "regions-b26-crossfade-curve-40.logicx",
   "note": "its Fade-Out curve slider 40",
   "facts": {
    "out_curve": 40,
@@ -9539,7 +9539,7 @@
   }
  },
  "regions-b27-crossfade-length-563-logic": {
-  "path": "public/regions-b27-crossfade-length-563.logicx",
+  "path": "regions-b27-crossfade-length-563.logicx",
   "note": "a second drag lengthened the crossfade to 563 ms",
   "facts": {
    "out_curve": 40,
@@ -9547,7 +9547,7 @@
   }
  },
  "regions-b28-crossfade-length-500-logic": {
-  "path": "public/regions-b28-crossfade-length-500.logicx",
+  "path": "regions-b28-crossfade-length-500.logicx",
   "note": "its Fade-Out slider back to 500 ms",
   "facts": {
    "out_curve": 40,
@@ -9555,7 +9555,7 @@
   }
  },
  "regions-b29-underneath-moved-bar-2-logic": {
-  "path": "public/regions-b29-underneath-moved-bar-2.logicx",
+  "path": "regions-b29-underneath-moved-bar-2.logicx",
   "note": "'tone renamed' nudged to bar 2 under Drag: X-Fade: the crossfade bytes stay on both regions",
   "facts": {
    "out_ms": 500,
@@ -9563,7 +9563,7 @@
   }
  },
  "regions-b31-audio-colour-12-logic": {
-  "path": "public/regions-b31-audio-colour-12.logicx",
+  "path": "regions-b31-audio-colour-12.logicx",
   "note": "'v030-tone' coloured from the Color window's swatch 12",
   "facts": {
    "region": "v030-tone",
@@ -9571,7 +9571,7 @@
   }
  },
  "regions-b32-midi-colour-40-logic": {
-  "path": "public/regions-b32-midi-colour-40.logicx",
+  "path": "regions-b32-midi-colour-40.logicx",
   "note": "the first 'Inst 1' MIDI region coloured with swatch 40",
   "facts": {
    "region": "Inst 1",
@@ -9579,7 +9579,7 @@
   }
  },
  "midi-qswing-region-60-logic": {
-  "path": "public/midi-q01-region-quantize-qswing-60.logicx",
+  "path": "midi-q01-region-quantize-qswing-60.logicx",
   "note": "the two-notes region with its notes moved 240 ticks later (odd 1/16 lines), Region inspector Quantize 1/16 and Q-Swing 60: non-destructive, the notes keep their ticks",
   "facts": {
    "ticks": [
@@ -9589,7 +9589,7 @@
   }
  },
  "midi-qswing-60-logic": {
-  "path": "public/midi-q02-piano-roll-swing-60.logicx",
+  "path": "midi-q02-piano-roll-swing-60.logicx",
   "note": "Piano Roll Time Quantize 1/16 with Swing 60 on both notes: the odd sixteenth lines land 48 ticks late",
   "facts": {
    "ticks": [
@@ -9599,7 +9599,7 @@
   }
  },
  "midi-qswing-region-70-logic": {
-  "path": "public/midi-q03-region-qswing-70.logicx",
+  "path": "midi-q03-region-qswing-70.logicx",
   "note": "its Region inspector Q-Swing 70",
   "facts": {
    "ticks": [
@@ -9609,7 +9609,7 @@
   }
  },
  "regions-params-ours": {
-  "path": "public/regions-params-ours.logicx",
+  "path": "regions-params-ours.logicx",
   "note": "logic regions --move 6=1.25 --crossfade 5=:0:eqp --fade-out 4=300:10:x --gain 3=5 --delay 3=60 --transpose 3=2 --fine-tune 3=-10 --reverse 3 --colour 3=40 --colour 1=50 on regions-a19-fade-out-curve-30-logic",
   "facts": {
    "regions": [
@@ -9648,12 +9648,12 @@
   }
  },
  "regions-params-resave-logic": {
-  "path": "public/regions-params-resave.logicx",
+  "path": "regions-params-resave.logicx",
   "note": "Logic's re-save of regions-params-ours: every parameter, the fade-out type, the crossfade and both colours as written; Logic set bit 7 beside bit 5 at +66 of the crossfade's underneath region",
   "facts": {}
  },
  "midi-transform-ours": {
-  "path": "public/midi-transform-ours.logicx",
+  "path": "midi-transform-ours.logicx",
   "note": "27 four-note regions added to midi-edits-resave-logic (--region/--note), then one transform per region: set, add, mul, min, max, random, flip, quantize length, crescendo, exp, reverse position, and the presets humanize, fixed-velocity, velocity-limit, random-velocity, crescendo, reverse-position, reverse-pitch, exp-velocity, fixed-length, max-length, min-length, double-speed, legato, staccato, swing 60%, half-speed (a two-bar region)",
   "facts": {
    "regions": [
@@ -10743,8 +10743,2101 @@
   }
  },
  "midi-transform-resave-logic": {
-  "path": "public/midi-transform-resave.logicx",
+  "path": "midi-transform-resave.logicx",
   "note": "Logic's re-save of midi-transform-ours: all 31 regions and every event as written",
   "facts": {}
+ },
+ "master-out-lpeq-logic": {
+  "path": "master-c01-lpeq-stereo-out.logicx",
+  "note": "Linear Phase EQ inserted on the Stereo Out below the earlier ones",
+  "facts": {
+   "channel": "Stereo Out",
+   "inserts": [
+    "Linear Phase EQ"
+   ]
+  }
+ },
+ "master-out-multipressor-logic": {
+  "path": "master-c02-multipressor-stereo-out.logicx",
+  "note": "Multipressor inserted on the Stereo Out below the earlier ones",
+  "facts": {
+   "channel": "Stereo Out",
+   "inserts": [
+    "Linear Phase EQ",
+    "Multipressor"
+   ]
+  }
+ },
+ "master-out-adaptive-limiter-logic": {
+  "path": "master-c03-adaptive-limiter-stereo-out.logicx",
+  "note": "Adaptive Limiter inserted on the Stereo Out below the earlier ones",
+  "facts": {
+   "channel": "Stereo Out",
+   "inserts": [
+    "Linear Phase EQ",
+    "Multipressor",
+    "Adaptive Limiter"
+   ]
+  }
+ },
+ "master-out-limiter-logic": {
+  "path": "master-c04-limiter-stereo-out.logicx",
+  "note": "Limiter inserted on the Stereo Out below the earlier ones",
+  "facts": {
+   "channel": "Stereo Out",
+   "inserts": [
+    "Linear Phase EQ",
+    "Multipressor",
+    "Adaptive Limiter",
+    "Limiter"
+   ]
+  }
+ },
+ "master-track-lpeq-logic": {
+  "path": "master-c05-lpeq-audio-1.logicx",
+  "note": "Linear Phase EQ inserted on Audio 1 below the earlier ones (the four on the Stereo Out stay)",
+  "facts": {
+   "channel": "Audio 1",
+   "inserts": [
+    "Linear Phase EQ"
+   ],
+   "stereo_out_inserts": [
+    "Linear Phase EQ",
+    "Multipressor",
+    "Adaptive Limiter",
+    "Limiter"
+   ]
+  }
+ },
+ "master-track-multipressor-logic": {
+  "path": "master-c06-multipressor-audio-1.logicx",
+  "note": "Multipressor inserted on Audio 1 below the earlier ones (the four on the Stereo Out stay)",
+  "facts": {
+   "channel": "Audio 1",
+   "inserts": [
+    "Linear Phase EQ",
+    "Multipressor"
+   ],
+   "stereo_out_inserts": [
+    "Linear Phase EQ",
+    "Multipressor",
+    "Adaptive Limiter",
+    "Limiter"
+   ]
+  }
+ },
+ "master-track-adaptive-limiter-logic": {
+  "path": "master-c07-adaptive-limiter-audio-1.logicx",
+  "note": "Adaptive Limiter inserted on Audio 1 below the earlier ones (the four on the Stereo Out stay)",
+  "facts": {
+   "channel": "Audio 1",
+   "inserts": [
+    "Linear Phase EQ",
+    "Multipressor",
+    "Adaptive Limiter"
+   ],
+   "stereo_out_inserts": [
+    "Linear Phase EQ",
+    "Multipressor",
+    "Adaptive Limiter",
+    "Limiter"
+   ]
+  }
+ },
+ "master-track-limiter-logic": {
+  "path": "master-c08-limiter-audio-1.logicx",
+  "note": "Limiter inserted on Audio 1 below the earlier ones (the four on the Stereo Out stay)",
+  "facts": {
+   "channel": "Audio 1",
+   "inserts": [
+    "Linear Phase EQ",
+    "Multipressor",
+    "Adaptive Limiter",
+    "Limiter"
+   ],
+   "stereo_out_inserts": [
+    "Linear Phase EQ",
+    "Multipressor",
+    "Adaptive Limiter",
+    "Limiter"
+   ]
+  }
+ },
+ "master-lpeq-peak3-gain-logic": {
+  "path": "master-c09-lpeq-peak3-gain.logicx",
+  "note": "Linear Phase EQ on the Stereo Out: Peak 3 Gain 0.0 dB -> +0.1 dB, one slider step in the plug-in window",
+  "facts": {
+   "channel": "Stereo Out",
+   "plugin": "Linear Phase EQ",
+   "parameter": "Peak 3 Gain",
+   "before": "0.0 dB",
+   "after": "+0.1 dB",
+   "value": 0.1
+  }
+ },
+ "master-lpeq-peak3-freq-logic": {
+  "path": "master-c10-lpeq-peak3-freq.logicx",
+  "note": "Linear Phase EQ on the Stereo Out: Peak 3 Frequency 750 Hz -> 755 Hz, one slider step in the plug-in window",
+  "facts": {
+   "channel": "Stereo Out",
+   "plugin": "Linear Phase EQ",
+   "parameter": "Peak 3 Frequency",
+   "before": "750 Hz",
+   "after": "755 Hz",
+   "value": 755
+  }
+ },
+ "master-lpeq-peak3-q-logic": {
+  "path": "master-c11-lpeq-peak3-q.logicx",
+  "note": "Linear Phase EQ on the Stereo Out: Peak 3 Q 0.60 -> 0.64, one slider step in the plug-in window",
+  "facts": {
+   "channel": "Stereo Out",
+   "plugin": "Linear Phase EQ",
+   "parameter": "Peak 3 Q",
+   "before": "0.60",
+   "after": "0.64",
+   "value": 0.64
+  }
+ },
+ "master-lpeq-lowcut-on-logic": {
+  "path": "master-c12-lpeq-lowcut-on.logicx",
+  "note": "Linear Phase EQ on the Stereo Out: Low Cut off -> on (20 Hz, 12 dB/Oct), one slider step in the plug-in window",
+  "facts": {
+   "channel": "Stereo Out",
+   "plugin": "Linear Phase EQ",
+   "parameter": "Low Cut",
+   "before": "off",
+   "after": "on (20 Hz, 12 dB/Oct)",
+   "value": 1
+  }
+ },
+ "master-mp-band1-threshold-logic": {
+  "path": "master-c13-multipressor-band1-threshold.logicx",
+  "note": "Multipressor on the Stereo Out: Band 1 Comp. Threshold -18.0 dB -> -17.5 dB, one slider step in the plug-in window",
+  "facts": {
+   "channel": "Stereo Out",
+   "plugin": "Multipressor",
+   "parameter": "Band 1 Comp. Threshold",
+   "before": "-18.0 dB",
+   "after": "-17.5 dB",
+   "value": -17.5
+  }
+ },
+ "master-mp-band1-ratio-logic": {
+  "path": "master-c14-multipressor-band1-ratio.logicx",
+  "note": "Multipressor on the Stereo Out: Band 1 Comp. Ratio 2.511 -> 2.555, one slider step in the plug-in window",
+  "facts": {
+   "channel": "Stereo Out",
+   "plugin": "Multipressor",
+   "parameter": "Band 1 Comp. Ratio",
+   "before": "2.511",
+   "after": "2.555",
+   "value": 2.5556
+  }
+ },
+ "master-mp-band1-makeup-logic": {
+  "path": "master-c15-multipressor-band1-makeup.logicx",
+  "note": "Multipressor on the Stereo Out: Band 1 Make Up 0.0 dB -> 0.5 dB, one slider step in the plug-in window",
+  "facts": {
+   "channel": "Stereo Out",
+   "plugin": "Multipressor",
+   "parameter": "Band 1 Make Up",
+   "before": "0.0 dB",
+   "after": "0.5 dB",
+   "value": 0.5
+  }
+ },
+ "master-mp-xover-1-2-logic": {
+  "path": "master-c16-multipressor-xover-1-2.logicx",
+  "note": "Multipressor on the Stereo Out: Band 2 Xover Frequency 1/2 160 Hz -> 170 Hz, one slider step in the plug-in window",
+  "facts": {
+   "channel": "Stereo Out",
+   "plugin": "Multipressor",
+   "parameter": "Band 2 Xover Frequency 1/2",
+   "before": "160 Hz",
+   "after": "170 Hz",
+   "value": 170
+  }
+ },
+ "master-adl-gain-logic": {
+  "path": "master-c17-adlimiter-gain.logicx",
+  "note": "Adaptive Limiter on the Stereo Out: Gain 3.0 dB -> 3.1 dB, one slider step in the plug-in window",
+  "facts": {
+   "channel": "Stereo Out",
+   "plugin": "Adaptive Limiter",
+   "parameter": "Gain",
+   "before": "3.0 dB",
+   "after": "3.1 dB",
+   "value": 3.1
+  }
+ },
+ "master-adl-out-ceiling-logic": {
+  "path": "master-c18-adlimiter-out-ceiling.logicx",
+  "note": "Adaptive Limiter on the Stereo Out: Out Ceiling 0.0 dB -> -0.1 dB, one slider step in the plug-in window",
+  "facts": {
+   "channel": "Stereo Out",
+   "plugin": "Adaptive Limiter",
+   "parameter": "Out Ceiling",
+   "before": "0.0 dB",
+   "after": "-0.1 dB",
+   "value": -0.1
+  }
+ },
+ "master-adl-lookahead-logic": {
+  "path": "master-c19-adlimiter-lookahead.logicx",
+  "note": "Adaptive Limiter on the Stereo Out: Lookahead 50 ms -> 51 ms, one slider step in the plug-in window",
+  "facts": {
+   "channel": "Stereo Out",
+   "plugin": "Adaptive Limiter",
+   "parameter": "Lookahead",
+   "before": "50 ms",
+   "after": "51 ms",
+   "value": 51
+  }
+ },
+ "master-adl-remove-dc-logic": {
+  "path": "master-c20-adlimiter-remove-dc.logicx",
+  "note": "Adaptive Limiter on the Stereo Out: Remove DC on -> off, one slider step in the plug-in window",
+  "facts": {
+   "channel": "Stereo Out",
+   "plugin": "Adaptive Limiter",
+   "parameter": "Remove DC",
+   "before": "on",
+   "after": "off",
+   "value": 0
+  }
+ },
+ "master-lim-gain-logic": {
+  "path": "master-c21-limiter-gain.logicx",
+  "note": "Limiter on the Stereo Out: Gain 0.0 dB -> +0.1 dB, one slider step in the plug-in window",
+  "facts": {
+   "channel": "Stereo Out",
+   "plugin": "Limiter",
+   "parameter": "Gain",
+   "before": "0.0 dB",
+   "after": "+0.1 dB",
+   "value": 0.1
+  }
+ },
+ "master-lim-output-level-logic": {
+  "path": "master-c22-limiter-output-level.logicx",
+  "note": "Limiter on the Stereo Out: Output Level -0.0 dB -> -0.1 dB, one slider step in the plug-in window",
+  "facts": {
+   "channel": "Stereo Out",
+   "plugin": "Limiter",
+   "parameter": "Output Level",
+   "before": "-0.0 dB",
+   "after": "-0.1 dB",
+   "value": -0.1
+  }
+ },
+ "master-lim-release-logic": {
+  "path": "master-c23-limiter-release.logicx",
+  "note": "Limiter on the Stereo Out: Release 250.0 ms -> 260.0 ms, one slider step in the plug-in window",
+  "facts": {
+   "channel": "Stereo Out",
+   "plugin": "Limiter",
+   "parameter": "Release",
+   "before": "250.0 ms",
+   "after": "260.0 ms",
+   "value": 260
+  }
+ },
+ "master-lim-lookahead-logic": {
+  "path": "master-c24-limiter-lookahead.logicx",
+  "note": "Limiter on the Stereo Out: Lookahead 5.0 ms -> 5.1 ms, one slider step in the plug-in window",
+  "facts": {
+   "channel": "Stereo Out",
+   "plugin": "Limiter",
+   "parameter": "Lookahead",
+   "before": "5.0 ms",
+   "after": "5.1 ms",
+   "value": 5.1
+  }
+ },
+ "nest-three-audio-logic": {
+  "path": "nest-c00-three-audio.logicx",
+  "note": "the blank with two audio tracks added",
+  "facts": {
+   "rows": [
+    "Audio 1",
+    "Audio 2",
+    "Audio 3"
+   ]
+  }
+ },
+ "nest-folder-logic": {
+  "path": "nest-c01-folder-of-1-2.logicx",
+  "note": "Create Track Stack (Folder) over Audio 1 and 2",
+  "facts": {
+   "rows": [
+    "Sub 1",
+    "Audio 1",
+    "Audio 2",
+    "Audio 3"
+   ],
+   "stacks": {
+    "Sub 1": [
+     "Audio 1",
+     "Audio 2"
+    ]
+   }
+  }
+ },
+ "nest-stack-in-stack-logic": {
+  "path": "nest-c02-stack-in-stack.logicx",
+  "note": "Create Track Stack (Folder) over the Sub 1 header and Audio 3: Sub 2 holds Sub 1 and Audio 3",
+  "facts": {
+   "rows": [
+    "Sub 2",
+    "Sub 1",
+    "Audio 1",
+    "Audio 2",
+    "Audio 3"
+   ],
+   "stacks": {
+    "Sub 2": [
+     "Sub 1",
+     "Audio 3"
+    ],
+    "Sub 1": [
+     "Audio 1",
+     "Audio 2"
+    ]
+   }
+  }
+ },
+ "nest-member-into-inner-logic": {
+  "path": "nest-c03-audio3-into-inner.logicx",
+  "note": "Audio 3 dragged between Audio 1 and Audio 2, into the inner stack",
+  "facts": {
+   "rows": [
+    "Sub 2",
+    "Sub 1",
+    "Audio 1",
+    "Audio 3",
+    "Audio 2"
+   ],
+   "stacks": {
+    "Sub 2": [
+     "Sub 1"
+    ],
+    "Sub 1": [
+     "Audio 1",
+     "Audio 3",
+     "Audio 2"
+    ]
+   }
+  }
+ },
+ "nest-member-up-to-outer-logic": {
+  "path": "nest-c04-audio2-up-to-outer.logicx",
+  "note": "Audio 2 dragged between the two headers, out of the inner stack into the outer",
+  "facts": {
+   "rows": [
+    "Sub 2",
+    "Audio 2",
+    "Sub 1",
+    "Audio 1",
+    "Audio 3"
+   ],
+   "stacks": {
+    "Sub 2": [
+     "Audio 2",
+     "Sub 1"
+    ],
+    "Sub 1": [
+     "Audio 1",
+     "Audio 3"
+    ]
+   }
+  }
+ },
+ "nest-inner-stack-out-logic": {
+  "path": "nest-c05-inner-stack-out.logicx",
+  "note": "the Sub 1 header dragged above Sub 2, out to the top level",
+  "facts": {
+   "rows": [
+    "Sub 1",
+    "Audio 1",
+    "Audio 3",
+    "Sub 2",
+    "Audio 2"
+   ],
+   "stacks": {
+    "Sub 1": [
+     "Audio 1",
+     "Audio 3"
+    ],
+    "Sub 2": [
+     "Audio 2"
+    ]
+   }
+  }
+ },
+ "automation-shown-logic": {
+  "path": "automation-c01-show.logicx",
+  "note": "Mix > Show Automation on the blank",
+  "facts": {
+   "shown": true
+  }
+ },
+ "sessionplayer-player-logic": {
+  "path": "sessionplayer-c10-player-retro-rock.logicx",
+  "note": "the picker's Retro Rock row (Acoustic Drummer stays)",
+  "facts": {
+   "type": "Acoustic Drummer",
+   "player": "Retro Rock",
+   "region": "Drummer - Retro Rock",
+   "track": "Retro Rock",
+   "character": "Acoustic Drummer - Retro Rock",
+   "preset": "AM Gold",
+   "notes": 60,
+   "bars": 16
+  }
+ },
+ "automation-volume-point-logic": {
+  "path": "automation-c02-volume-point.logicx",
+  "note": "Create 1 Automation Point for Visible Parameter with the region selected: a volume point at the region border on Audio 2",
+  "facts": {
+   "track": "Audio 2",
+   "parameter": "Volume",
+   "region": "v030-tone",
+   "points": 1,
+   "base": "audio-one-region-logic",
+   "lanes": [
+    {
+     "track": "Audio 2",
+     "parameter": "Volume",
+     "region": false,
+     "ticks": [
+      38400
+     ],
+     "values": [
+      90.0
+     ]
+    }
+   ],
+   "shown": {
+    "track": "Audio 2",
+    "rows": [
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     }
+    ],
+    "provenance": "Automation Event List of the track, read off the screen (Logic Pro 12.3.1, 2026-09-17); position as bar beat division tick"
+   }
+  }
+ },
+ "automation-volume-three-points-logic": {
+  "path": "automation-c03-volume-three-points.logicx",
+  "note": "Create 2 Automation Points for Visible Parameter: two more at the region borders",
+  "facts": {
+   "track": "Audio 2",
+   "parameter": "Volume",
+   "points": 3,
+   "base": "automation-volume-point-logic",
+   "lanes": [
+    {
+     "track": "Audio 2",
+     "parameter": "Volume",
+     "region": false,
+     "ticks": [
+      38399,
+      38400,
+      38400
+     ],
+     "values": [
+      90.0,
+      90.0,
+      90.0
+     ]
+    }
+   ],
+   "shown": {
+    "track": "Audio 2",
+    "rows": [
+     {
+      "pos": [
+       0,
+       4,
+       4,
+       240
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     }
+    ],
+    "provenance": "Automation Event List of the track, read off the screen (Logic Pro 12.3.1, 2026-09-17); position as bar beat division tick"
+   }
+  }
+ },
+ "automation-eq-inserted-logic": {
+  "path": "automation-c04-eq-inserted.logicx",
+  "note": "Channel EQ inserted on Audio 2 (the base for the plug-in lane)",
+  "facts": {
+   "track": "Audio 2",
+   "inserts": [
+    "Channel EQ"
+   ],
+   "base": "automation-volume-three-points-logic",
+   "lanes": [
+    {
+     "track": "Audio 2",
+     "parameter": "Volume",
+     "region": false,
+     "ticks": [
+      38399,
+      38400,
+      38400
+     ],
+     "values": [
+      90.0,
+      90.0,
+      90.0
+     ]
+    }
+   ],
+   "shown": {
+    "track": "Audio 2",
+    "rows": [
+     {
+      "pos": [
+       0,
+       4,
+       4,
+       240
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     }
+    ],
+    "provenance": "Automation Event List of the track, read off the screen (Logic Pro 12.3.1, 2026-09-17); position as bar beat division tick"
+   }
+  }
+ },
+ "automation-region-converted-logic": {
+  "path": "automation-c05-region-converted.logicx",
+  "note": "Convert Visible Track Automation to Region Automation with the Volume lane visible",
+  "facts": {
+   "track": "Audio 2",
+   "parameter": "Volume",
+   "region": "v030-tone",
+   "base": "automation-eq-inserted-logic",
+   "lanes": [
+    {
+     "track": "Audio 2",
+     "parameter": "Volume",
+     "region": false,
+     "ticks": [
+      38399,
+      38400,
+      40320
+     ],
+     "values": [
+      90.0,
+      90.0,
+      90.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "Volume",
+     "region": true,
+     "ticks": [
+      38400,
+      38400,
+      40320
+     ],
+     "values": [
+      90.0,
+      90.0,
+      90.0
+     ]
+    }
+   ],
+   "shown": {
+    "track": "Audio 2",
+    "rows": [
+     {
+      "pos": [
+       0,
+       4,
+       4,
+       240
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       3,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     }
+    ],
+    "provenance": "Automation Event List of the track, read off the screen (Logic Pro 12.3.1, 2026-09-17); position as bar beat division tick"
+   }
+  }
+ },
+ "automation-pan-point-logic": {
+  "path": "automation-c08-pan-point.logicx",
+  "note": "Automation Event List: a Fader event created at bar 1, Num to 10 (Pan) by one AXIncrement, Val 40; base automation-plugin-point-logic",
+  "facts": {
+   "base": "automation-plugin-point-logic",
+   "track": "Audio 2",
+   "lanes": [
+    {
+     "track": "Audio 2",
+     "parameter": "Volume",
+     "region": false,
+     "ticks": [
+      38399,
+      38400,
+      40320
+     ],
+     "values": [
+      90.0,
+      90.0,
+      90.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "Pan",
+     "region": false,
+     "ticks": [
+      38400
+     ],
+     "values": [
+      40.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "plug-in parameter 26",
+     "region": false,
+     "ticks": [
+      38400,
+      46800
+     ],
+     "values": [
+      1.0,
+      1.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "Volume",
+     "region": true,
+     "ticks": [
+      38400,
+      38400,
+      40320
+     ],
+     "values": [
+      90.0,
+      90.0,
+      90.0
+     ]
+    }
+   ],
+   "shown": {
+    "track": "Audio 2",
+    "rows": [
+     {
+      "pos": [
+       0,
+       4,
+       4,
+       240
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 10,
+      "val": 40,
+      "name": "Pan"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 26,
+      "val": 63,
+      "name": "High Shelf Gain"
+     },
+     {
+      "pos": [
+       1,
+       3,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       3,
+       1,
+       4,
+       1
+      ],
+      "status": "Fader",
+      "num": 26,
+      "val": 63,
+      "name": "High Shelf Gain"
+     }
+    ],
+    "provenance": "Automation Event List of the track, read off the screen (Logic Pro 12.3.1, 2026-09-17); position as bar beat division tick"
+   }
+  }
+ },
+ "automation-plugin-point-logic": {
+  "path": "automation-c07-plugin-point.logicx",
+  "note": "the parameter popup to 1 Channel EQ > High Shelf Gain, Create 1 Automation Point for Visible Parameter",
+  "facts": {
+   "track": "Audio 2",
+   "parameter": "1 Channel EQ: High Shelf Gain",
+   "points": 1,
+   "base": "automation-pan-point-logic",
+   "lanes": [
+    {
+     "track": "Audio 2",
+     "parameter": "Volume",
+     "region": false,
+     "ticks": [
+      38399,
+      38400,
+      40320
+     ],
+     "values": [
+      90.0,
+      90.0,
+      90.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "plug-in parameter 26",
+     "region": false,
+     "ticks": [
+      38400
+     ],
+     "values": [
+      1.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "Volume",
+     "region": true,
+     "ticks": [
+      38400,
+      38400,
+      40320
+     ],
+     "values": [
+      90.0,
+      90.0,
+      90.0
+     ]
+    }
+   ],
+   "shown": {
+    "track": "Audio 2",
+    "rows": [
+     {
+      "pos": [
+       0,
+       4,
+       4,
+       240
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 26,
+      "val": 63,
+      "name": "High Shelf Gain"
+     },
+     {
+      "pos": [
+       1,
+       3,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     }
+    ],
+    "provenance": "Automation Event List of the track, read off the screen (Logic Pro 12.3.1, 2026-09-17); position as bar beat division tick"
+   }
+  }
+ },
+ "nest-ours-resave-logic": {
+  "path": "nest-c06-ours-resaved.logicx",
+  "note": "Logic's re-save of our `stacks --move \"Audio 3:Sub 1\"` on nest-c02 (a track into the nested stack), untouched",
+  "facts": {
+   "base": "nest-stack-in-stack-logic",
+   "move": [
+    "Audio 3",
+    "Sub 1"
+   ],
+   "stacks": {
+    "Sub 2": [
+     "Sub 1"
+    ],
+    "Sub 1": [
+     "Audio 1",
+     "Audio 2",
+     "Audio 3"
+    ]
+   }
+  }
+ },
+ "master-ours-resave-logic": {
+  "path": "master-c25-ours-resaved.logicx",
+  "note": "Logic's re-save of `chains --config config/example-mastering.json` written onto the blank: the four output plug-ins on the Stereo Out, every configured parameter shown in the plug-in windows as written (the Multipressor ratio 2.5 snapped to 2.511)",
+  "facts": {
+   "channel": "Stereo Out",
+   "inserts": [
+    "Linear Phase EQ",
+    "Multipressor",
+    "Adaptive Limiter",
+    "Limiter"
+   ],
+   "config": "config/example-mastering.json",
+   "shown": {
+    "Low Cut On/Off": "1",
+    "Low Cut Frequency": "30.0 Hz",
+    "Peak 3 Frequency": "800 Hz",
+    "Peak 3 Gain": "+1.5 dB",
+    "Peak 3 Q-Factor": "0.79",
+    "Band 1 Comp. Threshold": "-20.0 dB",
+    "Band 1 Comp. Ratio": "2.511",
+    "Band 1 Make Up": "1.0 dB",
+    "Adaptive Limiter Gain": "2.0 dB",
+    "Out Ceiling": "-0.3 dB",
+    "Adaptive Limiter Lookahead": "50 ms",
+    "Remove DC": "1",
+    "Limiter Gain": "0.0 dB",
+    "Limiter Lookahead": "5.0 ms",
+    "Release": "250.0 ms",
+    "Output Level": "-0.1 dB"
+   }
+  }
+ },
+ "automation-pan-two-points-logic": {
+  "path": "automation-c09-pan-two-points.logicx",
+  "note": "a second Pan event at bar 2, Val 90",
+  "facts": {
+   "base": "automation-pan-point-logic",
+   "track": "Audio 2",
+   "lanes": [
+    {
+     "track": "Audio 2",
+     "parameter": "Volume",
+     "region": false,
+     "ticks": [
+      38399,
+      38400,
+      40320
+     ],
+     "values": [
+      90.0,
+      90.0,
+      90.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "Pan",
+     "region": false,
+     "ticks": [
+      38400,
+      42240
+     ],
+     "values": [
+      40.0,
+      90.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "plug-in parameter 26",
+     "region": false,
+     "ticks": [
+      38400,
+      46800
+     ],
+     "values": [
+      1.0,
+      1.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "Volume",
+     "region": true,
+     "ticks": [
+      38400,
+      38400,
+      40320
+     ],
+     "values": [
+      90.0,
+      90.0,
+      90.0
+     ]
+    }
+   ],
+   "shown": {
+    "track": "Audio 2",
+    "rows": [
+     {
+      "pos": [
+       0,
+       4,
+       4,
+       240
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 10,
+      "val": 40,
+      "name": "Pan"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 26,
+      "val": 63,
+      "name": "High Shelf Gain"
+     },
+     {
+      "pos": [
+       1,
+       3,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       2,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 10,
+      "val": 90,
+      "name": "Pan"
+     },
+     {
+      "pos": [
+       3,
+       1,
+       4,
+       1
+      ],
+      "status": "Fader",
+      "num": 26,
+      "val": 63,
+      "name": "High Shelf Gain"
+     }
+    ],
+    "provenance": "Automation Event List of the track, read off the screen (Logic Pro 12.3.1, 2026-09-17); position as bar beat division tick"
+   }
+  }
+ },
+ "automation-relative-volume-logic": {
+  "path": "automation-c10-relative-volume.logicx",
+  "note": "the header popup to Main > Volume > Relative (\u00b1), Create 1 Automation Point for Visible Parameter with the region selected: \u00b1 Volume points at bars 1 and 2",
+  "facts": {
+   "base": "automation-pan-two-points-logic",
+   "track": "Audio 2",
+   "lanes": [
+    {
+     "track": "Audio 2",
+     "parameter": "Volume",
+     "region": false,
+     "ticks": [
+      38399,
+      38400,
+      40320
+     ],
+     "values": [
+      90.0,
+      90.0,
+      90.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "\u00b1 Volume",
+     "region": false,
+     "ticks": [
+      38400,
+      42240
+     ],
+     "values": [
+      64.0,
+      64.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "Pan",
+     "region": false,
+     "ticks": [
+      38400,
+      42240
+     ],
+     "values": [
+      40.0,
+      90.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "plug-in parameter 26",
+     "region": false,
+     "ticks": [
+      38400,
+      46800
+     ],
+     "values": [
+      1.0,
+      1.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "Volume",
+     "region": true,
+     "ticks": [
+      38400,
+      38400,
+      40320
+     ],
+     "values": [
+      90.0,
+      90.0,
+      90.0
+     ]
+    }
+   ],
+   "shown": {
+    "track": "Audio 2",
+    "rows": [
+     {
+      "pos": [
+       0,
+       4,
+       4,
+       240
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 64,
+      "name": "\u00b1 Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 10,
+      "val": 40,
+      "name": "Pan"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 26,
+      "val": 63,
+      "name": "High Shelf Gain"
+     },
+     {
+      "pos": [
+       1,
+       3,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       2,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 64,
+      "name": "\u00b1 Volume"
+     },
+     {
+      "pos": [
+       2,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 10,
+      "val": 90,
+      "name": "Pan"
+     },
+     {
+      "pos": [
+       3,
+       1,
+       4,
+       1
+      ],
+      "status": "Fader",
+      "num": 26,
+      "val": 63,
+      "name": "High Shelf Gain"
+     }
+    ],
+    "provenance": "Automation Event List of the track, read off the screen (Logic Pro 12.3.1, 2026-09-17); position as bar beat division tick"
+   }
+  }
+ },
+ "automation-relative-volume-pair-logic": {
+  "path": "automation-c11-relative-volume-pair.logicx",
+  "note": "Create 2 Automation Points for Visible Parameter on the \u00b1 Volume lane",
+  "facts": {
+   "base": "automation-relative-volume-logic",
+   "track": "Audio 2",
+   "lanes": [
+    {
+     "track": "Audio 2",
+     "parameter": "Volume",
+     "region": false,
+     "ticks": [
+      38399,
+      38400,
+      40320
+     ],
+     "values": [
+      90.0,
+      90.0,
+      90.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "\u00b1 Volume",
+     "region": false,
+     "ticks": [
+      38400,
+      42239,
+      42240,
+      42240
+     ],
+     "values": [
+      64.0,
+      64.0,
+      64.0,
+      64.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "Pan",
+     "region": false,
+     "ticks": [
+      38400,
+      42240
+     ],
+     "values": [
+      40.0,
+      90.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "plug-in parameter 26",
+     "region": false,
+     "ticks": [
+      38400,
+      46800
+     ],
+     "values": [
+      1.0,
+      1.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "Volume",
+     "region": true,
+     "ticks": [
+      38400,
+      38400,
+      40320
+     ],
+     "values": [
+      90.0,
+      90.0,
+      90.0
+     ]
+    }
+   ],
+   "shown": {
+    "track": "Audio 2",
+    "rows": [
+     {
+      "pos": [
+       0,
+       4,
+       4,
+       240
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 64,
+      "name": "\u00b1 Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 10,
+      "val": 40,
+      "name": "Pan"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 26,
+      "val": 63,
+      "name": "High Shelf Gain"
+     },
+     {
+      "pos": [
+       1,
+       3,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       4,
+       4,
+       240
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 64,
+      "name": "\u00b1 Volume"
+     },
+     {
+      "pos": [
+       2,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 64,
+      "name": "\u00b1 Volume"
+     },
+     {
+      "pos": [
+       2,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 10,
+      "val": 90,
+      "name": "Pan"
+     },
+     {
+      "pos": [
+       2,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 64,
+      "name": "\u00b1 Volume"
+     },
+     {
+      "pos": [
+       3,
+       1,
+       4,
+       1
+      ],
+      "status": "Fader",
+      "num": 26,
+      "val": 63,
+      "name": "High Shelf Gain"
+     }
+    ],
+    "provenance": "Automation Event List of the track, read off the screen (Logic Pro 12.3.1, 2026-09-17); position as bar beat division tick"
+   }
+  }
+ },
+ "automation-volume-fade-logic": {
+  "path": "automation-c12-volume-fade.logicx",
+  "note": "the Volume event at 1 3 1 1 taken from 90 to 60 in the Event List",
+  "facts": {
+   "base": "automation-relative-volume-pair-logic",
+   "track": "Audio 2",
+   "lanes": [
+    {
+     "track": "Audio 2",
+     "parameter": "Volume",
+     "region": false,
+     "ticks": [
+      38399,
+      38400,
+      40320
+     ],
+     "values": [
+      90.0,
+      90.0,
+      60.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "\u00b1 Volume",
+     "region": false,
+     "ticks": [
+      38400,
+      42239,
+      42240,
+      42240
+     ],
+     "values": [
+      64.0,
+      64.0,
+      64.0,
+      64.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "Pan",
+     "region": false,
+     "ticks": [
+      38400,
+      42240
+     ],
+     "values": [
+      40.0,
+      90.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "plug-in parameter 26",
+     "region": false,
+     "ticks": [
+      38400,
+      46800
+     ],
+     "values": [
+      1.0,
+      1.0
+     ]
+    },
+    {
+     "track": "Audio 2",
+     "parameter": "Volume",
+     "region": true,
+     "ticks": [
+      38400,
+      38400,
+      40320
+     ],
+     "values": [
+      90.0,
+      90.0,
+      90.0
+     ]
+    }
+   ],
+   "shown": {
+    "track": "Audio 2",
+    "rows": [
+     {
+      "pos": [
+       0,
+       4,
+       4,
+       240
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 64,
+      "name": "\u00b1 Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 10,
+      "val": 40,
+      "name": "Pan"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 26,
+      "val": 63,
+      "name": "High Shelf Gain"
+     },
+     {
+      "pos": [
+       1,
+       3,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 60,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       4,
+       4,
+       240
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 64,
+      "name": "\u00b1 Volume"
+     },
+     {
+      "pos": [
+       2,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 64,
+      "name": "\u00b1 Volume"
+     },
+     {
+      "pos": [
+       2,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 10,
+      "val": 90,
+      "name": "Pan"
+     },
+     {
+      "pos": [
+       2,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 64,
+      "name": "\u00b1 Volume"
+     },
+     {
+      "pos": [
+       3,
+       1,
+       4,
+       1
+      ],
+      "status": "Fader",
+      "num": 26,
+      "val": 63,
+      "name": "High Shelf Gain"
+     }
+    ],
+    "provenance": "Automation Event List of the track, read off the screen (Logic Pro 12.3.1, 2026-09-17); position as bar beat division tick"
+   }
+  }
+ },
+ "automation-ours-resave-logic": {
+  "path": "automation-c13-ours-resaved.logicx",
+  "note": "Logic's re-save of `automation --set` on automation-c01: Audio 1 Volume 90@1 60@5, Pan 40@1 90@3, \u00b1Volume 64@1 80@5; its Event List listed the six points as written",
+  "facts": {
+   "base": "automation-shown-logic",
+   "track": "Audio 1",
+   "lanes": [
+    {
+     "track": "Audio 1",
+     "parameter": "Volume",
+     "region": false,
+     "ticks": [
+      38400,
+      53760
+     ],
+     "values": [
+      90.0,
+      60.0
+     ]
+    },
+    {
+     "track": "Audio 1",
+     "parameter": "\u00b1 Volume",
+     "region": false,
+     "ticks": [
+      38400,
+      53760
+     ],
+     "values": [
+      64.0,
+      80.0
+     ]
+    },
+    {
+     "track": "Audio 1",
+     "parameter": "Pan",
+     "region": false,
+     "ticks": [
+      38400,
+      46080
+     ],
+     "values": [
+      40.0,
+      90.0
+     ]
+    }
+   ],
+   "shown": {
+    "track": "Audio 1",
+    "rows": [
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 90,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 64,
+      "name": "\u00b1 Volume"
+     },
+     {
+      "pos": [
+       1,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 10,
+      "val": 40,
+      "name": "Pan"
+     },
+     {
+      "pos": [
+       3,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 10,
+      "val": 90,
+      "name": "Pan"
+     },
+     {
+      "pos": [
+       5,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 60,
+      "name": "Volume"
+     },
+     {
+      "pos": [
+       5,
+       1,
+       1,
+       1
+      ],
+      "status": "Fader",
+      "num": 7,
+      "val": 80,
+      "name": "\u00b1 Volume"
+     }
+    ],
+    "provenance": "Automation Event List of the track, read off the screen (Logic Pro 12.3.1, 2026-09-17); position as bar beat division tick"
+   }
+  }
+ },
+ "patch-base-logic": {
+  "path": "patch-c14-base.patch",
+  "note": "Library > Save\u2026 on the untouched Audio 1 of the eight-insert project",
+  "facts": {
+   "channels": 1,
+   "files": [
+    "#Root.cst",
+    "data.plist"
+   ],
+   "root": {
+    "plugins": [
+     "Channel EQ",
+     "Compressor",
+     "Gain",
+     "ChromaVerb",
+     "SilverVerb",
+     "EnVerb",
+     "Echo",
+     "Enveloper"
+    ],
+    "fader": 90,
+    "pan": 64,
+    "strip": "#Root.cst"
+   }
+  }
+ },
+ "patch-fader-logic": {
+  "path": "patch-c15-fader.patch",
+  "note": "the same strip after one fader step down (90 -> 89)",
+  "facts": {
+   "channels": 1,
+   "files": [
+    "#Root.cst",
+    "data.plist"
+   ],
+   "root": {
+    "plugins": [
+     "Channel EQ",
+     "Compressor",
+     "Gain",
+     "ChromaVerb",
+     "SilverVerb",
+     "EnVerb",
+     "Echo",
+     "Enveloper"
+    ],
+    "fader": 89,
+    "pan": 64,
+    "strip": "#Root.cst"
+   }
+  }
+ },
+ "patch-insert-logic": {
+  "path": "patch-c16-insert.patch",
+  "note": "Adaptive Limiter inserted on top of the eight",
+  "facts": {
+   "channels": 1,
+   "files": [
+    "#Root.cst",
+    "data.plist"
+   ],
+   "root": {
+    "plugins": [
+     "Channel EQ",
+     "Compressor",
+     "Gain",
+     "ChromaVerb",
+     "SilverVerb",
+     "EnVerb",
+     "Echo",
+     "Enveloper",
+     "Adaptive Limiter"
+    ],
+    "fader": 89,
+    "pan": 64,
+    "strip": "#Root.cst"
+   }
+  }
+ },
+ "patch-send-logic": {
+  "path": "patch-c17-send.patch",
+  "note": "a send to Bus 1 added (key 0 record) after the insert",
+  "facts": {
+   "channels": 1,
+   "files": [
+    "#Root.cst",
+    "data.plist"
+   ],
+   "root": {
+    "plugins": [
+     "Channel EQ",
+     "Compressor",
+     "Gain",
+     "ChromaVerb",
+     "SilverVerb",
+     "EnVerb",
+     "Echo",
+     "Enveloper",
+     "Adaptive Limiter"
+    ],
+    "fader": 89,
+    "pan": 64,
+    "strip": "#Root.cst"
+   }
+  }
+ },
+ "patch-stack-logic": {
+  "path": "patch-c18-stack.patch",
+  "note": "Library > Save\u2026 with the summing stack header selected: the Aux strip's #Root.cst plus one .cst per member, four channels in data.plist",
+  "facts": {
+   "channels": 4,
+   "files": [
+    "#Root.cst",
+    "Audio1.cst",
+    "Audio2.cst",
+    "Audio3.cst",
+    "data.plist"
+   ],
+   "root": {
+    "plugins": [],
+    "fader": 90,
+    "pan": 64,
+    "strip": "#Root.cst"
+   }
+  }
+ },
+ "tracks-stereo-pair-logic": {
+  "path": "tracks-06-stereo-pair.logicx",
+  "note": "Track > New Tracks\u2026 (Audio, Audio Input popup: Input 1-2) on the three-track save with an 18-input interface attached: a stereo Audio 4 bound to the Input 1-2 pair channel (2026-09-17)",
+  "facts": {
+   "new_track": "Audio 4",
+   "format": 2,
+   "input": "Input 1-2"
+  }
+ },
+ "midi-nested-import-logic": {
+  "path": "midi-31-nested-import.logicx",
+  "note": "File > Import > MIDI File (tempo not imported) of a 96-PPQ file holding note 36 on at 0 and at 10, off at 20 and at 100: Logic pairs first in, first out (2026-09-17)",
+  "facts": {
+   "lengths": [
+    200,
+    900
+   ],
+   "starts": [
+    38400,
+    38500
+   ]
+  }
+ },
+ "tempo-bit-cleared-resave-logic": {
+  "path": "tempo-03-bit-cleared-resave.logicx",
+  "note": "Logic's re-save of tempo-point-140 with the edited point's head +15 bit 0 cleared by hand: the bit stays cleared (2026-09-17)",
+  "facts": {
+   "head_15": [
+    0,
+    128
+   ]
+  }
  }
 }

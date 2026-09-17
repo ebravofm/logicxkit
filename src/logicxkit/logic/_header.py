@@ -12,7 +12,8 @@ from .services.header import (
     width_estimated,
     write_components,
 )
-from .services.retrack import copy_project, find_project
+from ._edit import edit_display
+from .services.retrack import find_project
 
 
 def _match(name: str) -> str:
@@ -56,9 +57,7 @@ def cmd_header(args) -> int:
     except ValueError as e:
         print(f"  {e}")
         return 2
-    dest = copy_project(project, Path(args.out))["dest"]
-    print(f"into : {dest}\n")
-    for alt in alternative_dirs(dest):
+    def step(alt: Path) -> None:
         estimated = width_estimated(alt, want)
         state = write_components(alt, want)
         print(f"  {alt.name}:")
@@ -66,6 +65,12 @@ def cmd_header(args) -> int:
         if estimated:
             print("  header width estimated: the stored width sat on Logic's 180-pixel floor, which "
                   "hides the name column, so the widest it could be was used")
+
+    try:
+        edit_display(project, Path(args.out), step)
+    except ValueError as e:
+        print(f"  {e}")
+        return 1
     print("\nUnverified until opened in Logic.")
     return 0
 

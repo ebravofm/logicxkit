@@ -1,5 +1,5 @@
-"""A golden key resolves to the public corpus first and the owner's files second, and its
-facts come from whichever manifest supplied the file."""
+"""A golden key resolves to the public corpus (under `tests/corpus/`) first and the owner's
+files (under `resources/`) second, and its facts come from whichever manifest supplied the file."""
 
 import json
 import os
@@ -28,12 +28,13 @@ class ResolutionTest(unittest.TestCase):
         self.enterContext(mock.patch.dict(os.environ))
         for var in (_goldens.REQUIRE, "LOGICXKIT_GOLDENS"):
             os.environ.pop(var, None)
-        self.saved = (_goldens.RESOURCES, _goldens.MANIFEST, _goldens.PUBLIC)
-        _goldens.RESOURCES, _goldens.MANIFEST, _goldens.PUBLIC = self.root, self.owner, self.public
+        self.saved = (_goldens.RESOURCES, _goldens.CORPUS, _goldens.MANIFEST, _goldens.PUBLIC)
+        _goldens.RESOURCES, _goldens.CORPUS = self.root, self.root / "corpus"
+        _goldens.MANIFEST, _goldens.PUBLIC = self.owner, self.public
         _goldens.reset()
 
     def tearDown(self):
-        _goldens.RESOURCES, _goldens.MANIFEST, _goldens.PUBLIC = self.saved
+        _goldens.RESOURCES, _goldens.CORPUS, _goldens.MANIFEST, _goldens.PUBLIC = self.saved
         _goldens.reset()
         self.tmp.cleanup()
 
@@ -42,16 +43,16 @@ class ResolutionTest(unittest.TestCase):
         self.owner.write_text(json.dumps(owner))
 
     def test_public_wins_when_its_file_is_there(self):
-        _bundle(self.root, "public/a.logicx")
+        _bundle(self.root, "corpus/a.logicx")
         _bundle(self.root, "experiments/9-a.logicx")
-        self._write({"k": {"path": "public/a.logicx", "facts": {"on": ["Cycle"]}}},
+        self._write({"k": {"path": "a.logicx", "facts": {"on": ["Cycle"]}}},
                     {"k": {"path": "experiments/9-a.logicx", "facts": {"on": ["Solo"]}}})
-        self.assertEqual(_goldens.path("k"), self.root / "public/a.logicx")
+        self.assertEqual(_goldens.path("k"), self.root / "corpus/a.logicx")
         self.assertEqual(_goldens.fact("k", "on"), ["Cycle"])
 
     def test_owner_is_the_fallback_when_the_public_file_is_absent(self):
         _bundle(self.root, "experiments/9-a.logicx")
-        self._write({"k": {"path": "public/a.logicx", "facts": {"on": ["Cycle"]}}},
+        self._write({"k": {"path": "a.logicx", "facts": {"on": ["Cycle"]}}},
                     {"k": {"path": "experiments/9-a.logicx", "facts": {"on": ["Solo"]}}})
         self.assertEqual(_goldens.path("k"), self.root / "experiments/9-a.logicx")
         self.assertEqual(_goldens.fact("k", "on"), ["Solo"])
@@ -66,15 +67,11 @@ class ResolutionTest(unittest.TestCase):
         self.assertIn("0 of 1", _goldens.report())
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class CorpusSwitchTest(ResolutionTest):
     def test_owner_first_when_asked(self):
-        _bundle(self.root, "public/a.logicx")
+        _bundle(self.root, "corpus/a.logicx")
         _bundle(self.root, "experiments/9-a.logicx")
-        self._write({"k": {"path": "public/a.logicx", "facts": {"on": ["Cycle"]}}},
+        self._write({"k": {"path": "a.logicx", "facts": {"on": ["Cycle"]}}},
                     {"k": {"path": "experiments/9-a.logicx", "facts": {"on": ["Solo"]}}})
         os.environ["LOGICXKIT_GOLDENS"] = "owner"
         _goldens.reset()
@@ -95,9 +92,13 @@ class RequirePublicTest(ResolutionTest):
 
     def test_a_missing_public_key_fails(self):
         with self.assertRaises(AssertionError):
-            self._run({"k": {"path": "public/gone.logicx"}}, {})
+            self._run({"k": {"path": "gone.logicx"}}, {})
 
     def test_a_missing_owner_only_key_still_skips(self):
-        _bundle(self.root, "public/a.logicx")
-        line = self._run({"k": {"path": "public/a.logicx"}}, {"song": {"path": "experiments/song.logicx"}})
+        _bundle(self.root, "corpus/a.logicx")
+        line = self._run({"k": {"path": "a.logicx"}}, {"song": {"path": "experiments/song.logicx"}})
         self.assertIn("1 of 2", line)
+
+
+if __name__ == "__main__":
+    unittest.main()

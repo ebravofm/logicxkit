@@ -65,13 +65,15 @@ def unarchive(blob: bytes) -> dict:
 class PatchChannel:
     name: str
     strip: str | None           # the .cst file name beside base.plistZ
-    volume: float | None        # Logic's 0-1 fader value
+    volume: float | None        # Logic's 0-1 fader value, when the plist carries one
     pan: float | None
     muted: bool
     solo: bool
     width: int | None           # 1 mono, 2 stereo
     output: str | None          # "Bus N" or "Output N"
     plugins: list[str]
+    fader: int | None = None    # the .cst channel record's fader byte (unity 90) and pan byte (centre 64)
+    pan_byte: int | None = None
 
 
 @dataclass(frozen=True)
@@ -100,13 +102,26 @@ def _plugins(cst: Path | None) -> list[str]:
     return out
 
 
+def _levels(cst: Path | None) -> tuple[int | None, int | None]:
+    """The fader and pan bytes of the strip's channel record, at a project channel's offsets (`levels.py`)."""
+    from .levels import FADER_AT, PAN_AT, _is_mixer_channel
+    if cst is None or not cst.is_file():
+        return None, None
+    for r in project_records(cst.read_bytes(), start=0):
+        if _is_mixer_channel(r):
+            payload = r.raw[HEADER:]
+            return payload[FADER_AT[1]], payload[PAN_AT]
+    return None, None
+
+
 def _channel(node: Path, ch: dict) -> PatchChannel:
     strip = ch.get("Channel_chaStrName") or ch.get("Filename")
     cst = next((p for p in node.glob("*.cst") if p.name.endswith(strip)), None) if strip else next(node.glob("*.cst"), None)
+    fader, pan_byte = _levels(cst)
     return PatchChannel(ch.get("Channel_name") or node.name, cst.name if cst else strip, ch.get("Channel_channelVolume"),
                         ch.get("Channel_pan"), bool(ch.get("Channel_isMuted")), bool(ch.get("Channel_isSolo")),
                         ch.get("Channel_numChannels"), _io(ch.get("Channel_outputIndex"), ch.get("Channel_outputIsBus")),
-                        _plugins(cst))
+                        _plugins(cst), fader, pan_byte)
 
 
 def read_patch(path: str | Path) -> Patch:

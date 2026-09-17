@@ -13,11 +13,12 @@ from .services.flexmarkers import GRIDS
 def _members(data: bytes, args, count: int | None) -> list[str]:
     if args.track:
         return list(args.track)
-    from .services.stacks import read_stacks
-    stack = next((s for s in read_stacks(data, count) if s.name == args.stack), None)
+    from .services.stacks import read_stacks, rows_below
+    stacks = read_stacks(data, count)
+    stack = next((s for s in stacks if s.name == args.stack), None)
     if stack is None:
         raise CommandError(f"no folder stack named {args.stack!r}; name the tracks with --track")
-    names = [name for _key, name in stack.members]
+    names = [name for _key, name in rows_below(stacks, stack, headers=False)]
     if not names:
         raise CommandError(f"stack {args.stack!r} has no member tracks")
     return names
@@ -73,7 +74,7 @@ def cmd_quantize(args) -> int:
                                       grid=args.grid, group=args.group, groups_off=tuple(args.off), track_count=count,
                                       bars=args.bars)
         for line in report.lines():
-            print(f"  {line}")
+            print(f"  {project_file.parent.name}: {line}")
         return data
 
     try:

@@ -37,6 +37,7 @@ class TempoEvent:
     position: int              # ticks
     bpm: float
     generated: bool            # a ramp point Logic made, not one the user placed
+    extra: int = 0             # the head +2 word, read and kept; meaning unknown
 
 
 def project_tempo(data: bytes) -> tuple[float, float]:
@@ -46,7 +47,7 @@ def project_tempo(data: bytes) -> tuple[float, float]:
 
 
 def _tempo(e: Event) -> TempoEvent:
-    return TempoEvent(e.tick, struct.unpack_from("<I", e.data, BPM_AT)[0] / SCALE, bool(e.head[FLAGS_AT] & GENERATED))
+    return TempoEvent(e.tick, struct.unpack_from("<I", e.data, BPM_AT)[0] / SCALE, bool(e.head[FLAGS_AT] & GENERATED), e.extra)
 
 
 def tempo_sequence(records) -> int | None:

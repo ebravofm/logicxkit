@@ -42,5 +42,24 @@ class OneControlPerSaveTest(unittest.TestCase):
         self._check("sessionplayer-swing-logic")
 
 
+class PlayerAndTypeTest(unittest.TestCase):
+    """The picker's style row changes the player; its Type popup changes the player family and,
+    with Change Patch on, the patch. Both land in the region's JSON as CharacterIdentifier."""
+
+    def _check(self, key: str):
+        sp = _one(key)
+        facts = _goldens.entry(key)["facts"]
+        self.assertEqual((sp.character, sp.preset, sp.region), (facts["character"], facts["preset"], facts["region"]))
+        self.assertEqual((sp.notes, sp.generated_bars), (facts["notes"], facts["bars"]))
+
+    @_goldens.needs("sessionplayer-player-logic")
+    def test_another_player_of_the_same_type(self):
+        self._check("sessionplayer-player-logic")
+
+    @_goldens.needs("sessionplayer-type-logic")
+    def test_another_player_type(self):
+        self._check("sessionplayer-type-logic")
+
+
 if __name__ == "__main__":
     unittest.main()

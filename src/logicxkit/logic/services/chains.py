@@ -19,6 +19,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from .chains_channels import CHANNEL_NAMES, channel_name, plan_channels, resolve_params  # noqa: F401
 from .comp import build_comp
 from .eq import build_eq
 from .insert import project_records, slot_index_base
@@ -27,6 +28,9 @@ REF_MAX = 400  # a channel's reference record is small; plugin slots are far big
 _REF = re.compile(rb"[\x20-\x7e]{2,60}\.cst")
 EQ_TYPE, COMP_TYPE, ENV_TYPE = 236, 154, 157
 EQ_USER_FLOATS, COMP_USER_FLOATS = 33, 14   # what build_eq/build_comp emit
+# (type, older count, current count): the older block is the current one minus trailing floats,
+# so its floats copy positionally and the donor's tail stands. Channel EQ: class v2 vs v3+.
+OLDER_LAYOUTS = {(EQ_TYPE, 51, 52)}
 
 
 def channel_references(data: bytes) -> dict[int, str]:
@@ -269,12 +273,19 @@ def width_plan(data: bytes, config: dict) -> dict[int, int]:
     """
     from .insert import MONO, STEREO
 
+    from .chains_channels import owners_by_label
+
     chains = config["chains"]
     out = {}
     for owner, ref in channel_references(data).items():
         spec = chains.get(ref)
         if spec and "stereo" in spec:
             out[owner] = STEREO if spec["stereo"] else MONO
+    by_label = owners_by_label(data)
+    for name, spec in chains.items():
+        if not name.endswith(".cst") and "stereo" in spec:
+            for owner in by_label.get(CHANNEL_NAMES.get(name, name), []):
+                out[owner] = STEREO if spec["stereo"] else MONO
     return out
 
 
@@ -315,7 +326,7 @@ def duplicate_chain_slots(data: bytes, plan: dict) -> list[tuple[int, int, int]]
 def describe_duplicates(data: bytes, dupes: list[tuple[int, int, int]]) -> list[str]:
     """Duplicate slots as one reportable line each, named by the channel's strip reference."""
     refs = channel_references(data)
-    return [f"{refs.get(owner, f'owner {owner}')}: plugin {type_id} also survives at slot key "
+    return [f"{refs.get(owner) or channel_name(data, owner)}: plugin {type_id} also survives at slot key "
             f"{key} — superseded copy of one the chain places" for owner, key, type_id in dupes]
 
 
@@ -325,7 +336,7 @@ def chain_plan(data: bytes, config: dict, eq_donor: bytes | None, comp_donor: by
     """Build an ``insert_slots`` plan from a config keyed by channel-strip reference."""
     chains = config["chains"]
     refs = channel_references(data)
-    plan, matched, degraded, mismatched = {}, set(), [], []
+    plan, matched, degraded, mismatched, older = {}, set(), [], [], []
 
     from .._binary import find_blocks
     from .insert import instance_offsets
@@ -359,7 +370,7 @@ def chain_plan(data: bytes, config: dict, eq_donor: bytes | None, comp_donor: by
                 floats = source.get(tid)
                 slots.append((raw, key, floats, len(floats or ()), label,
                               _id_offsets_for(data, tid, raw), tid,
-                              False, {int(k): v for k, v in params.get(name, {}).items()}))
+                              False, resolve_params(tid, params.get(name, {}), f"{ref}: {name}", raw)))
                 key += 1
         if eq_floats is not None and eq_donor:
             slots.append((eq_donor, key, eq_floats, eq_limit, label, ids[EQ_TYPE], EQ_TYPE))
@@ -382,7 +393,7 @@ def chain_plan(data: bytes, config: dict, eq_donor: bytes | None, comp_donor: by
                 floats = source.get(tid)
                 slots.append((raw, key, floats, len(floats or ()), label,
                               _id_offsets_for(data, tid, raw), tid,
-                              False, {int(k): v for k, v in params.get(name, {}).items()}))
+                              False, resolve_params(tid, params.get(name, {}), f"{ref}: {name}", raw)))
                 key += 1
         if slots:
             plan[owner] = slots
@@ -405,17 +416,26 @@ def chain_plan(data: bytes, config: dict, eq_donor: bytes | None, comp_donor: by
             if donor is None or floats is None or tid not in source:
                 continue
             blocks = find_blocks(donor[36:])
-            if blocks and blocks[0][2] != len(floats):
-                mismatched.append(
-                    f"{ref}: {tid} source has {len(floats)} floats, donor holds "
+            if not blocks or blocks[0][2] == len(floats):
+                continue
+            line = (f"{ref}: {tid} source has {len(floats)} floats, donor holds "
                     f"{blocks[0][2]} — trailing {blocks[0][2] - len(floats)} kept from donor")
+            (older if (tid, len(floats), blocks[0][2]) in OLDER_LAYOUTS else mismatched).append(line)
 
+    by_name, named = plan_channels(data, config, extra, _id_offsets_for)
+    twice = sorted(set(plan) & set(by_name))
+    if twice:
+        raise ValueError("channel(s) keyed twice, by strip reference and by name: "
+                         + ", ".join(f"{refs[o]} / {channel_name(data, o)}" for o in twice))
+    plan.update(by_name)
+    matched |= named
     return plan, {
         "matched": sorted(matched),
         "unmatched": sorted({r for r in refs.values() if r not in chains}),
-        "missing_from_project": sorted(set(chains) - set(refs.values())),
+        "missing_from_project": sorted(set(chains) - set(refs.values()) - matched),
         "degraded": sorted(set(degraded)),
         "shape_mismatch": sorted(set(mismatched)),
+        "older_layout": sorted(set(older)),
     }
 
 
@@ -430,3 +450,10 @@ def load_chain_config(path: Path) -> dict:
             raise ValueError(f"{ref}: sets 'strip' and {clash} — the strip already supplies "
                              "those values; drop the JSON block")
     return cfg
+
+
+def verify_channel_values(data: bytes, config: dict, extra: dict) -> list[str]:
+    """The channel-keyed chains' parameters read back from a WRITTEN project (`chains_channels`)."""
+    from .chains_channels import verify_channel_values as _verify
+
+    return _verify(data, config, extra, _id_offsets_for)

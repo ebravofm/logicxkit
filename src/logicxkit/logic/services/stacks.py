@@ -79,6 +79,8 @@ class Stack:
     owner: int | None = None       # the Sub N strip — where the stack's fader lives
     kind: str = FOLDER
     members: list[tuple[int, str]] = field(default_factory=list)
+    depth: int = 0                 # 0 at the top level; the row's +14 byte
+    parent: int | None = None      # the enclosing stack's object id
 
 
 def track_lists(data: bytes) -> list[list]:
@@ -123,7 +125,7 @@ def read_tracks(data: bytes, track_count: int | None = None) -> list[dict]:
                     "colour": obj.colour if obj else None,
                     "icon": obj.icon if obj else None,
                     "flag": flag, "hidden": bool(flag & HIDDEN_BIT), "on": not flag & OFF_BIT,
-                    "member": payload[MEMBER_AT] == 1,
+                    "member": payload[MEMBER_AT] != 0, "depth": payload[MEMBER_AT],
                     "expanded": bool(payload[EXPANDED_AT] & EXPANDED_BIT),
                     "grouping": obj.kind == GROUPING if obj else False,
                     "owner": owner, "label": chan.label if chan else None,
@@ -154,25 +156,56 @@ def read_stacks(data: bytes, track_count: int | None = None) -> list[Stack]:
     """Stacks in the arrange list, each with the tracks it holds.
 
     A stack is a grouping object bound to a ``Sub N`` strip (folder) or an ``Aux N`` strip
-    (summing); its members are the rows that follow it while their ``+14`` byte is set. Position still orders them — a member row
-    always sits below its header — but the byte is what says it belongs.
+    (summing); its members are the rows that follow it while their ``+14`` byte is set. The byte
+    is the nesting depth: a header at depth d
+    holds the rows after it at depth d+1, a nested header among them. Position still orders
+    them — a member row always sits below its header — but the byte is what says it belongs.
     """
     stacks: list[Stack] = []
-    open_stack: Stack | None = None
+    open_: list[Stack] = []                           # the headers enclosing the current row, by depth
     rows = read_tracks(data, track_count)
     for i, row in enumerate(rows):
+        depth = row["depth"]
+        del open_[depth:]                             # a row at depth d closes every header at d or deeper
         following = rows[i + 1] if i + 1 < len(rows) else None
         if _is_stack(row, following):
             kind = _stack_kind(row, following)
-            open_stack = Stack(name=row["name"], object_id=row["object_id"],
-                               track_key=row["key"], index=int(row["label"].split()[1]),
-                               owner=row["owner"], kind=kind)
-            stacks.append(open_stack)
-        elif open_stack is not None and not row["member"]:
-            open_stack = None
-        elif open_stack is not None and row["name"]:
-            open_stack.members.append((row["key"], row["name"]))
+            nested = bool(open_) and depth == len(open_)      # a depth jump belongs to nothing
+            stack = Stack(name=row["name"], object_id=row["object_id"],
+                          track_key=row["key"], index=int(row["label"].split()[1]),
+                          owner=row["owner"], kind=kind, depth=depth,
+                          parent=open_[-1].object_id if nested else None)
+            if nested:
+                open_[-1].members.append((row["key"], row["name"]))
+            stacks.append(stack)
+            if depth == len(open_):
+                open_.append(stack)
+        elif open_ and depth == len(open_) and row["name"]:
+            open_[-1].members.append((row["key"], row["name"]))
     return stacks
+
+
+def rows_below(stacks: list[Stack], stack: Stack, *, headers: bool = True) -> list[tuple[int, str]]:
+    """Every (key, name) under ``stack``, nested stacks' rows included; their headers too unless
+    ``headers`` is False. ``Stack.members`` alone is the direct children."""
+    inner = {s.track_key: s for s in stacks if s.parent == stack.object_id}
+    out = []
+    for key, name in stack.members:
+        if key in inner:
+            if headers:
+                out.append((key, name))
+            out += rows_below(stacks, inner[key], headers=headers)
+        else:
+            out.append((key, name))
+    return out
+
+
+def span_end(depths: list[int], start: int) -> int:
+    """The index after the last row a header at ``start`` holds: every following row deeper than it."""
+    end = start + 1
+    while end < len(depths) and depths[end] > depths[start]:
+        end += 1
+    return end
 
 
 def stack_parents(data: bytes) -> dict[int, int]:
@@ -195,23 +228,26 @@ def move_to_stack(data: bytes, track_object: int, stack_object: int,
     stacks = {s.object_id: s for s in read_stacks(data, track_count)}
     if stack_object not in stacks:
         raise ValueError(f"object {stack_object} is not a stack")
-    if track_object in stacks:
-        raise ValueError("moving a stack into a stack is not decoded")
     stack = stacks[stack_object]
     if stack.kind == SUMMING:
         raise ValueError("summing stacks are read, not written: a member's routing moves with it")
 
+    depths = [records[i].raw[HEADER + MEMBER_AT] for i in run]
     start = order.index(stack_object)
-    end = start + 1
-    while end < len(order) and records[run[end]].raw[HEADER + MEMBER_AT] == 1:
-        end += 1
-    if start < order.index(track_object) < end:
-        return data                                   # already in this stack
+    end = span_end(depths, start)
+    pos = order.index(track_object)
+    if start < pos < end and depths[pos] == stack.depth + 1:
+        return data                                   # already a direct member
+    block_end = span_end(depths, pos)                 # a moving stack takes its members along
+    if pos <= start < block_end:
+        raise ValueError("a stack cannot move into one of its own members")
 
     rows = [records[i].raw for i in run]
-    moving = with_member(rows.pop(order.index(track_object)), 1)
-    at = end - 1 if order.index(track_object) < end else end
-    rows.insert(at, moving)
+    shift = stack.depth + 1 - depths[pos]
+    block = [with_member(rows[k], depths[k] + shift, header=order[k] in stacks) for k in range(pos, block_end)]
+    del rows[pos:block_end]
+    at = end - len(block) if pos < end else end
+    rows[at:at] = block
     # the key field IS the display order, so renumber the run after the splice
     rows = [with_key(raw, key) for key, raw in enumerate(rows)]
 
@@ -265,10 +301,21 @@ def set_hidden(data: bytes, track_object: int, hidden: bool, track_count: int | 
     return result
 
 
+def _header_above(depths: list[int], pos: int, depth: int) -> int:
+    """The nearest row above ``pos`` shallower than ``depth``: the header enclosing it."""
+    start = pos
+    while start > 0 and depths[start] >= depth:
+        start -= 1
+    if depths[start] >= depth:
+        raise ValueError(f"row {pos} sits at depth {depth} with no header above it")
+    return start
+
+
 def move_out_of_stack(data: bytes, track_object: int, track_count: int | None = None) -> bytes:
-    """Move a member row out to the top level, right after its stack, the way Logic's drag
-    does (measured 2026-09-04): member byte cleared, parent pointer cleared, the channel's
-    stack index cleared, the row selected."""
+    """Move a member row one level out, right after the stack it leaves, the way Logic's drag
+    does: depth byte down by one, the
+    parent pointer and the channel's stack index now the enclosing stack's (cleared at the top
+    level), the row selected. A row two levels deep takes two moves to reach the top."""
     require_full_walk(data)
     records = list(project_records(data))
     run = arrange_run(records, track_count)
@@ -276,18 +323,26 @@ def move_out_of_stack(data: bytes, track_object: int, track_count: int | None = 
     if track_object not in order:
         raise ValueError(f"track object {track_object} is not in the arrange list")
     pos = order.index(track_object)
-    if records[run[pos]].raw[HEADER + MEMBER_AT] != 1:
+    depths = [records[i].raw[HEADER + MEMBER_AT] for i in run]
+    depth = depths[pos]
+    if depth == 0:
         return data                                       # already top level
-    start = pos
-    while start > 0 and records[run[start]].raw[HEADER + MEMBER_AT] == 1:
-        start -= 1
-    end = pos
-    while end + 1 < len(order) and records[run[end + 1]].raw[HEADER + MEMBER_AT] == 1:
-        end += 1
+    stacks = read_stacks(data, track_count)
+    headers = {s.object_id for s in stacks}
+    start = _header_above(depths, pos, depth)
+    end = span_end(depths, start)
+    block_end = span_end(depths, pos)                     # a moving stack takes its members along
     rows = [records[i].raw for i in run]
-    moving = with_member(rows.pop(pos), 0)
-    rows.insert(end, moving)                              # end shifted down by one after the pop
+    block = [with_member(rows[k], depths[k] - 1, header=order[k] in headers) for k in range(pos, block_end)]
+    del rows[pos:block_end]
+    rows[end - len(block):end - len(block)] = block       # right after the stack it leaves
     rows = [with_key(raw, key) for key, raw in enumerate(rows)]
+    outer = None                                          # the stack the row lands in, if any
+    if depth > 1:
+        outer_object = order[_header_above(depths, start, depth - 1)]
+        outer = next((s for s in stacks if s.object_id == outer_object), None)
+        if outer is None:
+            raise ValueError(f"object {outer_object} encloses the row but is not a stack")
 
     track_owner = bound_channels(data).get(track_object)
     replace = dict(zip(run, rows, strict=True))
@@ -298,10 +353,10 @@ def move_out_of_stack(data: bytes, track_object: int, track_count: int | None = 
             payload = raw[HEADER:]
             if (struct.unpack_from("<I", payload, 0)[0] & 0xFFFF == CHANNEL_OBJECT.get(record.ver)
                     and struct.unpack_from("<I", payload, OBJECT_ID_AT)[0] == track_object):
-                raw = set_parent(raw, 0)
+                raw = set_parent(raw, outer.object_id if outer else 0)
         elif (record.tag == CHANNEL_TAG and record.key == NO_KEY
                 and record.owner == track_owner and len(raw) - HEADER > 200):
-            raw = set_stack_index(raw, 0)
+            raw = set_stack_index(raw, outer.index if outer else 0)
         out.append(raw)
     result = sync_region_tracks(reassemble(data, out), track_count)
     result = select_track(result, track_object, track_count)

@@ -61,10 +61,6 @@ class GoldenPowerTest(unittest.TestCase):
         self.assertEqual((a["Gtr 1 DI"], b["Gtr 1 DI"], b["Gtr 2 DI"]), (False, True, False))
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 @_goldens.needs("stack-folder-logic", "stack-summing-logic")
 class LogicMadeStacksTest(unittest.TestCase):
     """Logic's own Create Track Stack over three audio tracks on a project that had no stack:
@@ -83,3 +79,7 @@ class LogicMadeStacksTest(unittest.TestCase):
         (stack,) = self._stacks("stack-summing-logic")
         self.assertEqual(stack.kind, "summing")
         self.assertEqual([n for _k, n in stack.members], _goldens.fact("stack-summing-logic", "members"))
+
+
+if __name__ == "__main__":
+    unittest.main()

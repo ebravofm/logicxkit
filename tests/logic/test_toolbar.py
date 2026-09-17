@@ -39,5 +39,20 @@ class ToolbarTest(unittest.TestCase):
             self.assertFalse(toolbar_shown(alt))
 
 
+class EditDisplayTest(unittest.TestCase):
+    def test_a_failing_step_discards_the_copy(self):
+        from logicxkit.logic._edit import edit_display
+        with tempfile.TemporaryDirectory() as d:
+            src = Path(d) / "song.logicx"
+            (src / "Alternatives" / "000").mkdir(parents=True)
+            state = (src / "Alternatives" / "000" / "DisplayState.plist")
+            state.write_bytes(plistlib.dumps({"screensetDictArray": []}, fmt=plistlib.FMT_BINARY))
+            out = Path(d) / "out"
+            with self.assertRaises(ValueError):                      # no window state: refused
+                edit_display(src, out, lambda alt: show_toolbar(alt, True))
+            self.assertFalse((out / "song.logicx").exists())
+            self.assertTrue(state.exists())
+
+
 if __name__ == "__main__":
     unittest.main()

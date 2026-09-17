@@ -4,23 +4,26 @@ The real-file part of tests/logic/test_signature.py; skips without the owner's f
 
 import unittest
 import _goldens
-import _paths
 from logicxkit.logic.services.signature import meter, read_signatures
 from logicxkit.logicx import project_data
 
-SONGS = sorted(p for d in ("mixes", "legacy") for p in (_paths.RESOURCES / d).glob("*/*.logicx"))
+SONGS = _goldens.sessions()
 FIVE = _goldens.path("meter-song")
 LIST_KEYS = ["signature-list-base-logic", "signature-meter-created-logic", "signature-meter-5-8-bar-6-logic",
              "signature-meter-3-8-bar-6-logic", "signature-key-created-logic", "signature-key-a-minor-logic"]
 
 
-@unittest.skipUnless(SONGS, "no resources copies")
+@unittest.skipUnless(SONGS, "no owner's session on this machine")
 class GoldenTest(unittest.TestCase):
-    def test_every_band_song_is_four_four_in_key_seven(self):
-        for song in SONGS:
-            times, keys = read_signatures(project_data(song))
-            self.assertEqual([(t.tick, t.numerator, t.denominator) for t in times], [(0, 4, 4)], song)
-            self.assertEqual([k.number for k in keys], [7], song)
+    def test_every_session_reads_the_signatures_its_manifest_records(self):
+        for key in _goldens.SESSION_KEYS:
+            song = _goldens.path(key)
+            if song is None:
+                continue
+            with self.subTest(key):
+                times, keys = read_signatures(project_data(song))
+                self.assertEqual([[t.tick, t.numerator, t.denominator] for t in times], _goldens.fact(key, "signatures"))
+                self.assertEqual([k.number for k in keys], _goldens.fact(key, "key_numbers"))
 
     @unittest.skipUnless(FIVE, "no meter-change golden")
     def test_meter_change_reads_as_the_song_has_it(self):

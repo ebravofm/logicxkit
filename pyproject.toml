@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "logicxkit"
-version = "0.5.0"
+version = "0.6.0"
 description = "Logic Pro project and channel-strip tooling, and Audio Unit preset and state decoding"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -28,7 +28,7 @@ dependencies = [
     # x32scene's pin, or pip cannot resolve the two together.
     "pf-core~=0.22.0",
     # General MIDI: files, note maps, transforms and the pattern library. The same pf-core pin.
-    "groovebin~=0.2.0",
+    "groovebin~=0.3.0",
 ]
 
 [project.urls]
@@ -43,6 +43,9 @@ logicxkit = "logicxkit.cli:main"
 dev = [
     "pytest>=8.0",
     "ruff>=0.6",
+    # tests/test_declared_dependencies.py reads the pins above. pytest happens to pull this in;
+    # the check must not rest on that.
+    "packaging>=23",
 ]
 # Opt-in: only tests/rig needs it, and only on a machine with the real scene. Nothing in
 # src/ imports it. Its own pf-core pin is ~=0.22.0, which is why the two resolve together.

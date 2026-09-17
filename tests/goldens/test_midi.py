@@ -78,10 +78,6 @@ class LoopTest(unittest.TestCase):
         self.assertTrue(_region("midi-region-looped-logic").loop)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 @_goldens.needs("midi-region-looped-logic", "midi-import-resave-logic")
 class LogicImportedExportTest(unittest.TestCase):
     """The .mid `logic midi --export` wrote, imported by Logic into a new project: the events
@@ -92,3 +88,7 @@ class LogicImportedExportTest(unittest.TestCase):
         keys = lambda r: [(e.kind, e.tick, e.channel, e.data1, e.data2, e.length) for e in r.events]  # noqa: E731
         self.assertEqual(keys(ours), keys(theirs))
         self.assertEqual(theirs.start, ours.start)
+
+
+if __name__ == "__main__":
+    unittest.main()

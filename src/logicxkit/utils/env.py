@@ -2,7 +2,9 @@
 
 `bin/run` sources `.env`, and `.env.example` carries every optional key with no value — so
 `os.environ.get(name, default)` hands back `""`, and a path override collapses to the process's
-working directory instead of falling back. Every override in this repo goes through here.
+working directory instead of falling back. Every override this repo resolves itself goes through
+here; `XDG_CACHE_HOME` is handed to groovebin instead, which applies the same rule
+(`_beats_cmd.default_db`).
 """
 
 from __future__ import annotations

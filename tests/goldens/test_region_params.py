@@ -157,10 +157,6 @@ class LikeLogicTest(unittest.TestCase):
             set_crossfade(data, number(data, "Inst 1"), ms=None, curve=0, kind="eqp", spt=spt, rate=RATE)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 @_goldens.needs("regions-params-ours", "regions-params-resave-logic")
 class LogicResavedTest(unittest.TestCase):
     """The parameters, a fade-out type, a crossfade and two colours on one copy, re-saved by Logic: back as written."""
@@ -188,3 +184,7 @@ class LogicResavedTest(unittest.TestCase):
         ours, logic = (project_data(_goldens.path(k)) for k in ("regions-params-ours", "regions-params-resave-logic"))
         masked = lambda d: [e[:66] + b"\0" + e[67:] for e in entries(d)]  # noqa: E731
         self.assertEqual(masked(ours), masked(logic))
+
+
+if __name__ == "__main__":
+    unittest.main()

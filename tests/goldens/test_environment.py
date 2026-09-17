@@ -16,9 +16,8 @@ class NextObjectIdAvoidsTrackRowsTest(unittest.TestCase):
     and an existing row claimed the same id — a duplicate flat mixer row."""
 
     def _sessions(self):
-        import _paths
-        root = _paths.RESOURCES
-        return sorted(p for d in ("legacy", "mixes") for p in (root / d).rglob("*.logicx"))
+        import _goldens
+        return _goldens.sessions()
 
     def test_no_real_session_hands_back_an_id_a_row_already_uses(self):
         from logicxkit.logic.services.environment import next_object_id
@@ -26,7 +25,7 @@ class NextObjectIdAvoidsTrackRowsTest(unittest.TestCase):
         from logicxkit.logic.services.tracklist import arrange_run, row_object
         projects = self._sessions()
         if not projects:
-            self.skipTest("no sessions under resources/legacy or resources/mixes")
+            self.skipTest("no owner's session on this machine")
         for project in projects:
             with self.subTest(project.stem):
                 data = sorted(project.glob("Alternatives/*/ProjectData"))[0].read_bytes()

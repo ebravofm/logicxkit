@@ -14,7 +14,7 @@ NOT_PATHS = {
     "length", "mono", "move", "name", "output", "pane", "ramp", "remove", "rename", "row", "set",
     "audio", "note", "patch", "region", "setting", "show", "skip", "stack", "stereo", "time", "time_at", "track",
     "ref", "group", "off", "edits", "drum_map", "hit", "id", "category", "meter",
-    "tempo", "intensity", "role", "unmapped", "select", "steps", "seed", "velocity",
+    "tempo", "intensity", "role", "unmapped", "select", "steps", "seed", "velocity", "clear",
 }
 
 

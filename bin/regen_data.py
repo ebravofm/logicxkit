@@ -1,4 +1,4 @@
-"""Regenerate src/logicxkit/data/logic from the public golden corpus (`bin/run fetch-corpus`).
+"""Regenerate src/logicxkit/data/logic and data/donors from the public golden corpus (`tests/corpus/`).
 
     bin/run python bin/regen_data.py
 
@@ -47,7 +47,7 @@ SOURCE = ("Logic Pro 12.3.1 on a blank project: {what} (public corpus {a} -> {b}
 def _load(key: str) -> bytes:
     p = _goldens.path(key)
     if p is None:
-        raise SystemExit(f"golden {key!r} is not on this machine — run bin/run fetch-corpus")
+        raise SystemExit(f"golden {key!r} is not under tests/corpus — the checkout is incomplete")
     return load_project_data(p)
 
 
@@ -240,11 +240,26 @@ TEMPLATES = {
 }
 
 
+# the saves the packaged donor library is harvested from, in order: the nine native inserts on
+# Audio 1, then the four output plug-ins on Audio 1 (mono donors; the writer widens them)
+DONOR_KEYS = ("inserts-native-all-logic", "master-track-limiter-logic")
+
+
+def donors() -> list[str]:
+    import shutil
+    from logicxkit.logic.services.chain_report import PLUGIN_NAMES
+    from logicxkit.logic.services.donors import harvest_donors
+    lib = OUT / "donors"
+    shutil.rmtree(lib, ignore_errors=True)
+    return [k for key in DONOR_KEYS for k in harvest_donors(_load(key), lib, PLUGIN_NAMES)]
+
+
 def main() -> int:
     (OUT / "logic").mkdir(parents=True, exist_ok=True)
     for name, (_keys, make) in TEMPLATES.items():
         (OUT / "logic" / name).write_text(json.dumps(make(), indent=1) + "\n")
         print("wrote", name)
+    print("donors:", ", ".join(donors()))
     return 0
 
 

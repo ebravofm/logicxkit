@@ -12,12 +12,12 @@ it was given rather than demanding zero problems.
 import unittest
 from pathlib import Path
 
-import _paths  # noqa: F401
+import _goldens
 
 
 def sessions() -> list[Path]:
-    """Every session in the reference store: the legacy projects and the finished mixes."""
-    return sorted(p for d in ("legacy", "mixes") for p in (_paths.RESOURCES / d).rglob("*.logicx"))
+    """The owner's sessions on this machine: the legacy projects and the finished mixes."""
+    return _goldens.sessions()
 
 
 class ProblemsOnRealFilesTest(unittest.TestCase):
@@ -26,7 +26,7 @@ class ProblemsOnRealFilesTest(unittest.TestCase):
     def setUp(self):
         self.files = sessions()
         if not self.files:
-            self.skipTest("no sessions under resources/legacy or resources/mixes")
+            self.skipTest("no owner's session on this machine")
 
     def test_a_logic_written_session_regresses_against_itself_zero_times(self):
         from logicxkit.logic.services.integrity import regressions
@@ -50,7 +50,7 @@ class RegressionDetectionTest(unittest.TestCase):
     def setUp(self):
         self.files = sessions()
         if not self.files:
-            self.skipTest("no sessions under resources/legacy or resources/mixes")
+            self.skipTest("no owner's session on this machine")
         self.project = self.files[0]
         self.data = sorted(self.project.glob("Alternatives/*/ProjectData"))[0].read_bytes()
         from logicxkit.logic.services.project import project_metadata
@@ -87,7 +87,7 @@ class DiscardOnRefusalTest(unittest.TestCase):
 
     def setUp(self):
         if not sessions():
-            self.skipTest("no sessions under resources/legacy or resources/mixes")
+            self.skipTest("no owner's session on this machine")
         self.src = sessions()[0]
 
     def test_a_refused_edit_takes_the_whole_copy_with_it(self):

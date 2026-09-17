@@ -17,7 +17,7 @@ def apply(template: bytes, session: bytes, ops: list[Op], *, session_count: int 
     from ..services.instout import bind_instrument_output, unbind_instrument_output
     from ..services.levels import set_levels
     from ..services.reorder import move_track
-    from ..services.retrack import retrack
+    from ..services.retrack import retrack_channels
     from ..services.sends_write import copy_sends
     from ..services.stack_create import create_stack
     from ..services.stacks import move_out_of_stack, move_to_stack, set_hidden, set_power
@@ -90,7 +90,7 @@ def apply(template: bytes, session: bytes, ops: list[Op], *, session_count: int 
                     data = copy_reference(template, data, src_owner=a["src_owner"], dst_owner=a["dst_owner"])
                 elif op.kind == "refs":
                     target = a["new"] if a["category"] is None else {"name": a["new"], "category": a["category"]}
-                    data, _r = retrack(data, {a["old"]: target}, a["category"] or "")
+                    data, _r = retrack_channels(data, {a["owner"]: target})
                 elif op.kind == "output":
                     data = set_output(data, a["owner"], a["dest"])
                 elif op.kind == "input":

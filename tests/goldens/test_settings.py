@@ -4,7 +4,6 @@ The real-file part of tests/logic/test_settings.py; skips without the owner's fi
 
 import unittest
 import _goldens
-import _paths
 from logicxkit.logic.services.events import events
 from logicxkit.logic.services.insert import HEADER, project_records
 from logicxkit.logic.services.integrity import require_no_regression
@@ -14,21 +13,25 @@ from logicxkit.logic.services.signature import KEY_TYPE, read_signatures
 from logicxkit.logic.services.signature_write import set_key
 from logicxkit.logicx import project_data
 
-SONGS = sorted(p for d in ("mixes", "legacy") for p in (_paths.RESOURCES / d).glob("*/*.logicx"))
+SONGS = _goldens.sessions()
 THREE, KEY_G, DIV48 = _goldens.path("meter-3-4-logic"), _goldens.path("key-g-logic"), _goldens.path("div-48-logic")
 def key_event(data):
     recs = project_records(data)
     return next(e for e in events(recs[sequences(recs)[0].end].raw[HEADER:]) if e.type == KEY_TYPE)
 
 
-@unittest.skipUnless(SONGS, "no resources copies")
+@unittest.skipUnless(SONGS, "no owner's session on this machine")
 class GoldenTest(unittest.TestCase):
-    def test_band_songs_are_sixteenths_in_c(self):
-        for song in SONGS:
-            s = read_settings(project_data(song))
-            self.assertEqual((s["division"], s["key_root"]), (16, "C"), song)
-            self.assertIn(s["division_ticks"], (240, 0), song)
-            self.assertEqual(read_signatures(project_data(song))[1][0].name, "C major", song)
+    def test_every_session_reads_the_division_and_key_its_manifest_records(self):
+        for key in _goldens.SESSION_KEYS:
+            song = _goldens.path(key)
+            if song is None:
+                continue
+            with self.subTest(key):
+                s = read_settings(project_data(song))
+                self.assertEqual((s["division"], s["key_root"], s["division_ticks"]),
+                                 tuple(_goldens.fact(key, n) for n in ("division", "key_root", "division_ticks")))
+                self.assertEqual(read_signatures(project_data(song))[1][0].name, f"{s['key_root']} major")
 
     def test_set_division(self):
         data = project_data(SONGS[0])
@@ -60,10 +63,6 @@ class LogicPairTest(unittest.TestCase):
         self.assertEqual(read_settings(ours), read_settings(logic))
         f = _goldens.entry("div-48-logic")["facts"]
         self.assertEqual(read_settings(logic), {"division": f["division"], "division_index": f["division_index"], "division_ticks": f["division_ticks"], "key_root": f["root"]})
-
-
-if __name__ == "__main__":
-    unittest.main()
 
 
 KEY_BASE, A_MINOR, E_MINOR = _goldens.path("key-base"), _goldens.path("key-a-minor-logic"), _goldens.path("key-e-minor-logic")
@@ -139,3 +138,7 @@ class SignatureChangesTest(unittest.TestCase):
             add_meter_change(base, BAR_ONE + 100, 3, 4)                # not on a bar line
         with self.assertRaises(ValueError):
             add_key_change(base, 0, "G")                                # the start, not a change
+
+
+if __name__ == "__main__":
+    unittest.main()

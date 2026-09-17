@@ -1,6 +1,6 @@
-# The runner fetches the public corpus (Logic's saves of a blank project) once it is pinned in
-# tests/goldens/corpus.json and then requires every public golden to run; the owner's corpus
-# and the console scene are not here, so those goldens and tests/rig still skip.
+# The public corpus (Logic's saves of a blank project) is tracked under tests/corpus, so every
+# public golden must run; the owner's corpus and the console scene are not here, so those
+# goldens and tests/rig still skip.
 name: CI
 
 on:
@@ -30,13 +30,9 @@ jobs:
           python -m pf_core.guards --root src
           python -m pf_core.guards --root tests
 
-      - name: Fetch the public corpus
-        if: hashFiles('tests/goldens/corpus.json') != ''
-        run: python bin/fetch_corpus.py
-
       - name: Tests
         env:
-          LOGICXKIT_REQUIRE_GOLDENS: ${{ hashFiles('tests/goldens/corpus.json') != '' && 'public' || '' }}
+          LOGICXKIT_REQUIRE_GOLDENS: public
         run: |
           set -o pipefail
           python -m pytest -q | tee pytest.out
