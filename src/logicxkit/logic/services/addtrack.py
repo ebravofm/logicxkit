@@ -267,7 +267,7 @@ def add_track(data: bytes, *, name: str, after: int, kind: str = "audio", input_
     elif kind == "instrument":
         chan_rec, number = new_inst_channel(mixer_record(records, like_owner), owner=owner,
                                             object_uuid=obj_uuid, output_uuid=output_uuid,
-                                            stack_index=stack_index)
+                                            stack_index=stack_index, stereo=stereo)
         inst_records = [chan_rec] + default_inst_records(owner)
     elif kind == "aux":
         highest = max(int(c.label.split(" ", 1)[1]) for c in chans.values() if c.label.startswith(prefix))

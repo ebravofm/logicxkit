@@ -53,8 +53,20 @@ NUMBER_AT, INST_NUMBER2_AT = 6, 128
 LABEL_BASE = {"Sub ": 0}          # the label's number is +6 plus this; the 0-based classes add 1
 WIDTH = {78: {1: 211, 2: 215}, 86: {1: 0, 2: 1}, 123: {1: 1, 2: 2}}
 INST_FRESH = {78: 243, 81: 0, 86: 0, 92: 0, 123: 1, 188: 0}
+# A fresh instrument channel, stereo: measured on a real Logic Pro 11.2.2 (build 6387) add —
+# Logic's own New Tracks made a stereo instrument by default with no stereo option chosen by
+# the caller. 86/123 match the module's own stereo width values (1/2); 78/81 do not match either
+# mono or stereo width alone, so they are recorded as their own fresh-instrument-stereo pair
+# rather than folded into WIDTH.
+INST_FRESH_STEREO = {78: 247, 81: 8, 86: 1, 92: 0, 123: 2, 188: 0}
 UUID_LEN = 16
 _MIXER_MIN = 200
+SHORT_CHANNEL_LEN = 225           # a fresh Logic Pro 11.2.2 project's Instrument/Aux channel has
+                                  # no destination/input trailer; its own uuid sits at len-16,
+                                  # not len-48 (see binding.py). Cloning such a channel to make a
+                                  # second instrument track must stamp the new uuid at len-16 too,
+                                  # or the clone comes out unbound ("no mixer channel"). Measured
+                                  # on a real Logic Pro 11.2.2 session, 2026-09-23.
 _DATA, _AUX_DATA, _AUDIO_DATA = "inst-track-12.3.1.json", "aux-track-12.3.1.json", "audio-channel-12.3.1.json"
 
 
@@ -115,21 +127,25 @@ def bind_audio_stub(raw: bytes, *, object_uuid: bytes, input_uuid: bytes,
 
 
 def new_inst_channel(template: bytes, *, owner: int, object_uuid: bytes,
-                     output_uuid: bytes | None, stack_index: int = 0) -> tuple[bytes, int]:
+                     output_uuid: bytes | None, stack_index: int = 0,
+                     stereo: bool = False) -> tuple[bytes, int]:
     """A fresh instrument channel numbered after ``template``'s -> ``(record, number)``."""
     p = bytearray(template[HEADER:])
     for off in (NUMBER_AT, INST_NUMBER2_AT):
         struct.pack_into("<H", p, off, struct.unpack_from("<H", p, off)[0] + 1)
-    for off, value in INST_FRESH.items():
+    for off, value in (INST_FRESH_STEREO if stereo else INST_FRESH).items():
         p[off] = value
     p[STACK_INDEX_AT] = stack_index
     number = struct.unpack_from("<H", p, NUMBER_AT)[0] + 1
     p[LABEL_AT:LABEL_AT + LABEL_LEN] = f" Inst {number}".encode().ljust(LABEL_LEN, b"\x00")
     n = len(p)
-    p[n - 48:n - 32] = object_uuid
-    if output_uuid is not None:
-        p[n - 32:n - 16] = output_uuid
-    p[n - 16:] = bytes(UUID_LEN)
+    if n <= SHORT_CHANNEL_LEN:
+        p[n - 16:] = object_uuid
+    else:
+        p[n - 48:n - 32] = object_uuid
+        if output_uuid is not None:
+            p[n - 32:n - 16] = output_uuid
+        p[n - 16:] = bytes(UUID_LEN)
     return rec(CHANNEL_TAG, template, bytes(p), owner=owner), number
 
 

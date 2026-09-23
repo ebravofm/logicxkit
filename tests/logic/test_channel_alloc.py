@@ -53,6 +53,52 @@ class InstNumberIsSixteenBitTest(unittest.TestCase):
         self.assertEqual(struct.unpack_from("<H", out, HDR + INST_NUMBER2_AT)[0], 256)
 
 
+class ShortTemplateBindsAtLenMinus16Test(unittest.TestCase):
+    """A fresh Logic Pro 11.2.2 session's Instrument channel is 225 bytes, with no room for a
+    destination/input trailer: the bound object's own uuid sits at len-16. Cloning it (a second
+    instrument track) must stamp the new uuid there too, not at len-48 (measured 2026-09-23:
+    that write used to land in the template's leftover placeholder bytes, and the clone came
+    back unbound — "no mixer channel")."""
+
+    def test_object_uuid_lands_at_len_minus_16_on_a_225_byte_template(self):
+        from logicxkit.logic.services.channel_alloc import new_inst_channel
+        marker = bytes(range(1, 17))
+        out, _ = new_inst_channel(inst_channel(3, size=225), owner=9, object_uuid=marker,
+                                  output_uuid=None)
+        payload = out[HDR:]
+        self.assertEqual(payload[-16:], marker)
+
+    def test_a_257_byte_template_is_unaffected(self):
+        from logicxkit.logic.services.channel_alloc import new_inst_channel
+        marker = bytes(range(1, 17))
+        out, _ = new_inst_channel(inst_channel(3, size=257), owner=9, object_uuid=marker,
+                                  output_uuid=None)
+        payload = out[HDR:]
+        self.assertEqual(payload[-48:-32], marker)
+        self.assertEqual(payload[-16:], bytes(16))
+
+
+class InstStereoWidthTest(unittest.TestCase):
+    """`--stereo` on `add-track --instrument` used to do nothing: `new_inst_channel` always
+    wrote the mono INST_FRESH bytes. Logic Pro 11.2.2 (build 6387) made a stereo instrument
+    channel by default (2026-09-23): offsets 78/81/86/123 were 247/8/1/2, not the mono
+    243/0/0/1 — 86 and 123 match this module's own stereo width pair (1, 2)."""
+
+    def test_stereo_writes_the_measured_stereo_bytes(self):
+        from logicxkit.logic.services.channel_alloc import new_inst_channel
+        out, _ = new_inst_channel(inst_channel(3, size=225), owner=9, object_uuid=bytes(16),
+                                  output_uuid=None, stereo=True)
+        payload = out[HDR:]
+        self.assertEqual((payload[78], payload[81], payload[86], payload[123]), (247, 8, 1, 2))
+
+    def test_mono_is_still_the_default(self):
+        from logicxkit.logic.services.channel_alloc import new_inst_channel
+        out, _ = new_inst_channel(inst_channel(3, size=225), owner=9, object_uuid=bytes(16),
+                                  output_uuid=None)
+        payload = out[HDR:]
+        self.assertEqual((payload[78], payload[81], payload[86], payload[123]), (243, 0, 0, 1))
+
+
 class ShiftedChannelIsSixteenBitTest(unittest.TestCase):
     def _shift(self, number: int) -> bytes:
         from logicxkit.logic.services.channel_alloc import shifted_channel
