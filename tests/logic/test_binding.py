@@ -52,6 +52,17 @@ class LinkTest(unittest.TestCase):
     def test_unbound_stub_is_absent(self):
         self.assertNotIn(26, bound_objects(_session()))
 
+    def test_a_225_byte_channel_binds_from_len_minus_16(self):
+        """A fresh Logic Pro 11.2.2 session's Instrument/Aux channels are 225 bytes with no
+        destination/input trailer: the bound object's uuid sits where `input_uuid` is read,
+        and len-48 is zero. Measured on a real session (2026-09-23): all 3 named channels
+        (two Aux returns, one Instrument) matched this shape."""
+        data = proj(
+            env_obj(88, "Piano", uuid=uuid(88)),
+            chan(5, "Inst 1", source=uuid(88), size=225),
+        )
+        self.assertEqual(bound_objects(data)[5], 88)
+
 
 class RoutingTest(unittest.TestCase):
     def test_destination_resolves_to_the_bus_owner(self):

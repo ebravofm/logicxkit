@@ -72,9 +72,23 @@ def channels(data: bytes) -> dict[int, Channel]:
 
 
 def bound_objects(data: bytes) -> dict[int, int]:
-    """owner -> Environment object id, for every channel whose UUID names an object."""
+    """owner -> Environment object id, for every channel whose UUID names an object.
+
+    The bound uuid is usually 48 bytes from the end (``Channel.uuid``). A 225-byte OCuA payload
+    has no room for the destination/input trailer the 257+-byte records carry, so it packs the
+    bound object's own uuid 16 bytes from the end instead — the slot ``Channel.input_uuid``
+    otherwise names. Confirmed on a real Logic Pro 11.2.2 (build 6387) session: all three of its
+    225-byte channels (two Aux returns, one Instrument) had their bound object's uuid there and
+    zeroes at len-48.
+    """
     by_uuid = {o.uuid: i for i, o in channel_objects(data).items()}
-    return {owner: by_uuid[c.uuid] for owner, c in channels(data).items() if c.uuid in by_uuid}
+    out = {}
+    for owner, c in channels(data).items():
+        if c.uuid in by_uuid:
+            out[owner] = by_uuid[c.uuid]
+        elif c.input_uuid in by_uuid:
+            out[owner] = by_uuid[c.input_uuid]
+    return out
 
 
 def bound_channels(data: bytes) -> dict[int, int]:
