@@ -32,12 +32,12 @@ def uuid(n: int) -> bytes:
 
 
 def env_obj(object_id: int, name: str, *, grouping: bool = False, uuid: bytes | None = None,
-            parent: int = 0, ver: int = 12, group: int = 0) -> bytes:
+            parent: int = 0, ver: int = 12, group: int = 0, type_value: int | None = None) -> bytes:
     from logicxkit.logic.services.environment import (
         CHANNEL_OBJECT, GROUPING, KIND_AT, NAME_AT, PARENT_AT)
     encoded = name.encode()
     p = bytearray(463 + len(encoded) + len(encoded) % 2)   # names are padded to even length
-    struct.pack_into("<I", p, 0, CHANNEL_OBJECT[ver])
+    struct.pack_into("<I", p, 0, CHANNEL_OBJECT[ver] if type_value is None else type_value)
     struct.pack_into("<I", p, 16, object_id)
     struct.pack_into("<I", p, 24, group)
     struct.pack_into("<I", p, PARENT_AT, parent)

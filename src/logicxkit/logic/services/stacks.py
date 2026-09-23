@@ -32,6 +32,7 @@ from dataclasses import dataclass, field
 from .binding import bound_channels, channels, set_stack_index
 from .environment import (  # noqa: F401 — re-exported for callers and tests
     CHANNEL_OBJECT,
+    CHANNEL_OBJECT_TYPES,
     ENV_TAG,
     GROUPING,
     KIND_AT,
@@ -258,7 +259,7 @@ def move_to_stack(data: bytes, track_object: int, stack_object: int,
         raw = replace.get(index, record.raw)
         if record.tag == ENV_TAG and len(raw) - HEADER > PARENT_AT + 4:
             payload = raw[HEADER:]
-            if (struct.unpack_from("<I", payload, 0)[0] & 0xFFFF == CHANNEL_OBJECT.get(record.ver)
+            if (struct.unpack_from("<I", payload, 0)[0] & 0xFFFF in (CHANNEL_OBJECT_TYPES.get(record.ver) or set())
                     and struct.unpack_from("<I", payload, OBJECT_ID_AT)[0] == track_object):
                 raw = set_parent(raw, stack_object)
         elif (record.tag == CHANNEL_TAG and record.key == NO_KEY
@@ -351,7 +352,7 @@ def move_out_of_stack(data: bytes, track_object: int, track_count: int | None = 
         raw = replace.get(index, record.raw)
         if record.tag == ENV_TAG and len(raw) - HEADER > PARENT_AT + 4:
             payload = raw[HEADER:]
-            if (struct.unpack_from("<I", payload, 0)[0] & 0xFFFF == CHANNEL_OBJECT.get(record.ver)
+            if (struct.unpack_from("<I", payload, 0)[0] & 0xFFFF in (CHANNEL_OBJECT_TYPES.get(record.ver) or set())
                     and struct.unpack_from("<I", payload, OBJECT_ID_AT)[0] == track_object):
                 raw = set_parent(raw, outer.object_id if outer else 0)
         elif (record.tag == CHANNEL_TAG and record.key == NO_KEY

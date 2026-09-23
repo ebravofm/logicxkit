@@ -42,6 +42,18 @@ class ChannelObjectsTest(unittest.TestCase):
         self.assertEqual(channel_objects(data)[88].name, "Kick In")
         self.assertEqual(CHANNEL_OBJECT[11], 1728)
 
+    def test_logic_11_2_2_v12_channel_object_type(self):
+        """A real Logic Pro 11.2.2 (build 6387) session types its v12 channel objects 1760
+        (0x6e0), not 1800 — 7 of 7 objects at that type were channel strips (Preview, Click,
+        Stereo Out, Master, two Aux returns, a user-named Instrument track) and 1800 never
+        appeared. Both values must resolve so the arrange track's name is found."""
+        data = proj(env_obj(88, "Piano", ver=12, type_value=1760))
+        self.assertEqual(channel_objects(data)[88].name, "Piano")
+
+    def test_logic_11_2_2_v12_1800_still_resolves(self):
+        data = proj(env_obj(88, "Kick In", ver=12, type_value=1800))
+        self.assertEqual(channel_objects(data)[88].name, "Kick In")
+
 
 class SetParentTest(unittest.TestCase):
     def test_writes_all_four_bytes(self):

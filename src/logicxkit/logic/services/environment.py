@@ -1,7 +1,14 @@
 """Environment objects — the `ivnE` records that name tracks and stack folders.
 
     +0     u32   channel-object type in the low half: 1800 at class v12 (Logic 12), 1728 at
-                 v11; mixed projects set flag bits 0x4040 in the high half on some tracks
+                 v11; mixed projects set flag bits 0x4040 in the high half on some tracks.
+                 A real Logic Pro 11.2.2 (build 6387) session carries v12 objects typed 1760
+                 (0x6e0) instead — 7 of 7 objects at that type were channel strips (Preview,
+                 Click, Stereo Out, Master, two Aux returns and a user-named Instrument track);
+                 1800 never appeared in that file. Both are accepted when matching an existing
+                 object (`CHANNEL_OBJECT_TYPES`); `CHANNEL_OBJECT` itself is unchanged and still
+                 the value a fresh write stamps, since that is what `add-track`'s byte-for-byte
+                 goldens were measured against.
     +16    u32   object id — what a `karT` row's +8 points at
     +38    u32   parent: the object id of the stack this track was dragged into (0 = never)
     +80    u8    1 on the selected object only (`selection.py`)
@@ -29,6 +36,7 @@ from .recbuild import fresh_uuid, rec
 
 ENV_TAG = b"ivnE"
 CHANNEL_OBJECT = {11: 1728, 12: 1800}
+CHANNEL_OBJECT_TYPES = {11: {1728}, 12: {1760, 1800}}
 OBJECT_ID_AT = 16
 PARENT_AT = 38
 KIND_AT = 154
@@ -63,17 +71,17 @@ class EnvObject:
     icon: int = 0
 
 
-def _constant(records) -> int | None:
+def _constant(records) -> set[int] | None:
     version = next((r.ver for r in records if r.tag == ENV_TAG), None)
-    return CHANNEL_OBJECT.get(version)
+    return CHANNEL_OBJECT_TYPES.get(version)
 
 
 TYPE_MASK = 0xFFFF                 # +0: the type in the low half; mixes set flags above it
 
 
-def _is_channel_object(payload: bytes, constant: int | None) -> bool:
+def _is_channel_object(payload: bytes, constant: set[int] | None) -> bool:
     return (constant is not None and len(payload) > NAME_AT + 2 + UUID_LEN
-            and struct.unpack_from("<I", payload, 0)[0] & TYPE_MASK == constant)
+            and struct.unpack_from("<I", payload, 0)[0] & TYPE_MASK in constant)
 
 
 def _name(payload: bytes) -> str | None:
@@ -190,7 +198,7 @@ def next_object_id(records) -> int:
 def object_id_of(record) -> int | None:
     """The object id of a channel-object `ivnE` record, else None."""
     payload = record.raw[HEADER:]
-    if record.tag != ENV_TAG or not _is_channel_object(payload, CHANNEL_OBJECT.get(record.ver)):
+    if record.tag != ENV_TAG or not _is_channel_object(payload, CHANNEL_OBJECT_TYPES.get(record.ver)):
         return None
     return struct.unpack_from("<I", payload, OBJECT_ID_AT)[0]
 
