@@ -11,7 +11,7 @@ from .regions import sync_region_tracks
 from .selection import select_track
 from .stacks import MEMBER_AT, read_stacks, read_tracks, span_end
 from .tracklist import arrange_run, row_object
-from .validate import require_full_walk, require_valid
+from .validate import require_full_walk, require_valid, tolerating
 
 
 def move_track(data: bytes, track_object: int, *, before: int | None = None,
@@ -60,7 +60,8 @@ def move_track(data: bytes, track_object: int, *, before: int | None = None,
     result = sync_region_tracks(result, track_count)
     if track_object not in headers:      # a dragged header keeps the selection it had (Logic's save)
         result = select_track(result, track_object, track_count)
-    require_valid(result)
+    with tolerating(data):
+        require_valid(result)
     return result
 
 

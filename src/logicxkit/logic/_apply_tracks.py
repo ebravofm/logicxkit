@@ -30,15 +30,17 @@ def cmd_reorder(args) -> int:
 def cmd_colour(args) -> int:
     """Set track colours by palette index."""
     from .services.environment import set_colour
-    from .services.validate import require_full_walk, require_valid
+    from .services.validate import require_full_walk, require_valid, tolerating
 
     def step(data, count, data_file):
         require_full_walk(data)
+        before = data
         for spec in args.track:
             name, _, value = spec.rpartition("=")
             data = set_colour(data, object_by_name(data, name, count), int(value))
             print(f"  {data_file.parent.name}: {name} -> colour {value}")
-        require_valid(data)
+        with tolerating(before):
+            require_valid(data)
         return data
     return _run(args, step)
 
@@ -46,17 +48,19 @@ def cmd_colour(args) -> int:
 def cmd_rename(args) -> int:
     """Rename tracks."""
     from .services.environment import rename_track
-    from .services.validate import require_full_walk, require_valid
+    from .services.validate import require_full_walk, require_valid, tolerating
 
     def step(data, count, data_file):
         require_full_walk(data)
+        before = data
         for spec in args.track:
             old, _, new = spec.partition("=")
             if not new:
                 raise CommandError(f"bad --track {spec!r}: use OLD=NEW")
             data = rename_track(data, object_by_name(data, old.strip(), count), new.strip())
             print(f"  {data_file.parent.name}: {old.strip()} -> {new.strip()}")
-        require_valid(data)
+        with tolerating(before):
+            require_valid(data)
         return data
     return _run(args, step, note=UNVERIFIED)
 

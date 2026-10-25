@@ -63,7 +63,7 @@ from .tracklist import (  # noqa: F401 — re-exported for callers and tests
     with_member,
     with_power,
 )
-from .validate import require_full_walk, require_valid
+from .validate import require_full_walk, require_valid, tolerating
 
 FOLDER = "folder"
 SUMMING = "summing"
@@ -298,7 +298,8 @@ def set_hidden(data: bytes, track_object: int, hidden: bool, track_count: int | 
         raise ValueError(f"track object {track_object} is not in the arrange list")
     result = reassemble(data, [with_hidden(r.raw, hidden) if i in rows else r.raw
                                for i, r in enumerate(records)])
-    require_valid(result)
+    with tolerating(data):
+        require_valid(result)
     return result
 
 

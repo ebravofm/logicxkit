@@ -69,7 +69,7 @@ from .tracklist import (
     row_object,
     with_member,
 )
-from .validate import require_full_walk, require_valid
+from .validate import require_full_walk, require_valid, tolerating
 
 SUB_NUMBER_AT = NUMBER_AT
 _DATA = "stack-folder-12.3.1.json"
@@ -216,6 +216,7 @@ def create_stack(data: bytes, *, name: str, members: list[int], track_count: int
     result = sync_row_count(result, None if track_count is None else track_count + 1)
     result = sync_region_tracks(result, None if track_count is None else track_count + 1)
     result = select_track(result, object_id, None if track_count is None else track_count + 1)
-    require_valid(result)
+    with tolerating(data):
+        require_valid(result)
     return result, {"object_id": object_id, "owner": owner, "label": label,
                     "sequence": plan.index, "slot": plan.slot, "members": ordered}
